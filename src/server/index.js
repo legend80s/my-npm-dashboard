@@ -1,8 +1,8 @@
-import { createServer } from "node:http"
-import { readFile } from "node:fs/promises"
-import { existsSync } from "node:fs"
-import { join, extname } from "node:path"
 import { spawn } from "node:child_process"
+import { existsSync } from "node:fs"
+import { readFile } from "node:fs/promises"
+import { createServer } from "node:http"
+import { extname, join } from "node:path"
 
 /**
  * MIME 类型映射
@@ -139,11 +139,12 @@ export function startServer({ port, root, open = true }) {
   server.listen(port, () => {
     const url = `http://localhost:${port}`
     console.log(`
-                🐿️  pkg-marmot
-                📡 服务器已启动: ${url}
-                📂 根目录: ${root}
-                ℹ️  按 Ctrl+C 停止服务器
-            `)
+        🐿️  My npm Dashboard
+
+    📡 服务器已启动: ${url}
+    📂 根目录: ${root}
+    ℹ️  按 Ctrl+C 停止服务器
+`)
 
     if (open) {
       openBrowser(url)
