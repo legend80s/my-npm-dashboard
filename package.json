@@ -8,7 +8,7 @@
   },
   "scripts": {
     "tauri": "tauri",
-
+    "typecheck": "tsgo --noEmit",
     "start": "node src/bin/index.js",
     "dev": "pnpx live-server --port=3000 ./src"
   },

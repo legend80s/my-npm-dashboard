@@ -135,40 +135,8 @@ function timeAgo(dateStr) {
 }
 
 // ============================================================
-//  7. 渲染 Mermaid 图表
+//  7. 渲染图表
 // ============================================================
-
-function buildMermaidChart(pkgName, weeklyData) {
-  if (!weeklyData || weeklyData.length === 0) {
-    return `xychart-beta
-                    title "${pkgName} 周下载量"
-                    x-axis [无数据]
-                    line [0]`
-  }
-
-  // 生成日期标签（最近 7 天）
-  const labels = []
-  const now = new Date()
-  for (let i = 6; i >= 0; i--) {
-    const d = new Date(now)
-    d.setDate(d.getDate() - i)
-    labels.push(`${d.getMonth() + 1}/${d.getDate()}`)
-  }
-
-  // 限制数据点数量，防止图表过于拥挤
-  const data = weeklyData.slice(0, 7)
-  // 补齐到 7 个点
-  while (data.length < 7) data.push(0)
-
-  const labelStr = labels.join(", ")
-  const dataStr = data.join(", ")
-
-  return `xychart-beta
-                title "${pkgName}"
-                x-axis [${labelStr}]
-                line [${dataStr}]`
-}
-
 /**
  * 使用 Chart.js 渲染周聚合下载量曲线
  * @param {HTMLElement} container - 图表容器DOM元素
@@ -427,8 +395,8 @@ async function loadPackages(username, limit, forceRefresh = false) {
         const downloads = await fetchYearlyWeeklyDownloads(pkg.name)
         /** @type {string} */
         const version = meta["dist-tags"]?.latest || pkg.version || "--"
-        const publishedAt = meta.time?.[version] || pkg.date || null
-        const createdAt = meta.time?.created || null
+        const publishedAt = meta.time?.[version] || pkg.date
+        const createdAt = meta.time?.created
 
         // 解析 GitHub repo
         const github = {
@@ -511,7 +479,8 @@ async function loadPackages(username, limit, forceRefresh = false) {
             lastCommitDate: null,
           },
           activeAt: null,
-          error: err.message,
+
+          error: err instanceof Error ? err.message : String(err),
         })
       }
     }
@@ -548,6 +517,10 @@ async function loadPackages(username, limit, forceRefresh = false) {
   setLoading(false)
 }
 
+function byWeeklyDownloadsDesc(a, b) {
+  return (b.weeklyData?.at(-1)?.total || 0) - (a.weeklyData?.at(-1)?.total || 0)
+}
+
 /**
  * 从数据渲染页面（共享渲染逻辑）
  * @param {FreshPackageDetail[]} pkgDetails 包详情
@@ -557,10 +530,6 @@ async function loadPackages(username, limit, forceRefresh = false) {
  * @param {number | null} cacheTimestamp - 缓存写入时间戳（仅 fromCache=true 时有效）
  * @returns {Promise<void>}
  */
-function byWeeklyDownloadsDesc(a, b) {
-  return (b.weeklyData?.at(-1)?.total || 0) - (a.weeklyData?.at(-1)?.total || 0)
-}
-
 async function renderFromData(
   pkgDetails,
   username,
@@ -672,7 +641,7 @@ async function renderCards(pkgDetails) {
     }
 
     // 错误状态
-    if (pkg.error) {
+    if ("error" in pkg) {
       card.innerHTML = `
         <div class="card-header">
             <span class="card-name">⚠️ ${pkg.name}</span>
@@ -702,7 +671,8 @@ async function renderCards(pkgDetails) {
     // <span title="latest week trend" class="metric ${trendClass}">${trendArrow} ${Math.abs(pkg.trend)}%</span>
 
     const latestWeeklyTrend = `${trendArrow} ${Math.abs(pkg.trend)}%`
-    const latestWeekDownloads = pkg.weeklyData?.at(-1)?.total
+    // @ts-expect-error
+    const latestWeekDownloads = pkg.weeklyData.at(-1).total
 
     card.innerHTML = `
         <a class="card-header" href="https://www.npmjs.com/package/${pkg.name}" target="_blank">

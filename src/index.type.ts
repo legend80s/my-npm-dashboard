@@ -27,9 +27,9 @@ export type Hottest = { name: string; downloads: int; latestWeekDownloads: int }
 type Case1 = {
   name: string
   version: string
-  publishedAt: string | null
-  createdAt: string | null
-  weeklyData?: {
+  publishedAt: string
+  createdAt: string
+  weeklyData: {
     weekIndex: number
     startDate: Date
     endDate: Date
@@ -42,17 +42,29 @@ type Case1 = {
   totalDownloads: number
   trend: number
   github: {
+    owner: string
+    repo: string
+    stars: string
+    lastCommit: string
+    lastCommitDate: string
+  }
+  activeAt: string | null
+}
+
+type CaseError = Omit<Case1, "publishedAt" | "createdAt" | "weeklyData"> & {
+  publishedAt: null
+  createdAt: null
+  error: string
+  github: {
     owner: null
     repo: null
     stars: null
     lastCommit: null
     lastCommitDate: null
   }
-  activeAt: string | null
-  error?: unknown
 }
 
-export type FreshPackageDetail = Case1
+export type FreshPackageDetail = Case1 | CaseError
 
 /**
  * 单日下载量数据
