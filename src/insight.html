@@ -3,56 +3,78 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Package Insight - my-npm-dashboard</title>
+  <title>包排行榜 - my-npm-dashboard</title>
   <link rel="stylesheet" href="index.css" />
+  <script type="importmap">
+    {
+      "imports": {
+        "chart.js": "https://esm.sh/chart.js@4.5.1"
+      }
+    }
+  </script>
   <style>
+    body { padding: 20px; }
     .insight-header {
-      max-width: 1000px;
-      margin: 0 auto 2rem;
-      display: flex;
-      align-items: center;
-      gap: 1rem;
+      max-width: 1000px; margin: 0 auto 1.5rem;
+      display: flex; align-items: center; gap: 1rem;
     }
-    .insight-header h1 {
-      font-size: 1.5rem;
-      color: #f0e6d0;
+    .insight-header h1 { font-size: 1.25rem; color: #f0e6d0; }
+    .back-link { font-size: 0.875rem; color: #58a6ff; }
+
+    .tabs {
+      max-width: 1000px; margin: 0 auto 1.5rem;
+      display: flex; flex-wrap: wrap; gap: 0.4rem;
     }
-    .insight-content {
-      max-width: 1000px;
-      margin: 0 auto;
+    .tab {
+      padding: 0.4rem 0.8rem; border-radius: 6px;
+      border: 1px solid #30363d; background: #21262d;
+      color: #8b949e; font-size: 0.75rem; cursor: pointer;
+      transition: all 0.15s;
     }
-    .back-link {
-      font-size: 0.875rem;
-      color: #58a6ff;
+    .tab:hover { border-color: #58a6ff; color: #e6edf3; }
+    .tab.active { border-color: #58a6ff; color: #58a6ff; background: #0d1117; font-weight: 600; }
+
+    .hero {
+      max-width: 1000px; margin: 0 auto 1.5rem;
+      background: #161b22; border-radius: 12px;
+      padding: 1.2rem 1.5rem; outline: 2px solid #58a6ff;
     }
+    .hero-rank { font-size: 0.75rem; color: #58a6ff; font-weight: 700; margin-bottom: 0.3rem; }
+    .hero-name { font-size: 1.5rem; font-weight: 700; color: #f0e6d0; margin-bottom: 0.5rem; }
+    .hero-name a { color: inherit; text-decoration: none; }
+    .hero-name a:hover { text-decoration: underline; }
+    .hero-primary { font-size: 1.1rem; color: #3fb950; margin-bottom: 0.6rem; }
+    .hero-metrics {
+      display: flex; flex-wrap: wrap; gap: 0.6rem 1.2rem;
+      font-size: 0.8rem; color: #8b949e;
+    }
+    .hero-metrics span { white-space: nowrap; }
+    .hero-metrics strong { color: #e6edf3; }
+
+    .chart-wrap {
+      max-width: 1000px; margin: 0 auto 1.5rem;
+      background: #161b22; border-radius: 12px; padding: 1rem;
+    }
+    .chart-wrap canvas { width: 100%; height: 300px; }
+
+    .status-msg {
+      max-width: 1000px; margin: 2rem auto; text-align: center;
+      color: #8b949e; font-size: 1rem;
+    }
+    .status-msg .big { font-size: 3rem; display: block; margin-bottom: 1rem; }
   </style>
 </head>
 <body>
   <div class="insight-header">
     <a class="back-link" href="/" onclick="history.back(); return false" title="回到仪表板">← 返回仪表板</a>
-    <h1>📦 <span id="pkgName">-</span></h1>
+    <h1>📊 包排行榜 · <span id="insightUsername">-</span></h1>
   </div>
-  <div class="insight-content" id="insightContent">
-    <p style="color:#8b949e;">加载中...</p>
-  </div>
-  <script>
-    const params = new URLSearchParams(window.location.search)
-    const pkg = params.get('pkg')
-    const pkgNameEl = document.getElementById('pkgName')
-    if (pkg) {
-      pkgNameEl.textContent = pkg
-      document.title = `${pkg} - Package Insight`
-      const content = document.getElementById('insightContent')
-      content.innerHTML = `
-        <p style="color:#8b949e;">
-          <a href="https://www.npmjs.com/package/${encodeURIComponent(pkg)}" target="_blank" style="color:#58a6ff;" title="在 npmjs.com 上查看">
-            📡 在 npmjs.com 上查看 ${pkg}
-          </a>
-        </p>
-      `
-    } else {
-      document.getElementById('insightContent').innerHTML = '<p style="color:#f85149;">未指定包名</p>'
-    }
-  </script>
+
+  <div class="tabs" id="tabs"></div>
+  <div class="hero" id="hero"></div>
+  <div class="chart-wrap" id="chartWrap"><canvas id="chart"></canvas></div>
+  <div class="status-msg" id="statusMsg" style="display:none;"></div>
+
+  <script type="module" src="./insight.js"></script>
 </body>
 </html>
