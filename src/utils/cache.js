@@ -5,13 +5,14 @@
 // ============================================================
 
 const CACHE_KEY = "pkg-marmot-cache"
-const CACHE_TTL = 12 * 60 * 60 * 1000 // 12小时（毫秒）
+export const CACHE_TTL_IN_HOURS = 12 // 12小时
+export const CACHE_TTL_IN_MS = CACHE_TTL_IN_HOURS * 60 * 60 * 1000 // 12小时（毫秒）
 
 /**
  * 获取缓存数据
  * @param {string} username - npm 用户名
  * @param {number} limit - 包数量限制
- * @returns {FreshPackageDetail[] | null}
+ * @returns {{ packages: FreshPackageDetail[], timestamp: number } | null}
  */
 export function getCache(username, limit) {
   try {
@@ -30,7 +31,7 @@ export function getCache(username, limit) {
     }
 
     // 检查是否过期
-    if (Date.now() - data.timestamp > CACHE_TTL) {
+    if (Date.now() - data.timestamp > CACHE_TTL_IN_MS) {
       // 过期则清除
       localStorage.removeItem(CACHE_KEY)
       return null
@@ -47,7 +48,7 @@ export function getCache(username, limit) {
       })
     })
 
-    return pkgs
+    return { packages: pkgs, timestamp: data.timestamp }
   } catch (parseError) {
     console.error("解析失败清除缓存", parseError)
     // 解析失败则清除缓存
@@ -61,14 +62,15 @@ export function getCache(username, limit) {
  * @param {string} username - npm 用户名
  * @param {number} limit - 包数量限制
  * @param {FreshPackageDetail[]} packages - 包数据数组
+ * @param {number} timestamp - 缓存时间戳
  */
-export function setCache(username, limit, packages) {
+export function setCache(username, limit, packages, timestamp) {
   try {
     const data = {
       username,
       limit,
       packages,
-      timestamp: Date.now(),
+      timestamp,
     }
     localStorage.setItem(CACHE_KEY, JSON.stringify(data))
   } catch (e) {
@@ -96,7 +98,7 @@ export function getCacheTTL() {
     }
     const data = JSON.parse(cached)
     const elapsed = Date.now() - data.timestamp
-    const remaining = CACHE_TTL - elapsed
+    const remaining = CACHE_TTL_IN_MS - elapsed
     if (remaining <= 0) {
       return "已过期"
     }

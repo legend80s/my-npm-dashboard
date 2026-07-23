@@ -36,38 +36,60 @@
   </head>
   <body>
     <!-- ===== HEADER ===== -->
-    <div style="display: flex; justify-content: end; align-items: center">
-      <div class="stat-item" style="text-align: end; padding-bottom: 1rem">
-        🕐 数据更新于 <strong id="updateTime">-</strong>
+    <div
+      style="
+        display: flex;
+        justify-content: end;
+        align-items: center;
+        font-size: 0.75rem;
+        gap: 0.5rem;
+        margin-bottom: 1rem;
+      "
+    >
+      <button
+        type="button"
+        class="btn btn-sm"
+        id="refreshBtn"
+        title="强制刷新数据（忽略缓存）"
+      >
+        🔄 刷新
+      </button>
+      <div class="stat-item" style="text-align: end">
+        <!-- 数据来自 <strong id="updateTime">-</strong> -->
+
+        <div class="" style="">
+          数据来自 <strong id="updateTime">-</strong>
+          <span id="cacheStatus">--</span>
+          | <span id="cacheTTL">--</span>
+        </div>
       </div>
     </div>
     <header class="header">
       <div class="header-right">
         <form id="searchForm">
-          <input
-            type="text"
-            id="usernameInput"
-            placeholder="npm 用户名"
-            value=""
-          />
+          <button type="submit" id="searchBtn" style="">🔍 搜索</button>
+
           <input
             type="number"
             id="limitInput"
-            placeholder="数量"
+            placeholder="Count"
+            title="npm Package Count"
             min="1"
             max="50"
           />
-          <button type="submit" id="searchBtn">🔍 探出</button>
-        </form>
-        <button type="button" id="refreshBtn" title="强制刷新数据（忽略缓存）">
-          🔄 刷新
-        </button>
-        <span class="" id="statusBadge"></span>
 
-        <div class="status-badge" style="font-size: 0.75rem">
-          <span id="cacheStatus">--</span>
-          <span id="cacheTTL">--</span>
-        </div>
+          npm packages by
+
+          <input
+            type="text"
+            id="usernameInput"
+            placeholder="npm username"
+            title="npm username"
+            value=""
+          />
+        </form>
+
+        <span class="" id="statusBadge"></span>
       </div>
     </header>
 
@@ -75,9 +97,9 @@
     <h2 class="stats-bar" id="statsBar">
       <!-- <span class="stat-item">📦 包数 <strong id="pkgCount">-</strong></span> -->
       <!-- <span class="stat-item">📥 周总下载 <strong id="totalDownloads">-</strong></span> -->
-      <span class="stat-item"
-        >🔥 最热包 <strong id="hottestPkg">-</strong></span
-      >
+      <span class="stat-item">
+        🔥 最热包 <strong id="hottestPkg">-</strong>
+      </span>
     </h2>
 
     <!-- ===== GRID ===== -->

@@ -6,7 +6,13 @@ import {
   fetchUserPackages,
   fetchYearlyWeeklyDownloads,
 } from "./utils/api.js"
-import { clearCache, getCache, getCacheTTL, setCache } from "./utils/cache.js"
+import {
+  CACHE_TTL_IN_HOURS,
+  clearCache,
+  getCache,
+  getCacheTTL,
+  setCache,
+} from "./utils/cache.js"
 
 Chart.register(...registerables)
 
@@ -76,7 +82,7 @@ function setStatus(text, type = "") {
 function setLoading(loading) {
   isLoading = loading
   searchBtn.disabled = loading
-  searchBtn.textContent = loading ? "⏳ 加载中..." : "🔍 探出"
+  searchBtn.textContent = loading ? "⏳ 加载中..." : "🔍 搜索"
   setStatus(loading ? "加载中..." : "", loading ? "loading" : "")
 }
 
@@ -349,11 +355,24 @@ async function loadPackages(username, limit, forceRefresh = false) {
 
   // 检查缓存（除非强制刷新）
   let pkgDetails = null
+  let cacheTimestamp = null
+  let fromCache = false
+
   if (!forceRefresh) {
-    pkgDetails = getCache(username.trim(), limit)
-    if (pkgDetails) {
+    const cached = getCache(username, limit)
+    if (cached) {
+      pkgDetails = cached.packages
+      cacheTimestamp = cached.timestamp
+      fromCache = true
+
       // 使用缓存数据
-      await renderFromData(pkgDetails, username, limit, true)
+      await renderFromData(
+        pkgDetails,
+        username,
+        limit,
+        fromCache,
+        cacheTimestamp,
+      )
       setLoading(false)
       return
     }
@@ -361,7 +380,7 @@ async function loadPackages(username, limit, forceRefresh = false) {
 
   // 缓存未命中或强制刷新，重新加载
   setLoading(true)
-  grid.innerHTML = `<div class="no-results"><span class="big">⏳</span>正在“觅食” ${username} 的 ${limit} 个包...</div>`
+  grid.innerHTML = `<div class="no-results"><span class="big">⏳</span>正在搜索 ${username} 的 ${limit} 个包...</div>`
 
   try {
     // ---- 8a. 搜索包 ----
@@ -376,10 +395,9 @@ async function loadPackages(username, limit, forceRefresh = false) {
       // pkgCount.textContent = "0"
       // totalDownloads.textContent = "0"
       hottestPkg.textContent = "-"
-      updateTime.textContent = new Date().toLocaleString()
+      updateTime.textContent = "-"
 
       updateCacheInfo()
-
       setLoading(false)
       return
     }
@@ -389,9 +407,9 @@ async function loadPackages(username, limit, forceRefresh = false) {
 
     // ---- 8b. 并发获取每个包的详细数据 ----
     const pkgDetails = []
-    let grandTotal = 0
-    /** @type {Hottest} */
-    let hottest = { name: "", downloads: 0, latestWeekDownloads: 0 }
+    // let grandTotal = 0
+    // /** @type {Hottest} */
+    // let hottest = { name: "", downloads: 0, latestWeekDownloads: 0 }
 
     for (const pkg of packages) {
       try {
@@ -457,15 +475,15 @@ async function loadPackages(username, limit, forceRefresh = false) {
           activeAt,
         })
 
-        grandTotal += downloads.total
-        const latestWeekDownloads = downloads.weekly.at(-1)?.total || 0
-        if (latestWeekDownloads > hottest.latestWeekDownloads) {
-          hottest = {
-            name: pkg.name,
-            downloads: downloads.total,
-            latestWeekDownloads,
-          }
-        }
+        // grandTotal += downloads.total
+        // const latestWeekDownloads = downloads.weekly.at(-1)?.total || 0
+        // if (latestWeekDownloads > hottest.latestWeekDownloads) {
+        //   hottest = {
+        //     name: pkg.name,
+        //     downloads: downloads.total,
+        //     latestWeekDownloads,
+        //   }
+        // }
       } catch (err) {
         // 单个包失败，添加错误占位
         pkgDetails.push({
@@ -500,14 +518,15 @@ async function loadPackages(username, limit, forceRefresh = false) {
     // pkgCount.textContent = pkgDetails.length
     // totalDownloads.textContent = grandTotal.toLocaleString()
     // console.log("hottest.latestWeekDownloads:", hottest.latestWeekDownloads)
-    renderHottest(hottest)
-    updateTime.textContent = new Date().toLocaleString()
+    // renderHottest(hottest)
+    // updateTime.textContent = new Date().toLocaleString()
 
     // 缓存聚合数据
-    setCache(username, limit, pkgDetails)
+    const timestamp = Date.now()
+    setCache(username, limit, pkgDetails, timestamp)
 
-    // ---- 8e. 渲染 ----
-    await renderFromData(pkgDetails, username, limit, false)
+    // ---- 8e. 渲染（实时数据） ----
+    await renderFromData(pkgDetails, username, limit, false, null)
 
     // ---- 8f. 更新 URL ----
     // setUrlParams(username, limit) // TODO: WHY
@@ -530,8 +549,16 @@ async function loadPackages(username, limit, forceRefresh = false) {
  * @param {string} username 用户名
  * @param {number} limit 包数量限制
  * @param {boolean} fromCache 是否从缓存中读取
+ * @param {number | null} cacheTimestamp - 缓存写入时间戳（仅 fromCache=true 时有效）
+ * @returns {Promise<void>}
  */
-async function renderFromData(pkgDetails, username, limit, fromCache) {
+async function renderFromData(
+  pkgDetails,
+  username,
+  limit,
+  fromCache,
+  cacheTimestamp,
+) {
   // 更新统计
   // const total = pkgDetails.reduce((sum, p) => sum + (p.totalDownloads || 0), 0)
   /** @type {Hottest} */
@@ -552,7 +579,7 @@ async function renderFromData(pkgDetails, username, limit, fromCache) {
   // totalDownloads.textContent = total.toLocaleString()
   renderHottest(hottest)
 
-  updateTime.textContent = new Date().toLocaleString()
+  updateTime.textContent = getFreshnessLabel(fromCache, cacheTimestamp)
 
   // 更新缓存信息
   updateCacheInfo()
@@ -562,7 +589,7 @@ async function renderFromData(pkgDetails, username, limit, fromCache) {
   // @ts-expect-error
   const cacheStatus = document.getElementById("cacheStatus")
 
-  cacheStatus.textContent = fromCache ? "📦 缓存" : "🔄 实时"
+  cacheStatus.textContent = fromCache ? "" : "🔄 实时"
   cacheStatus.style.color = fromCache ? "#8b949e" : "#3fb950"
 
   // 渲染卡片
@@ -577,9 +604,9 @@ async function renderFromData(pkgDetails, username, limit, fromCache) {
  */
 function updateCacheInfo() {
   const ttlDisplay = document.getElementById("cacheTTL")
-  if (ttlDisplay) {
-    ttlDisplay.textContent = `Cache TTL ${getCacheTTL()}`
-  }
+  ttlDisplay?.setHTMLUnsafe(
+    `TTL <strong>${CACHE_TTL_IN_HOURS}</strong> 小时 | Remaining <strong>${getCacheTTL()}</strong>`,
+  )
 }
 
 // ============================================================
@@ -764,4 +791,55 @@ function renderHottest(hottest) {
   hottestPkg.textContent = hottest.name
     ? `${hottest.name} (Latest week downloads: ${hottest.latestWeekDownloads.toLocaleString()})`
     : "-"
+}
+
+/**
+ * 生成数据新鲜度标签
+ * @param {boolean} fromCache - 数据是否来自缓存
+ * @param {number|null} cacheTimestamp - 缓存时间戳（毫秒）
+ * @returns {string} 展示用的时间标签
+ * @example
+ * ### 效果预览
+ *
+ * | 场景 | `updateTime` 显示 |
+ * | :--- | :--- |
+ * | **实时加载** | `🔄 实时数据 · 7/23/2026, 11:20:08 AM` |
+ * | **缓存加载（5分钟前）** | `📦 缓存数据 · 7/23/2026, 11:15:00 AM (5 分钟前)` |
+ * | **缓存加载（2小时前）** | `📦 缓存数据 · 7/23/2026, 9:20:00 AM (2 小时前)` |
+ * | **缓存加载（1天前）** | `📦 缓存数据 · 7/22/2026, 10:00:00 AM (1 天前)` |
+ * | **无数据** | `-` |
+ *
+ * 这样用户一眼就能知道数据是实时的还是缓存的，以及缓存了多久，方便判断数据的"新鲜度"。
+ */
+function getFreshnessLabel(fromCache, cacheTimestamp) {
+  // ---- 优化：显示有意义的时间信息 ----
+  const now = Date.now()
+  let timeDisplay = ""
+
+  if (fromCache && cacheTimestamp) {
+    const elapsed = now - cacheTimestamp
+    const elapsedMinutes = Math.floor(elapsed / (60 * 1000))
+    const elapsedHours = Math.floor(elapsed / (60 * 60 * 1000))
+    const elapsedDays = Math.floor(elapsed / (24 * 60 * 60 * 1000))
+
+    let relativeTime
+    if (elapsedDays > 0) {
+      relativeTime = `${elapsedDays} 天前`
+    } else if (elapsedHours > 0) {
+      relativeTime = `${elapsedHours} 小时前`
+    } else if (elapsedMinutes > 0) {
+      relativeTime = `${elapsedMinutes} 分钟前`
+    } else {
+      relativeTime = "刚刚"
+    }
+
+    const cacheTimeStr = new Date(cacheTimestamp).toLocaleString()
+    timeDisplay = `📦 缓存数据 · ${cacheTimeStr} (${relativeTime})`
+  } else {
+    // 实时数据
+    const realTimeStr = new Date(now).toLocaleString()
+    timeDisplay = `🔄 实时数据 · ${realTimeStr}`
+  }
+
+  return timeDisplay
 }

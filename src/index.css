@@ -18,6 +18,30 @@ body {
   padding: 20px;
 }
 
+button {
+  padding: 8px 14px;
+  border-radius: 8px;
+  border: 1px solid #30363d;
+  background: #21262d;
+  color: #e6edf3;
+  font-size: 0.875rem;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+button:hover {
+  background: #30363d;
+}
+
+button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.btn-sm {
+  font-size: inherit;
+  padding: calc(2 / 16 * 1rem) calc(4 / 16 * 1rem);
+}
 /* ===== Header ===== */
 .header {
   /* max-width: 1400px; */
@@ -50,14 +74,14 @@ body {
 .header-right {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: calc(16 / 16 * 1rem);
   flex-wrap: wrap;
 }
 
 .header-right form {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: calc(12 / 16 * 1rem);
   flex-wrap: wrap;
 }
 
@@ -72,6 +96,7 @@ body {
   outline: none;
   transition: border-color 0.2s;
   width: 150px;
+  text-align: center;
 }
 
 .header-right input[type='text']:focus,
@@ -80,7 +105,7 @@ body {
 }
 
 .header-right input[type='number'] {
-  width: 70px;
+  width: calc(74 / 16 * 1rem);
 }
 
 .header-right button {
@@ -100,26 +125,6 @@ body {
 }
 
 .header-right button:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-}
-
-.header-right button#refreshBtn {
-  padding: 8px 14px;
-  border-radius: 8px;
-  border: 1px solid #30363d;
-  background: #21262d;
-  color: #e6edf3;
-  font-size: 0.875rem;
-  cursor: pointer;
-  transition: background 0.2s;
-}
-
-.header-right button#refreshBtn:hover {
-  background: #30363d;
-}
-
-.header-right button#refreshBtn:disabled {
   opacity: 0.5;
   cursor: not-allowed;
 }
