@@ -202,6 +202,14 @@ export function startServer({ port, root, open = true }) {
 
   server.listen(port, () => {
     const url = `http://localhost:${port}`
+    const launchInfo = {
+      "🐿️": "My npm Dashboard",
+      "📡 服务器已启动": `${url}`,
+      "📂 根目录": `${root}`,
+      "": `按 Ctrl+C 停止服务器`,
+    }
+
+    console.table(launchInfo)
     console.log(`
         🐿️  My npm Dashboard
 
