@@ -91,16 +91,23 @@ export function clearCache() {
 export function getCacheTTL() {
   try {
     const cached = localStorage.getItem(CACHE_KEY)
-    if (!cached) return "无缓存"
+    if (!cached) {
+      return "无缓存"
+    }
     const data = JSON.parse(cached)
     const elapsed = Date.now() - data.timestamp
     const remaining = CACHE_TTL - elapsed
-    if (remaining <= 0) return "已过期"
+    if (remaining <= 0) {
+      return "已过期"
+    }
     const hours = Math.floor(remaining / (60 * 60 * 1000))
     const minutes = Math.floor((remaining % (60 * 60 * 1000)) / (60 * 1000))
-    if (hours > 0) return `${hours}小时${minutes}分钟`
+    if (hours > 0) {
+      return `${hours}小时${minutes}分钟`
+    }
     return `${minutes}分钟`
-  } catch (e) {
+  } catch (parseError) {
+    console.error("getCacheTTL 缓存读取失败:", parseError)
     return "--"
   }
 }

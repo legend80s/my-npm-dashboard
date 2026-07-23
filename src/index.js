@@ -70,14 +70,14 @@ let isLoading = false
 
 function setStatus(text, type = "") {
   statusBadge.textContent = text
-  statusBadge.className = "status-badge" + (type ? " " + type : "")
+  statusBadge.className = type ? "status-badge " + type : ""
 }
 
 function setLoading(loading) {
   isLoading = loading
   searchBtn.disabled = loading
   searchBtn.textContent = loading ? "⏳ 加载中..." : "🔍 探出"
-  setStatus(loading ? "加载中..." : "就绪", loading ? "loading" : "")
+  setStatus(loading ? "加载中..." : "", loading ? "loading" : "")
 }
 
 // ============================================================
@@ -558,11 +558,12 @@ async function renderFromData(pkgDetails, username, limit, fromCache) {
   updateCacheInfo()
 
   // 显示缓存状态
+  /** @type {HTMLElement} */
+  // @ts-expect-error
   const cacheStatus = document.getElementById("cacheStatus")
-  if (cacheStatus) {
-    cacheStatus.textContent = fromCache ? "📦 缓存" : "🔄 实时"
-    cacheStatus.style.color = fromCache ? "#8b949e" : "#3fb950"
-  }
+
+  cacheStatus.textContent = fromCache ? "📦 缓存" : "🔄 实时"
+  cacheStatus.style.color = fromCache ? "#8b949e" : "#3fb950"
 
   // 渲染卡片
   await renderCards(pkgDetails)
@@ -577,7 +578,7 @@ async function renderFromData(pkgDetails, username, limit, fromCache) {
 function updateCacheInfo() {
   const ttlDisplay = document.getElementById("cacheTTL")
   if (ttlDisplay) {
-    ttlDisplay.textContent = getCacheTTL()
+    ttlDisplay.textContent = `Cache TTL ${getCacheTTL()}`
   }
 }
 
@@ -594,12 +595,8 @@ async function renderCards(pkgDetails) {
   const cardElements = []
 
   for (const pkg of pkgDetails) {
-    const card = document.createElement("a")
+    const card = document.createElement("article")
     card.className = "card"
-
-    // 点击跳转 npm
-    card.href = `https://www.npmjs.com/package/${pkg.name}`
-    card.target = "_blank"
 
     // 构建 GitHub 信息
     let ghInfo = ""
@@ -652,10 +649,10 @@ async function renderCards(pkgDetails) {
 
     // 将 .chart-container 的占位内容改为空，并添加 data 属性
     card.innerHTML = `
-                    <div class="card-header">
+                    <a class="card-header" href="https://www.npmjs.com/package/${pkg.name}" target="_blank">
                         <span class="card-name">📦 ${pkg.name}</span>
                         <span class="card-version">v${pkg.version}</span>
-                    </div>
+                    </a>
                     <div class="chart-container" id="chart-${pkg.name.replace(/[^a-zA-Z0-9]/g, "-")}" 
                         data-pkgname="${pkg.name}">
                         <!-- Chart.js 将在此渲染 Canvas -->
