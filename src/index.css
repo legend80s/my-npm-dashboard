@@ -214,7 +214,7 @@ button:disabled {
   margin: 0 auto;
   display: grid;
   /* 40 vw to make 2 card in one line at least in md or lg screen (> 1200px) */
-  grid-template-columns: repeat(auto-fill, minmax(40vw, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(32vw, 1fr));
   gap: 18px;
 }
 
@@ -230,6 +230,7 @@ button:disabled {
   display: flex;
   flex-direction: column;
   outline: 3px dotted transparent;
+  container-type: inline-size;
 }
 .card:focus {
   outline-color: #58a6ff;
@@ -239,7 +240,7 @@ button:disabled {
   /* border-color: #58a6ff; */
   outline-color: #58a6ff;
   /* add transition: ; */
-  transition: outline 1.5s;
+  transition: outline 3s;
   /* transform: translateY(-2px); */
 }
 
@@ -317,12 +318,17 @@ button:disabled {
 .card-metrics {
   display: flex;
   align-items: center;
-  justify-content: center;
   flex-wrap: wrap;
   gap: 10px 18px;
   font-size: 0.75rem;
   color: greenyellow;
   margin-bottom: 6px;
+}
+
+@container (min-width: 620px) {
+  .card-metrics {
+    justify-content: center;
+  }
 }
 
 .card-metrics .metric {

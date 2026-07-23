@@ -87,6 +87,7 @@ let isLoading = false
 //   statusBadge.className = type ? "status-badge " + type : ""
 // }
 
+/** @param {boolean} loading */
 function setLoading(loading) {
   isLoading = loading
   searchBtn.disabled = loading
