@@ -383,8 +383,10 @@ async function loadPackages(username, displayLimit, forceRefresh = false) {
   setLoading(false)
 }
 
-function byWeeklyDownloadsDesc(a, b) {
-  return (b.weeklyData?.at(-1)?.total || 0) - (a.weeklyData?.at(-1)?.total || 0)
+function byActiveAtDesc(a, b) {
+  const dateA = a.activeAt ? new Date(a.activeAt).getTime() : 0
+  const dateB = b.activeAt ? new Date(b.activeAt).getTime() : 0
+  return dateB - dateA
 }
 
 /**
@@ -442,8 +444,10 @@ async function renderFromData(
   cacheStatus.textContent = fromCache ? "" : "🔄 实时"
   cacheStatus.style.color = fromCache ? "#8b949e" : "#3fb950"
 
-  // 渲染前统一按最近一周下载量排序
-  pkgDetails.sort(byWeeklyDownloadsDesc)
+  // 渲染前统一按活跃时间排序（npm 发布时间或 GitHub 提交时间）
+  pkgDetails.sort(byActiveAtDesc)
+
+  document.getElementById("sortAvatar").src = `https://avatars.githubusercontent.com/${username}?s=40`
 
   // 渲染卡片
   await renderCards(pkgDetails)
