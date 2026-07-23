@@ -210,13 +210,13 @@ export function startServer({ port, root, open = true }) {
     }
 
     console.table(launchInfo)
-    console.log(`
-        🐿️  My npm Dashboard
+    // console.log(`
+    //     🐿️  My npm Dashboard
 
-    📡 服务器已启动: ${url}
-    📂 根目录: ${root}
-    ℹ️  按 Ctrl+C 停止服务器
-    `)
+    // 📡 服务器已启动: ${url}
+    // 📂 根目录: ${root}
+    // ℹ️  按 Ctrl+C 停止服务器
+    // `)
 
     if (open) {
       openBrowser(url)
