@@ -633,10 +633,20 @@ async function renderCards(pkgDetails) {
       const commitTime = pkg.github.lastCommitDate
         ? timeAgo(pkg.github.lastCommitDate)
         : ""
+
+      const repoUrl = `https://github.com/${pkg.github.owner}/${pkg.github.repo}`
+      const commitUrl = `https://github.com/${pkg.github.owner}/${pkg.github.repo}/commits`
+
+      // <span class="metric">⭐ <strong>${starDisplay}</strong></span>
       ghInfo = `
-        <div class="card-metrics">
-            <span class="metric">⭐ <strong>${starDisplay}</strong></span>
-            <span class="metric">💻 <strong>${commitDisplay}</strong>${commitTime ? " · " + commitTime : ""}</span>
+        <div class="card-metrics" style="flex-wrap: nowrap;">
+            <a href="${repoUrl}" target="_blank" title="github stars ${starDisplay}">
+              <img alt="GitHub Repo stars" src="https://img.shields.io/github/stars/${pkg.github.owner}/${pkg.github.repo}">
+            </a>
+
+            <a href="${commitUrl}" target="_blank" style="flex: 1;" title="${new Date(pkg.github.lastCommitDate).toLocaleString()}">
+              <span class="metric">💻 <strong class="ellipsis" style="max-width: 55%;">${commitDisplay}</strong>${commitTime ? " · " + commitTime : ""}</span>
+            </a>
         </div>
       `
     } else {
@@ -675,11 +685,13 @@ async function renderCards(pkgDetails) {
       : "--"
 
     // 将 .chart-container 的占位内容改为空，并添加 data 属性
+    // <span class="metric">📥 <strong>${pkg.totalDownloads.toLocaleString()}</strong></span>
+
     card.innerHTML = `
         <a class="card-header" href="https://www.npmjs.com/package/${pkg.name}" target="_blank">
             <span class="card-name">📦 ${pkg.name}</span>
             <span class="card-versionx" title="v${pkg.version}">
-                <img src="https://img.shields.io/npm/v/${pkg.name}.svg?style=for-the-badge" alt="NPM Version" srcset="" />
+                <img src="https://img.shields.io/npm/v/${pkg.name}.svg?style=for-the-badge" alt="NPM Version" />
             </span>
         </a>
         <div class="chart-container" id="chart-${pkg.name.replace(/[^a-zA-Z0-9]/g, "-")}" 
@@ -687,10 +699,12 @@ async function renderCards(pkgDetails) {
             <!-- Chart.js 将在此渲染 Canvas -->
         </div>
         <div class="card-metrics">
-            <span class="metric">📥 <strong>${pkg.totalDownloads.toLocaleString()}</strong></span>
-            <span class="metric ${trendClass}">${trendArrow} ${Math.abs(pkg.trend)}%</span>
-            <span class="metric" title="${new Date(pkg.publishedAt).toLocaleString()}">📅 发布 <strong>${publishedDisplay}</strong></span>
-            <span class="metric" title="${new Date(pkg.createdAt).toLocaleString()}">🕐 创建 <strong>${createdDisplay}</strong></span>
+            <img src="https://img.shields.io/badge/total%20downloads-${pkg.totalDownloads.toLocaleString()}-blue?logo=github" alt="total downloads: ${pkg.totalDownloads}" />
+            <img src="https://img.shields.io/npm/dm/${pkg.name}.svg" alt="npm downloads" />
+
+            <span title="latest week trend" class="metric ${trendClass}">${trendArrow} ${Math.abs(pkg.trend)}%</span>
+            <span class="metric" title="${new Date(pkg.publishedAt).toLocaleString()}">🚀 发布 <strong>${publishedDisplay}</strong></span>
+            <span class="metric" title="${new Date(pkg.createdAt).toLocaleString()}">🤰 创建 <strong>${createdDisplay}</strong></span>
         </div>
         ${ghInfo}
     `

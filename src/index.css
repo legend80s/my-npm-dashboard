@@ -18,6 +18,15 @@ body {
   padding: 20px;
 }
 
+a {
+  text-decoration: none;
+  color: inherit;
+  text-underline-offset: calc(6 / 16 * 1rem);
+  &:hover {
+    text-decoration: underline;
+  }
+}
+
 button {
   padding: 8px 14px;
   border-radius: 8px;
@@ -41,6 +50,28 @@ button:disabled {
 .btn-sm {
   font-size: inherit;
   padding: calc(2 / 16 * 1rem) calc(4 / 16 * 1rem);
+}
+
+.ellipsis-1 {
+  display: -webkit-box;
+  -webkit-line-clamp: 1; /* 控制行数 */
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.ellipsis {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.ellipsis-2 {
+  display: -webkit-box;
+  -webkit-line-clamp: 2; /* 控制行数 */
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 /* ===== Header ===== */
 .header {
@@ -279,7 +310,7 @@ button:disabled {
   flex-wrap: wrap;
   gap: 10px 18px;
   font-size: 0.75rem;
-  color: #8b949e;
+  color: greenyellow;
   margin-bottom: 6px;
 }
 
