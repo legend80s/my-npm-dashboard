@@ -4,20 +4,20 @@
 //  4. npm API 调用（浏览器端直接请求，支持 CORS）
 // ============================================================
 
+/** npm search API 单次拉取最大数量 */
+export const MAX_SEARCH_SIZE = 250
+
 /**
  * https://github.com/npm/registry/blob/main/docs/REGISTRY-API.md#get-v1search
- * 搜索用户维护的包，按发布时间客户端排序
+ * 搜索用户维护的所有包，按发布时间排序
  * @param {string} username - npm 用户名
- * @param {number} limit - 包数量限制
- * @returns {Promise<Array<NpmPkgSearchResp['objects'][number]['package']>>}
+ * @returns {Promise<{ packages: Array<NpmPkgSearchResp['objects'][number]['package']>, dependents: Record<string, number> }>}
  */
-export async function fetchUserPackages(username, limit) {
-  // 固定拉取最大数量
-  const MAX_SIZE = 250
+export async function fetchUserPackages(username) {
   const url =
     `https://registry.npmjs.org/-/v1/search?` +
     `text=maintainer:${encodeURIComponent(username)}&` +
-    `size=${MAX_SIZE}`
+    `size=${MAX_SEARCH_SIZE}`
 
   const res = await fetch(url)
   if (!res.ok) {
@@ -26,8 +26,14 @@ export async function fetchUserPackages(username, limit) {
   /** @type {NpmPkgSearchResp} */
   const data = await res.json()
 
-  // 提取包数据
   const packages = data.objects.map((o) => o.package)
+
+  // Extract dependents map
+  /** @type {Record<string, number>} */
+  const dependents = {}
+  for (const obj of data.objects) {
+    dependents[obj.package.name] = Number(obj.dependents) || 0
+  }
 
   // 客户端按发布时间排序（最新在前）
   packages.sort((a, b) => {
@@ -36,7 +42,7 @@ export async function fetchUserPackages(username, limit) {
     return dateB - dateA
   })
 
-  return packages.slice(0, limit)
+  return { packages, dependents }
 }
 
 /**
