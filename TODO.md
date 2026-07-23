@@ -9,7 +9,10 @@
 - [ ] Pagination / show more than  limit  packages
 - [ ] Export / share rankings: install cli open `?limit=3&username=xxx`
 - [ ] Dark/light theme toggle
+- [ ] 预期 legend80s 是 pelican sse-stuntman gallery-server ...
 - [ ] 目前有体验问题：
+- [ ] icon 最近在开发什么？按活跃时间排序（npm 近期发布或 GitHub 最近提交）icon 从 broken 到 ok
+
 
 1. 目前会搜索所有 250 个包，时间太长了，改成 10 个
 2. 搜索中显示『正在搜索 antfu 的包...』，应该显示进度『正在搜索 antfu 的第N个包...』
