@@ -117,7 +117,7 @@ export function startServer({ port, root, open = true }) {
       const filePath = safePath(root, req.url)
 
       if (!filePath) {
-        console.warn(`[403] 路径被拒绝: ${req.url}`)
+        console.warn(`    [WARN] [403] 路径被拒绝: ${req.url}`)
         res.statusCode = 403
         res.setHeader("Content-Type", "text/plain; charset=utf-8")
         res.end("403 Forbidden - 路径不在允许范围内")
@@ -128,7 +128,7 @@ export function startServer({ port, root, open = true }) {
 
       // 检查文件是否存在
       if (!existsSync(filePath)) {
-        console.warn(`[404] 文件不存在: ${filePath}`)
+        console.warn(`    [WARN] [404] 文件不存在: ${filePath}`)
         res.statusCode = 404
         res.setHeader("Content-Type", "text/html; charset=utf-8")
         res.end(`

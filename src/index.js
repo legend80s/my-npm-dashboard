@@ -40,7 +40,7 @@ const hottestPkg = document.getElementById("hottestPkg")
 const updateTime = document.getElementById("updateTime")
 
 const config = {
-  pkgLimit: 3,
+  pkgLimit: 4,
 }
 
 console.log("1 limitInput.value:", limitInput.value)
