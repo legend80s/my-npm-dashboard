@@ -213,7 +213,8 @@ button:disabled {
   padding-inline: 1rem;
   margin: 0 auto;
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(640px, 1fr));
+  /* 40 vw to make 2 card in one line at least in md or lg screen (> 1200px) */
+  grid-template-columns: repeat(auto-fill, minmax(40vw, 1fr));
   gap: 18px;
 }
 

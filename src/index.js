@@ -752,7 +752,7 @@ function init() {
 
     usernameInput.parentElement?.insertAdjacentHTML(
       "beforeend",
-      `<img src="https://avatars.githubusercontent.com/${username}?s=64" alt="github user icon" style="width:3.5rem;border-radius: 50%;" />`,
+      `<img src="https://avatars.githubusercontent.com/${username}?s=64" alt="github user icon" style="width: 5vw; border-radius: 50%;" />`,
       // `<img src="https://unavatar.io/npm/${username}?size=16" alt="" style="width:2.5rem;border-radius: 50%;" />`,
     )
   }
