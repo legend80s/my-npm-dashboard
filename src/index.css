@@ -209,8 +209,8 @@ button:disabled {
 
 /* ===== Grid ===== */
 .grid {
-  max-width: 95vw;
-  padding-inline: 1rem;
+  /* max-width: 95vw; */
+  /* padding-inline: 1rem; */
   margin: 0 auto;
   display: grid;
   /* 40 vw to make 2 card in one line at least in md or lg screen (> 1200px) */

@@ -10,7 +10,7 @@
     "tauri": "tauri",
 
     "start": "node src/bin/index.js",
-    "dev": "node --watch src/bin/index.js"
+    "dev": "pnpx live-server --port=3000 ./src"
   },
   "devDependencies": {
     "@tauri-apps/cli": "^2",

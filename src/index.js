@@ -507,12 +507,8 @@ async function loadPackages(username, limit, forceRefresh = false) {
       }
     }
 
-    // ---- 8c. 按活跃度排序 ----
-    pkgDetails.sort((a, b) => {
-      const da = a.activeAt ? new Date(a.activeAt).getTime() : 0
-      const db = b.activeAt ? new Date(b.activeAt).getTime() : 0
-      return db - da
-    })
+    // ---- 8c. 按最近一周下载量排序 ----
+    // pkgDetails.sort(byWeeklyDownloadsDesc)
 
     // ---- 8d. 更新统计 ----
     // pkgCount.textContent = pkgDetails.length
@@ -552,6 +548,10 @@ async function loadPackages(username, limit, forceRefresh = false) {
  * @param {number | null} cacheTimestamp - 缓存写入时间戳（仅 fromCache=true 时有效）
  * @returns {Promise<void>}
  */
+function byWeeklyDownloadsDesc(a, b) {
+  return (b.weeklyData?.at(-1)?.total || 0) - (a.weeklyData?.at(-1)?.total || 0)
+}
+
 async function renderFromData(
   pkgDetails,
   username,
@@ -591,6 +591,9 @@ async function renderFromData(
 
   cacheStatus.textContent = fromCache ? "" : "🔄 实时"
   cacheStatus.style.color = fromCache ? "#8b949e" : "#3fb950"
+
+  // 渲染前统一按最近一周下载量排序
+  pkgDetails.sort(byWeeklyDownloadsDesc)
 
   // 渲染卡片
   await renderCards(pkgDetails)
