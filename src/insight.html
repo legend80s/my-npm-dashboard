@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Package Insight - my-npm-dashboard</title>
+  <link rel="stylesheet" href="index.css" />
+  <style>
+    .insight-header {
+      max-width: 1000px;
+      margin: 0 auto 2rem;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+    .insight-header h1 {
+      font-size: 1.5rem;
+      color: #f0e6d0;
+    }
+    .insight-content {
+      max-width: 1000px;
+      margin: 0 auto;
+    }
+    .back-link {
+      font-size: 0.875rem;
+      color: #58a6ff;
+    }
+  </style>
+</head>
+<body>
+  <div class="insight-header">
+    <a class="back-link" href="/" title="回到仪表板">← 返回仪表板</a>
+    <h1>📦 <span id="pkgName">-</span></h1>
+  </div>
+  <div class="insight-content" id="insightContent">
+    <p style="color:#8b949e;">加载中...</p>
+  </div>
+  <script>
+    const params = new URLSearchParams(window.location.search)
+    const pkg = params.get('pkg')
+    const pkgNameEl = document.getElementById('pkgName')
+    if (pkg) {
+      pkgNameEl.textContent = pkg
+      document.title = `${pkg} - Package Insight`
+      const content = document.getElementById('insightContent')
+      content.innerHTML = `
+        <p style="color:#8b949e;">
+          <a href="https://www.npmjs.com/package/${encodeURIComponent(pkg)}" target="_blank" style="color:#58a6ff;" title="在 npmjs.com 上查看">
+            📡 在 npmjs.com 上查看 ${pkg}
+          </a>
+        </p>
+      `
+    } else {
+      document.getElementById('insightContent').innerHTML = '<p style="color:#f85149;">未指定包名</p>'
+    }
+  </script>
+</body>
+</html>

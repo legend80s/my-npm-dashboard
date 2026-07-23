@@ -813,14 +813,14 @@ document.addEventListener("DOMContentLoaded", init)
  * @param {Hottest} hottest
  */
 function renderHottest(hottest) {
-  hottestPkg.textContent = hottest.name
-    ? `${hottest.name} (Latest week downloads: ${hottest.latestWeekDownloads.toLocaleString()})`
+  hottestPkg.innerHTML = hottest.name
+    ? `<a href="insight.html?pkg=${encodeURIComponent(hottest.name)}" title="npm 包洞察页面" style="color:inherit;">${hottest.name}</a> (Latest week downloads: ${hottest.latestWeekDownloads.toLocaleString()})`
     : "-"
 }
 
 function renderHottestTrend(trend) {
-  hottestTrendPkg.textContent = trend.name
-    ? `${trend.name} (+${trend.trend}%)`
+  hottestTrendPkg.innerHTML = trend.name
+    ? `<a href="insight.html?pkg=${encodeURIComponent(trend.name)}" title="npm 包洞察页面" style="color:inherit;">${trend.name}</a> (+${trend.trend}%)`
     : "-"
 }
 
