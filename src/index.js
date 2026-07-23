@@ -31,12 +31,20 @@ const usernameInput = document.getElementById("usernameInput")
 /** @type {HTMLInputElement} */
 // @ts-expect-error
 const limitInput = document.getElementById("limitInput")
+/** @type {HTMLInputElement} */
+// @ts-expect-error
 const searchBtn = document.getElementById("searchBtn")
-const statusBadge = document.getElementById("statusBadge")
+// const statusBadge = document.getElementById("statusBadge")
+/** @type {HTMLInputElement} */
+// @ts-expect-error
 const grid = document.getElementById("grid")
 // const pkgCount = document.getElementById("pkgCount")
 // const totalDownloads = document.getElementById("totalDownloads")
+/** @type {HTMLInputElement} */
+// @ts-expect-error
 const hottestPkg = document.getElementById("hottestPkg")
+/** @type {HTMLInputElement} */
+// @ts-expect-error
 const updateTime = document.getElementById("updateTime")
 
 const config = {
@@ -74,16 +82,16 @@ function setUrlParams(username, limit) {
 // ============================================================
 let isLoading = false
 
-function setStatus(text, type = "") {
-  statusBadge.textContent = text
-  statusBadge.className = type ? "status-badge " + type : ""
-}
+// function setStatus(text, type = "") {
+//   statusBadge.textContent = text
+//   statusBadge.className = type ? "status-badge " + type : ""
+// }
 
 function setLoading(loading) {
   isLoading = loading
   searchBtn.disabled = loading
   searchBtn.textContent = loading ? "⏳ 加载中..." : "🔍 搜索"
-  setStatus(loading ? "加载中..." : "", loading ? "loading" : "")
+  // setStatus(loading ? "加载中..." : "", loading ? "loading" : "")
 }
 
 // ============================================================
@@ -380,7 +388,7 @@ async function loadPackages(username, limit, forceRefresh = false) {
 
   // 缓存未命中或强制刷新，重新加载
   setLoading(true)
-  grid.innerHTML = `<div class="no-results"><span class="big">⏳</span>正在搜索 ${username} 的 ${limit} 个包...</div>`
+  grid.innerHTML = `<div class="no-results" style="color:#f0883e;"><span class="big">⏳</span>正在搜索 ${username} 的 ${limit} 个包...</div>`
 
   try {
     // ---- 8a. 搜索包 ----

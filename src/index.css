@@ -193,7 +193,7 @@ button:disabled {
   /* background: #161b22; */
   border-radius: 10px;
   /* border: 1px solid #30363d; */
-  font-size: 1.5rem;
+  font-size: 1.25rem;
   color: #8b949e;
 }
 
@@ -387,7 +387,7 @@ button:disabled {
 }
 
 .no-results .big {
-  font-size: 3rem;
+  font-size: 6rem;
   display: block;
   margin-bottom: 16px;
 }
