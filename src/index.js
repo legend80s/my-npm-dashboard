@@ -676,22 +676,24 @@ async function renderCards(pkgDetails) {
 
     // 将 .chart-container 的占位内容改为空，并添加 data 属性
     card.innerHTML = `
-                    <a class="card-header" href="https://www.npmjs.com/package/${pkg.name}" target="_blank">
-                        <span class="card-name">📦 ${pkg.name}</span>
-                        <span class="card-version">v${pkg.version}</span>
-                    </a>
-                    <div class="chart-container" id="chart-${pkg.name.replace(/[^a-zA-Z0-9]/g, "-")}" 
-                        data-pkgname="${pkg.name}">
-                        <!-- Chart.js 将在此渲染 Canvas -->
-                    </div>
-                    <div class="card-metrics">
-                        <span class="metric">📥 <strong>${pkg.totalDownloads.toLocaleString()}</strong></span>
-                        <span class="metric ${trendClass}">${trendArrow} ${Math.abs(pkg.trend)}%</span>
-                        <span class="metric" title="${new Date(pkg.publishedAt).toLocaleString()}">📅 发布 <strong>${publishedDisplay}</strong></span>
-                        <span class="metric" title="${new Date(pkg.createdAt).toLocaleString()}">🕐 创建 <strong>${createdDisplay}</strong></span>
-                    </div>
-                    ${ghInfo}
-                `
+        <a class="card-header" href="https://www.npmjs.com/package/${pkg.name}" target="_blank">
+            <span class="card-name">📦 ${pkg.name}</span>
+            <span class="card-versionx" title="v${pkg.version}">
+                <img src="https://img.shields.io/npm/v/${pkg.name}.svg?style=for-the-badge" alt="NPM Version" srcset="" />
+            </span>
+        </a>
+        <div class="chart-container" id="chart-${pkg.name.replace(/[^a-zA-Z0-9]/g, "-")}" 
+            data-pkgname="${pkg.name}">
+            <!-- Chart.js 将在此渲染 Canvas -->
+        </div>
+        <div class="card-metrics">
+            <span class="metric">📥 <strong>${pkg.totalDownloads.toLocaleString()}</strong></span>
+            <span class="metric ${trendClass}">${trendArrow} ${Math.abs(pkg.trend)}%</span>
+            <span class="metric" title="${new Date(pkg.publishedAt).toLocaleString()}">📅 发布 <strong>${publishedDisplay}</strong></span>
+            <span class="metric" title="${new Date(pkg.createdAt).toLocaleString()}">🕐 创建 <strong>${createdDisplay}</strong></span>
+        </div>
+        ${ghInfo}
+    `
 
     grid.appendChild(card)
     cardElements.push({ element: card, pkg })
