@@ -4,6 +4,8 @@ import { readFile } from "node:fs/promises"
 import { createServer } from "node:http"
 import { extname, join, normalize, sep } from "node:path"
 
+const debugging = false
+
 /**
  * MIME 类型映射
  */
@@ -124,7 +126,7 @@ export function startServer({ port, root, open = true }) {
         return
       }
 
-      console.log(`[File] 尝试访问: ${filePath}`)
+      debugging && console.log(`[File] 尝试访问: ${filePath}`)
 
       // 检查文件是否存在
       if (!existsSync(filePath)) {
