@@ -1,77 +1,94 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="zh-CN">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>pkg-marmot: npm dashboard</title>
-  <!-- description -->
-  <meta name="description" content="pkg-marmot: Your own npm packages download dashboard" />
-  <!-- keywords -->
-  <meta name="keywords" content="pkg-marmot, npm, dashboard, packages, download" />
-  <!-- author -->
-  <meta name="author" content="legend80s" />
-  
-  <!-- favicon -->
-  <link
-    rel="icon"
-    href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='80'>🐿️</text></svg>"
-  />
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>pkg-marmot: npm dashboard</title>
+    <!-- description -->
+    <meta
+      name="description"
+      content="pkg-marmot: Your own npm packages download dashboard"
+    />
+    <!-- keywords -->
+    <meta
+      name="keywords"
+      content="pkg-marmot, npm, dashboard, packages, download"
+    />
+    <!-- author -->
+    <meta name="author" content="legend80s" />
 
-  <!-- "beautiful-mermaid": "https://unpkg.com/beautiful-mermaid@1.1.3/dist/index.js" -->
-  <script type="importmap">
-    {
-      "imports": {
+    <!-- favicon -->
+    <link
+      rel="icon"
+      href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='80'>🐿️</text></svg>"
+    />
+
+    <!-- "beautiful-mermaid": "https://unpkg.com/beautiful-mermaid@1.1.3/dist/index.js" -->
+    <script type="importmap">
+      {
+        "imports": {
           "chart.js": "https://esm.sh/chart.js@4.5.1"
+        }
       }
-    }
-  </script>
+    </script>
 
-  <link rel="stylesheet" href="index.css">
-</head>
-<body>
-
+    <link rel="stylesheet" href="index.css" />
+  </head>
+  <body>
     <!-- ===== HEADER ===== -->
-     <div style="display: flex; justify-content: end; align-items: center;">
-       
-     <div class="stat-item" style="text-align: end; padding-bottom: 1rem;">🕐 数据更新于 <strong id="updateTime">-</strong></div>
-     </div>
+    <div style="display: flex; justify-content: end; align-items: center">
+      <div class="stat-item" style="text-align: end; padding-bottom: 1rem">
+        🕐 数据更新于 <strong id="updateTime">-</strong>
+      </div>
+    </div>
     <header class="header">
-        
+      <div class="header-right">
+        <form id="searchForm">
+          <input
+            type="text"
+            id="usernameInput"
+            placeholder="npm 用户名"
+            value=""
+          />
+          <input
+            type="number"
+            id="limitInput"
+            placeholder="数量"
+            min="1"
+            max="50"
+          />
+          <button type="submit" id="searchBtn">🔍 探出</button>
+        </form>
+        <button type="button" id="refreshBtn" title="强制刷新数据（忽略缓存）">
+          🔄 刷新
+        </button>
+        <span class="" id="statusBadge"></span>
 
-        
-        <div class="header-right">
-            <form id="searchForm">
-                <input type="text" id="usernameInput" placeholder="npm 用户名" value="" />
-                <input type="number" id="limitInput" placeholder="数量" min="1" max="50" />
-                <button type="submit" id="searchBtn">🔍 探出</button>
-            </form>
-            <button type="button" id="refreshBtn" title="强制刷新数据（忽略缓存）">🔄 刷新</button>
-            <span class="" id="statusBadge"></span>
-
-            <div class="status-badge" style="font-size: 0.75rem;">
-                <span id="cacheStatus">--</span>
-                <span id="cacheTTL">--</span>
-            </div>
+        <div class="status-badge" style="font-size: 0.75rem">
+          <span id="cacheStatus">--</span>
+          <span id="cacheTTL">--</span>
         </div>
+      </div>
     </header>
 
     <!-- ===== STATS BAR ===== -->
     <h2 class="stats-bar" id="statsBar">
-        <!-- <span class="stat-item">📦 包数 <strong id="pkgCount">-</strong></span> -->
-        <!-- <span class="stat-item">📥 周总下载 <strong id="totalDownloads">-</strong></span> -->
-        <span class="stat-item">🔥 最热包 <strong id="hottestPkg">-</strong></span>
+      <!-- <span class="stat-item">📦 包数 <strong id="pkgCount">-</strong></span> -->
+      <!-- <span class="stat-item">📥 周总下载 <strong id="totalDownloads">-</strong></span> -->
+      <span class="stat-item"
+        >🔥 最热包 <strong id="hottestPkg">-</strong></span
+      >
     </h2>
 
     <!-- ===== GRID ===== -->
     <div class="grid" id="grid">
-        <div class="no-results">
-            <span class="big">🐿️</span>
-            输入 npm 用户名，让 marmot 帮你查看最近发布的包
-        </div>
+      <div class="no-results">
+        <span class="big">🐿️</span>
+        输入 npm 用户名，让 marmot 帮你查看最近发布的包
+      </div>
     </div>
 
     <!-- ============================================================ -->
-    <script type="module" src="./index.js" ></script>
-
-</body>
+    <script type="module" src="./index.js"></script>
+  </body>
 </html>
