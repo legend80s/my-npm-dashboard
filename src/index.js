@@ -43,6 +43,7 @@ const grid = document.getElementById("grid")
 /** @type {HTMLInputElement} */
 // @ts-expect-error
 const hottestPkg = document.getElementById("hottestPkg")
+const hottestTrendPkg = document.getElementById("hottestTrendPkg")
 /** @type {HTMLInputElement} */
 // @ts-expect-error
 const updateTime = document.getElementById("updateTime")
@@ -323,6 +324,7 @@ async function loadPackages(username, limit, forceRefresh = false) {
     // pkgCount.textContent = "-"
     // totalDownloads.textContent = "-"
     hottestPkg.textContent = "-"
+    hottestTrendPkg.textContent = "-"
     updateTime.textContent = "-"
 
     updateCacheInfo()
@@ -372,6 +374,7 @@ async function loadPackages(username, limit, forceRefresh = false) {
       // pkgCount.textContent = "0"
       // totalDownloads.textContent = "0"
       hottestPkg.textContent = "-"
+      hottestTrendPkg.textContent = "-"
       updateTime.textContent = "-"
 
       updateCacheInfo()
@@ -541,6 +544,7 @@ async function renderFromData(
   // const total = pkgDetails.reduce((sum, p) => sum + (p.totalDownloads || 0), 0)
   /** @type {Hottest} */
   let hottest = { name: "", latestWeekDownloads: 0, downloads: 0 }
+  let hottestTrend = { name: "", trend: 0 }
 
   for (const pkg of pkgDetails) {
     const latest = pkg.weeklyData?.at(-1)?.total
@@ -551,11 +555,16 @@ async function renderFromData(
         latestWeekDownloads: latest,
       }
     }
+
+    if (pkg.trend > hottestTrend.trend) {
+      hottestTrend = { name: pkg.name, trend: pkg.trend }
+    }
   }
 
   // pkgCount.textContent = pkgDetails.length
   // totalDownloads.textContent = total.toLocaleString()
   renderHottest(hottest)
+  renderHottestTrend(hottestTrend)
 
   updateTime.textContent = getFreshnessLabel(fromCache, cacheTimestamp)
 
@@ -806,6 +815,12 @@ document.addEventListener("DOMContentLoaded", init)
 function renderHottest(hottest) {
   hottestPkg.textContent = hottest.name
     ? `${hottest.name} (Latest week downloads: ${hottest.latestWeekDownloads.toLocaleString()})`
+    : "-"
+}
+
+function renderHottestTrend(trend) {
+  hottestTrendPkg.textContent = trend.name
+    ? `${trend.name} (+${trend.trend}%)`
     : "-"
 }
 
