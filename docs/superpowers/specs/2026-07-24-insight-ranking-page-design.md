@@ -7,7 +7,7 @@ Package insight ranking page for my-npm-dashboard (pkg-marmot).
 `insight.html?username=legend80s&rank=weekly-downloads`
 
 - `username` — npm username whose packages to rank.
-- `rank` — which ranking to show on first load (default: first tab). See rank values below.
+- `rank` — which ranking to show on first load (default: first tab).
 
 ## Architecture
 
@@ -16,9 +16,11 @@ Package insight ranking page for my-npm-dashboard (pkg-marmot).
 Shared data fetching + caching module used by both `src/index.js` (dashboard) and `src/insight.html` (ranking page).
 
 ```
-loadData(username, limit, forceRefresh = false)
-  → { packages: PackageDetail[], username: string, limit: number, timestamp: number }
+loadData(username, forceRefresh = false)
+  → { packages: PackageDetail[], username, timestamp }
 ```
+
+Single cache per username, always fetches up to 250 packages (MAX_SIZE from search API). Callers slice to their own limit after receiving data.
 
 Behavior:
 1. Check localStorage cache (key `pkg-marmot-cache`, 12h TTL).
@@ -26,20 +28,36 @@ Behavior:
 3. Cache miss or `forceRefresh` → call `fetchRaw()` + write to cache + return.
 
 ```
-fetchRaw(username, limit)
-  → { packages: PackageDetail[], username, limit }
+fetchRaw(username)
+  → { packages: PackageDetail[], username }
 ```
 
-Pure API fetching, no cache side-effect. Can be called independently.
+Pure API fetching, no cache side-effect. Always fetches full 250-package dataset.
+
+### Configuration
+
+```js
+// data-loader.js
+export const MAX_SEARCH_SIZE = 250    // npm search API page size
+export const RANKING_TOP_N = 5        // chart visible bar count
+```
+
+Dashboard config (in `index.js`):
+```js
+const config = { pkgLimit: 4 }  // display limit, adjustable via URL/input
+```
+
+Insight page uses all 250 for ranking; only top N shown in chart.
 
 ### API Changes: `src/utils/api.js`
 
-- `fetchUserPackages` — also extract `dependents` (string → number) from search response `Object.dependents`.
-- `fetchPackageMetadata` — already returns full metadata. New fields extracted in data-loader.
+- `fetchUserPackages(username)` — remove `limit` param; always fetches MAX_SEARCH_SIZE. Also extract `dependents` (parse string → number) from search response `Object.dependents`. Return `{ packages: Package[], dependents: Record<string, number> }`.
+- `fetchPackageMetadata` — unchanged.
+- `fetchYearlyWeeklyDownloads` — unchanged.
 
 ### Type Changes: `src/index.type.ts`
 
-`FreshPackageDetail` (same for `PackageDetail` in cache) gets 4 new optional fields:
+`FreshPackageDetail` / `PackageDetail` gets 4 new optional fields:
 
 | Field | Type | Source |
 |---|---|---|
@@ -48,16 +66,29 @@ Pure API fetching, no cache side-effect. Can be called independently.
 | `versionCount` | `number` | `Object.keys(meta.versions \|\| {}).length` |
 | `dependents` | `number` | `Object.dependents` from search API (parsed from string) |
 
-These require zero extra network requests — all available in existing API responses.
+Zero extra network requests.
+
+### Cache Design
+
+Single key per username, stores all 250 packages. No per-limit distinction.
+
+```
+Cache key: pkg-marmot-cache
+TTL: 12 hours
+Format: { username, packages: PackageDetail[], timestamp }
+```
+
+Cache lookup: match `username` + TTL only. No `limit` field.
+
+Dashboard loads → caches all 250 → slices to 4 for display.
+Insight loads → reads same cache → ranks all 250 → shows top N in chart.
 
 ### Dashboard Changes: `src/index.js`
 
-Replace inline fetch loop (lines ~386-488) with:
-```js
-const result = await loadData(username, limit, forceRefresh)
-pkgDetails = result.packages
-```
-All downstream rendering logic (renderFromData, renderCards) unchanged.
+- `loadPackages(username, limit, forceRefresh)` → calls `loadData(username, forceRefresh)`, then slices to `limit` for rendering.
+- Inline fetch loop (lines ~386-488) replaced with `loadData()`.
+- `limit` parameter now only controls display count, not fetch size.
+- Cache timestamp/setCache logic moved into `loadData()`.
 
 ## Ranking Page Layout
 
@@ -66,29 +97,18 @@ All downstream rendering logic (renderFromData, renderCards) unchanged.
 │  ← 返回仪表板          📊 包排行榜 · username  │  header
 ├─────────────────────────────────────────────┤
 │  8 ranking tabs (horizontal bar)             │  tabs
-│  [🔥 最热] [🚀 势头] [📥 总下载] [⭐ Stars]   │
-│  [📦 体积] [🔗 依赖] [👥 被依赖] [🔢 版本数] │
 ├─────────────────────────────────────────────┤
 │  🏆 #1 Hero Card (HTML)                     │  hero
 │  - pkg-name (bold, large)                    │
-│  - core metric (tab-specific)                │
-│  - secondary metrics (downloads, stars,      │
-│    size, deps, versions)                     │
-│  - links to npmjs.com                        │
+│  - tab-specific primary metric               │
+│  - secondary metrics row                     │
 ├─────────────────────────────────────────────┤
-│  Chart.js vertical bar chart (Top 5)         │  chart
-│  - Y: metric value, X: [pkgA…pkgE]          │
-│  - #1 bar highlighted (matching hero)        │
+│  Chart.js vertical bar chart (Top N)         │  chart
+│  - Y: metric value, X: [pkg1…pkgN]          │
+│  - #1 bar highlighted                        │
 │  - click bar → npmjs.com/package/{name}      │
 └─────────────────────────────────────────────┘
 ```
-
-### Components
-
-1. **Header** — back link (`history.back()` fallback `/`), page title "📊 包排行榜 · {username}".
-2. **Tabs** — horizontal row, one per rank. Active tab underlined/highlighted. Clicking re-sorts data in-memory, updates hero + chart.
-3. **Hero Card** — #1 package displayed as a rich HTML card. Shows package name, tab-specific primary metric, and a row of key secondary metrics (downloads, stars, size, deps, versions).
-4. **Chart** — Chart.js vertical bar chart, Top 5 packages. #1 bar in distinct color. Bar click → opens `https://npmjs.com/package/{name}` in new tab.
 
 ### Tabs / Rankings (8)
 
@@ -103,30 +123,21 @@ All downstream rendering logic (renderFromData, renderCards) unchanged.
 | `dependents` | 👥 被依赖数 | `dependents` |
 | `versions` | 🔢 版本数 | `versionCount` |
 
-When `&rank=` param is present on page load, scroll to and activate that tab. Default to first tab if omitted or invalid.
-
-## Caching
-
-Single localStorage key `pkg-marmot-cache`, shared between dashboard and insight page.
-
-- **Key**: `pkg-marmot-cache`
-- **TTL**: 12 hours
-- **Format**: `{ username, limit, packages: PackageDetail[], timestamp }`
-- Both pages read/write the same cache. First load from either page populates it; subsequent loads from either page hit cache.
+`&rank=` param auto-selects tab on load. Default to first tab if omitted/invalid.
 
 ## Edge Cases
 
-1. **No cache, direct URL access** — insight page calls `loadData()`, which fetches from npm/GitHub APIs, writes cache, returns data. Works standalone.
-2. **Cache expired** — same as above; re-fetch.
+1. **No cache, direct URL access** — insight page calls `loadData()`, fetches from APIs, writes cache, renders.
+2. **Cache expired** — re-fetch.
 3. **Empty packages** — show "用户 **{username}** 没有找到任何包".
-4. **Tab with all-zero values** (e.g. no GitHub Stars) — bar chart shows flat line, hero says "暂无数据", list shows all at 0.
-5. **Rank param invalid** — fall back to first tab.
-6. **API errors** — per-package errors shown inline (error badge in hero/list), non-error packages still ranked normally.
-7. **Fewer than 5 packages** — bar chart renders whatever exists (1-4 bars).
+4. **All-zero values for a tab** — chart shows flat line, hero says "暂无数据".
+5. **Fewer than N packages** — chart renders whatever exists.
+6. **API errors** — per-package error shown inline; non-error packages ranked normally.
+7. **Rank param invalid** — fall back to first tab.
 
 ## Out of Scope (v1)
 
-- Pagination / show more than `limit` packages
-- Custom cache TTL per user
+- Pagination beyond 250 packages
+- Custom cache TTL
 - Export / share rankings
-- Dark/light theme toggle
+- Light theme toggle
