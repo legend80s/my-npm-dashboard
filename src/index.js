@@ -690,13 +690,15 @@ async function renderCards(pkgDetails) {
     // <span title="latest week trend" class="metric ${trendClass}">${trendArrow} ${Math.abs(pkg.trend)}%</span>
 
     const latestWeeklyTrend = `${trendArrow} ${Math.abs(pkg.trend)}%`
+    const latestWeekDownloads = pkg.weeklyData?.at(-1)?.total
+
     card.innerHTML = `
         <a class="card-header" href="https://www.npmjs.com/package/${pkg.name}" target="_blank">
             <span class="card-name">${pkg.name}</span>
 
             <div style="white-space: nowrap;">
               <img title="v${pkg.version}" src="https://img.shields.io/npm/v/${pkg.name}.svg?style=flat" alt="NPM Version" />
-              <img src="https://img.shields.io/npm/dm/${pkg.name}.svg?style=flat" alt="npm downloads" />
+              <img src="https://img.shields.io/npm/${latestWeekDownloads > 1000 ? "dw" : "dm"}/${pkg.name}.svg?style=flat" alt="npm downloads" />
               <img src="https://img.shields.io/badge/yearly%20downloads-${pkg.totalDownloads.toLocaleString()}-blue?logo=npm&logoColor=cyan&style=flat" alt="Yearly downloads: ${pkg.totalDownloads}" />
             </div>
         </a>
@@ -750,7 +752,8 @@ function init() {
 
     usernameInput.parentElement?.insertAdjacentHTML(
       "beforeend",
-      `<img src="https://unavatar.io/npm/${username}?size=16" alt="" style="width:2.5rem;border-radius: 50%;" />`,
+      `<img src="https://avatars.githubusercontent.com/${username}?s=64" alt="github user icon" style="width:3.5rem;border-radius: 50%;" />`,
+      // `<img src="https://unavatar.io/npm/${username}?size=16" alt="" style="width:2.5rem;border-radius: 50%;" />`,
     )
   }
 
@@ -760,7 +763,7 @@ function init() {
     const username = usernameInput.value.trim()
     const limit = Number(limitInput.value) || config.pkgLimit
     if (username) {
-      loadPackages(username, limit, false) // 正常加载，使用缓存
+      window.location.href = `?username=${username}&limit=${limit}`
     } else {
       usernameInput.focus()
     }

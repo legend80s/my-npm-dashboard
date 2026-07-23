@@ -265,6 +265,9 @@ button:disabled {
   max-width: 39%;
   text-overflow: ellipsis;
   overflow: hidden;
+
+  /* otherwise text-underline will no show */
+  padding-bottom: 4px;
 }
 
 .card-version {
