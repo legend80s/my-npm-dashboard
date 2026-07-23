@@ -41,6 +41,10 @@ type Case1 = {
   }[]
   totalDownloads: number
   trend: number
+  unpackedSize: number | null
+  dependencyCount: number
+  versionCount: number
+  dependents: number
   github: {
     owner: string
     repo: string
@@ -127,6 +131,14 @@ export type PackageDetail = {
   totalDownloads: number
   /** 趋势百分比（正数=上升，负数=下降） */
   trend: number
+  /** 打包后体积（字节），null 表示获取失败 */
+  unpackedSize: number | null
+  /** 生产依赖数量 */
+  dependencyCount: number
+  /** 版本总数 */
+  versionCount: number
+  /** 被依赖数 */
+  dependents: number
   /** GitHub 相关数据 */
   github: GitHubInfo
   /** 活跃度排序用的时间戳（ISO 字符串）= max(发布时间, GitHub提交时间, 最近有下载的周) */
@@ -142,8 +154,6 @@ export type PackageDetail = {
 export type CacheData = {
   /** 缓存的 npm 用户名 */
   username: string
-  /** 缓存的包数量限制 */
-  limit: number
   /** 缓存创建时间戳（毫秒） */
   timestamp: number
   /** 包数据数组 */
