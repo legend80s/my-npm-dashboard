@@ -1,8 +1,8 @@
 import { spawn } from "node:child_process"
-import { existsSync } from "node:fs"
+import { existsSync, statSync } from "node:fs"
 import { readFile } from "node:fs/promises"
 import { createServer } from "node:http"
-import { extname, join } from "node:path"
+import { extname, join, normalize, sep } from "node:path"
 
 /**
  * MIME 类型映射
@@ -23,29 +23,55 @@ const MIME_TYPES = {
   ".wasm": "application/wasm",
 }
 
-/**
- * 获取 MIME 类型
- */
 function getMimeType(filePath) {
   const ext = extname(filePath).toLowerCase()
   return MIME_TYPES[ext] || "application/octet-stream"
 }
 
 /**
- * 解析请求路径，防止目录遍历攻击
+ * 安全解析路径，防止目录遍历攻击
+ * 修复 Windows 路径问题
  */
 function safePath(root, url) {
   // 去掉查询参数
-  const pathname = url.split("?")[0]
-  // 解码并规范化路径
+  const pathname = url.split("?")[0] || "/"
+
+  // 解码 URL
   const decoded = decodeURIComponent(pathname)
-  const normalized = join(root, decoded)
-  // 检查是否在 root 目录内
-  const resolved = join(root, pathname)
-  if (!resolved.startsWith(root)) {
+
+  // 将 URL 路径转换为文件系统路径
+  // 注意：在 Windows 下，/ 转换为 \
+  const relativePath = decoded.replace(/\//g, sep)
+
+  // 如果是根路径，relativePath 可能是空字符串或 \
+  const normalizedRelative =
+    relativePath === sep || relativePath === "" ? "" : relativePath
+
+  // 拼接完整路径
+  let fullPath = join(root, normalizedRelative)
+
+  // 规范化路径（处理 .. 等）
+  fullPath = normalize(fullPath)
+
+  // 检查是否在 root 目录内（使用 fs.realpath 或简单字符串比较）
+  // 简单方法：确保 fullPath 以 root 开头（归一化后比较）
+  const normalizedRoot = normalize(root)
+
+  // 确保 root 以路径分隔符结尾，防止 "root" 匹配到 "root2"
+  const rootWithSep = normalizedRoot.endsWith(sep)
+    ? normalizedRoot
+    : normalizedRoot + sep
+
+  // 检查 fullPath 是否在 root 目录内
+  if (!fullPath.startsWith(rootWithSep) && fullPath !== normalizedRoot) {
+    // 额外检查：如果请求的是根目录本身，允许通过
+    if (fullPath === normalizedRoot) {
+      return fullPath
+    }
     return null
   }
-  return normalized
+
+  return fullPath
 }
 
 /**
@@ -84,19 +110,25 @@ function openBrowser(url) {
  */
 export function startServer({ port, root, open = true }) {
   const server = createServer(async (req, res) => {
+    console.log(`[${new Date().toISOString()}] ${req.method} ${req.url}`)
+
     try {
       // 解析请求路径
       const filePath = safePath(root, req.url)
 
-      // 路径无效或不在 root 内
       if (!filePath) {
+        console.warn(`[403] 路径被拒绝: ${req.url}`)
         res.statusCode = 403
-        res.end("Forbidden")
+        res.setHeader("Content-Type", "text/plain; charset=utf-8")
+        res.end("403 Forbidden - 路径不在允许范围内")
         return
       }
 
-      // 处理 404
+      console.log(`[File] 尝试访问: ${filePath}`)
+
+      // 检查文件是否存在
       if (!existsSync(filePath)) {
+        console.warn(`[404] 文件不存在: ${filePath}`)
         res.statusCode = 404
         res.setHeader("Content-Type", "text/html; charset=utf-8")
         res.end(`
@@ -106,6 +138,36 @@ export function startServer({ port, root, open = true }) {
                         <body>
                             <h1>404 - 文件未找到</h1>
                             <p>${req.url}</p>
+                        </body>
+                        </html>
+                    `)
+        return
+      }
+
+      // 检查是否是目录
+      const stats = statSync(filePath)
+      if (stats.isDirectory()) {
+        // 如果是目录，尝试返回 index.html
+        const indexPath = join(filePath, "index.html")
+        if (existsSync(indexPath)) {
+          // 重定向到 / 或直接返回 index.html
+          const content = await readFile(indexPath)
+          res.setHeader("Content-Type", "text/html; charset=utf-8")
+          res.setHeader("Cache-Control", "no-cache, no-store, must-revalidate")
+          res.statusCode = 200
+          res.end(content)
+          return
+        }
+        // 没有 index.html，返回目录列表（或 404）
+        res.statusCode = 404
+        res.setHeader("Content-Type", "text/html; charset=utf-8")
+        res.end(`
+                        <!DOCTYPE html>
+                        <html>
+                        <head><meta charset="UTF-8"><title>404</title></head>
+                        <body>
+                            <h1>404 - 没有 index.html</h1>
+                            <p>目录: ${req.url}</p>
                         </body>
                         </html>
                     `)
@@ -144,14 +206,13 @@ export function startServer({ port, root, open = true }) {
     📡 服务器已启动: ${url}
     📂 根目录: ${root}
     ℹ️  按 Ctrl+C 停止服务器
-`)
+    `)
 
     if (open) {
       openBrowser(url)
     }
   })
 
-  // 优雅关闭
   process.on("SIGINT", () => {
     console.log("\n🛑 服务器已关闭")
     server.close(() => process.exit(0))
