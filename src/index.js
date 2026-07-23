@@ -1,18 +1,9 @@
 import { Chart, registerables } from "chart.js"
 import {
-  fetchGitHubLastCommit,
-  fetchGitHubStars,
-  fetchPackageMetadata,
-  fetchUserPackages,
-  fetchYearlyWeeklyDownloads,
-} from "./utils/api.js"
-import {
   CACHE_TTL_IN_HOURS,
-  clearCache,
-  getCache,
   getCacheTTL,
-  setCache,
 } from "./utils/cache.js"
+import { readCache, writeCache, clearCache, fetchRaw, loadData } from "./utils/data-loader.js"
 
 Chart.register(...registerables)
 
@@ -99,22 +90,6 @@ function setLoading(loading) {
 // ============================================================
 //  5. 数据聚合
 // ============================================================
-
-/** 从 package.json 中解析 GitHub repo */
-function parseGitHubRepo(pkgMeta) {
-  const repo = pkgMeta.repository
-  if (!repo) return null
-  if (typeof repo === "string") {
-    const match = repo.match(/github\.com[:/]([^/]+)\/([^/.]+)/)
-    if (match) return { owner: match[1], repo: match[2] }
-    return null
-  }
-  if (repo.url) {
-    const match = repo.url.match(/github\.com[:/]([^/]+)\/([^/.]+)/)
-    if (match) return { owner: match[1], repo: match[2] }
-  }
-  return null
-}
 
 // ============================================================
 //  6. 相对时间格式化
@@ -308,7 +283,7 @@ async function renderChart(container, pkgName, weeklyData) {
  * @param {boolean} forceRefresh
  * @returns
  */
-async function loadPackages(username, limit, forceRefresh = false) {
+async function loadPackages(username, displayLimit, forceRefresh = false) {
   if (isLoading) {
     return
   }
@@ -321,8 +296,6 @@ async function loadPackages(username, limit, forceRefresh = false) {
             请输入 npm 用户名
         </div>
     `
-    // pkgCount.textContent = "-"
-    // totalDownloads.textContent = "-"
     hottestPkg.textContent = "-"
     hottestTrendPkg.textContent = "-"
     updateTime.textContent = "-"
@@ -332,47 +305,41 @@ async function loadPackages(username, limit, forceRefresh = false) {
     return
   }
 
-  // 检查缓存（除非强制刷新）
-  let pkgDetails = null
-  let cacheTimestamp = null
-  let fromCache = false
-
+  // 尝试从缓存加载
   if (!forceRefresh) {
-    const cached = getCache(username, limit)
+    const cached = readCache(username)
     if (cached) {
-      pkgDetails = cached.packages
-      cacheTimestamp = cached.timestamp
-      fromCache = true
+      const pkgDetails = cached.packages.slice(0, displayLimit)
 
-      // 使用缓存数据
       await renderFromData(
         pkgDetails,
         username,
-        limit,
-        fromCache,
-        cacheTimestamp,
+        displayLimit,
+        true,
+        cached.timestamp,
       )
       setLoading(false)
       return
     }
   }
 
-  // 缓存未命中或强制刷新，重新加载
+  // 缓存未命中或强制刷新
   setLoading(true)
-  grid.innerHTML = `<div class="no-results" style="color:#f0883e;"><span class="big">⏳</span>正在搜索 ${username} 的 ${limit} 个包...</div>`
+  grid.innerHTML = `<div class="no-results" style="color:#f0883e;"><span class="big">⏳</span>正在搜索 ${username} 的包...</div>`
 
   try {
-    // ---- 8a. 搜索包 ----
-    const packages = await fetchUserPackages(username, limit)
-    if (!packages.length) {
+    const data = await fetchRaw(username)
+    writeCache(username, data.packages)
+
+    const pkgDetails = data.packages.slice(0, displayLimit)
+
+    if (!pkgDetails.length) {
       grid.innerHTML = `
           <div class="no-results">
               <span class="big">😕</span>
               用户 <strong>${username}</strong> 没有找到任何包
           </div>
       `
-      // pkgCount.textContent = "0"
-      // totalDownloads.textContent = "0"
       hottestPkg.textContent = "-"
       hottestTrendPkg.textContent = "-"
       updateTime.textContent = "-"
@@ -382,131 +349,8 @@ async function loadPackages(username, limit, forceRefresh = false) {
       return
     }
 
-    // 按最近发布时间排序（npm search 已排序，但再确保一下）
-    packages.sort((a, b) => new Date(b.date) - new Date(a.date))
-
-    // ---- 8b. 并发获取每个包的详细数据 ----
-    const pkgDetails = []
-    // let grandTotal = 0
-    // /** @type {Hottest} */
-    // let hottest = { name: "", downloads: 0, latestWeekDownloads: 0 }
-
-    for (const pkg of packages) {
-      try {
-        const meta = await fetchPackageMetadata(pkg.name)
-        // 使用新的周聚合函数
-        const downloads = await fetchYearlyWeeklyDownloads(pkg.name)
-        /** @type {string} */
-        const version = meta["dist-tags"]?.latest || pkg.version || "--"
-        const publishedAt = meta.time?.[version] || pkg.date
-        const createdAt = meta.time?.created
-
-        // 解析 GitHub repo
-        const github = {
-          owner: null,
-          repo: null,
-          stars: null,
-          lastCommit: null,
-          lastCommitDate: null,
-        }
-        const ghRepo = parseGitHubRepo(meta)
-        if (ghRepo) {
-          github.owner = ghRepo.owner
-          github.repo = ghRepo.repo
-          try {
-            const starData = await fetchGitHubStars(ghRepo.owner, ghRepo.repo)
-            github.stars = starData.stars
-          } catch (error) {
-            /* 静默 */
-            console.log(`[WARN] fetching GitHub stars for`, ghRepo, error)
-          }
-          try {
-            const commitData = await fetchGitHubLastCommit(
-              ghRepo.owner,
-              ghRepo.repo,
-            )
-            github.lastCommit = commitData.message
-            github.lastCommitDate = commitData.date
-          } catch (error) {
-            /* 静默 */
-            console.log(`[WARN] fetching GitHub last commit for`, ghRepo, error)
-          }
-        }
-
-        // 计算"最近活跃时间"：max(发布时间, GitHub提交时间)
-        let activeAt = publishedAt
-        if (
-          github.lastCommitDate &&
-          new Date(github.lastCommitDate) > new Date(activeAt || 0)
-        ) {
-          activeAt = github.lastCommitDate
-        }
-
-        pkgDetails.push({
-          name: pkg.name,
-          version,
-          publishedAt,
-          createdAt,
-          // 存储完整的周数据
-          weeklyData: downloads.weekly,
-          totalDownloads: downloads.total,
-          trend: downloads.trend,
-          github,
-          activeAt,
-        })
-
-        // grandTotal += downloads.total
-        // const latestWeekDownloads = downloads.weekly.at(-1)?.total || 0
-        // if (latestWeekDownloads > hottest.latestWeekDownloads) {
-        //   hottest = {
-        //     name: pkg.name,
-        //     downloads: downloads.total,
-        //     latestWeekDownloads,
-        //   }
-        // }
-      } catch (err) {
-        // 单个包失败，添加错误占位
-        pkgDetails.push({
-          name: pkg.name,
-          version: "--",
-          publishedAt: null,
-          createdAt: null,
-          // downloads: [],
-          totalDownloads: 0,
-          trend: 0,
-          github: {
-            owner: null,
-            repo: null,
-            stars: null,
-            lastCommit: null,
-            lastCommitDate: null,
-          },
-          activeAt: null,
-
-          error: err instanceof Error ? err.message : String(err),
-        })
-      }
-    }
-
-    // ---- 8c. 按最近一周下载量排序 ----
-    // pkgDetails.sort(byWeeklyDownloadsDesc)
-
-    // ---- 8d. 更新统计 ----
-    // pkgCount.textContent = pkgDetails.length
-    // totalDownloads.textContent = grandTotal.toLocaleString()
-    // console.log("hottest.latestWeekDownloads:", hottest.latestWeekDownloads)
-    // renderHottest(hottest)
-    // updateTime.textContent = new Date().toLocaleString()
-
-    // 缓存聚合数据
-    const timestamp = Date.now()
-    setCache(username, limit, pkgDetails, timestamp)
-
-    // ---- 8e. 渲染（实时数据） ----
-    await renderFromData(pkgDetails, username, limit, false, null)
-
-    // ---- 8f. 更新 URL ----
-    // setUrlParams(username, limit) // TODO: WHY
+    // 渲染（实时数据）
+    await renderFromData(pkgDetails, username, displayLimit, false, null)
   } catch (err) {
     console.error(err)
     grid.innerHTML = `
@@ -563,8 +407,8 @@ async function renderFromData(
 
   // pkgCount.textContent = pkgDetails.length
   // totalDownloads.textContent = total.toLocaleString()
-  renderHottest(hottest)
-  renderHottestTrend(hottestTrend)
+  renderHottest(hottest, username)
+  renderHottestTrend(hottestTrend, username)
 
   updateTime.textContent = getFreshnessLabel(fromCache, cacheTimestamp)
 
@@ -811,16 +655,21 @@ document.addEventListener("DOMContentLoaded", init)
 
 /**
  * @param {Hottest} hottest
+ * @param {string} username
  */
-function renderHottest(hottest) {
+function renderHottest(hottest, username) {
   hottestPkg.innerHTML = hottest.name
-    ? `<a href="insight.html?pkg=${encodeURIComponent(hottest.name)}" title="npm 包洞察页面" style="color:inherit;">${hottest.name}</a> (Latest week downloads: ${hottest.latestWeekDownloads.toLocaleString()})`
+    ? `<a href="insight.html?username=${encodeURIComponent(username)}&rank=weekly-downloads" title="📊 排行榜页面" style="color:inherit;">${hottest.name}</a> (Latest week downloads: ${hottest.latestWeekDownloads.toLocaleString()})`
     : "-"
 }
 
-function renderHottestTrend(trend) {
+/**
+ * @param {{ name: string; trend: number }} trend
+ * @param {string} username
+ */
+function renderHottestTrend(trend, username) {
   hottestTrendPkg.innerHTML = trend.name
-    ? `<a href="insight.html?pkg=${encodeURIComponent(trend.name)}" title="npm 包洞察页面" style="color:inherit;">${trend.name}</a> (+${trend.trend}%)`
+    ? `<a href="insight.html?username=${encodeURIComponent(username)}&rank=trend" title="📊 排行榜页面" style="color:inherit;">${trend.name}</a> (+${trend.trend}%)`
     : "-"
 }
 
