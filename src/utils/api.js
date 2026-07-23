@@ -5,7 +5,7 @@
 // ============================================================
 
 /** npm search API 单次拉取最大数量 */
-export const MAX_SEARCH_SIZE = 250
+export const MAX_SEARCH_SIZE = 10
 
 /**
  * https://github.com/npm/registry/blob/main/docs/REGISTRY-API.md#get-v1search

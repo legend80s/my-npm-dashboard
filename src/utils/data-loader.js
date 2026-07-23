@@ -79,13 +79,19 @@ export function clearCache() {
  * @param {string} username
  * @returns {Promise<{ packages: FreshPackageDetail[], username: string }>}
  */
-export async function fetchRaw(username) {
+/**
+ * @param {string} username
+ * @param {{ onPackage?: (pkg: FreshPackageDetail, done: number, total: number) => void }} [options]
+ */
+export async function fetchRaw(username, options = {}) {
   const { packages: pkgList, dependents: dependentsMap } = await fetchUserPackages(username)
 
   /** @type {FreshPackageDetail[]} */
   const pkgDetails = []
 
-  for (const pkg of pkgList) {
+  const { onPackage } = options
+
+  for (const [index, pkg] of pkgList.entries()) {
     try {
       const meta = await fetchPackageMetadata(pkg.name)
       const downloads = await fetchYearlyWeeklyDownloads(pkg.name)
@@ -120,7 +126,7 @@ export async function fetchRaw(username) {
         activeAt = github.lastCommitDate
       }
 
-      pkgDetails.push({
+      const detail = {
         name: pkg.name,
         version,
         publishedAt,
@@ -134,9 +140,11 @@ export async function fetchRaw(username) {
         dependencyCount,
         versionCount,
         dependents,
-      })
+      }
+      pkgDetails.push(detail)
+      onPackage?.(detail, index + 1, pkgList.length)
     } catch (err) {
-      pkgDetails.push({
+      const fallbackDetail = {
         name: pkg.name,
         version: "--",
         publishedAt: null,
@@ -150,7 +158,9 @@ export async function fetchRaw(username) {
         versionCount: 0,
         dependents: 0,
         error: err instanceof Error ? err.message : String(err),
-      })
+      }
+      pkgDetails.push(fallbackDetail)
+      onPackage?.(fallbackDetail, index + 1, pkgList.length)
     }
   }
 

@@ -1,9 +1,11 @@
 import { Chart, registerables } from "chart.js"
+import { CACHE_TTL_IN_HOURS, getCacheTTL } from "./utils/cache.js"
 import {
-  CACHE_TTL_IN_HOURS,
-  getCacheTTL,
-} from "./utils/cache.js"
-import { readCache, writeCache, clearCache, fetchRaw, loadData } from "./utils/data-loader.js"
+  readCache,
+  writeCache,
+  clearCache,
+  fetchRaw,
+} from "./utils/data-loader.js"
 
 Chart.register(...registerables)
 
@@ -34,6 +36,8 @@ const grid = document.getElementById("grid")
 /** @type {HTMLInputElement} */
 // @ts-expect-error
 const hottestPkg = document.getElementById("hottestPkg")
+/** @type {HTMLInputElement} */
+// @ts-expect-error
 const hottestTrendPkg = document.getElementById("hottestTrendPkg")
 /** @type {HTMLInputElement} */
 // @ts-expect-error
@@ -279,7 +283,7 @@ async function renderChart(container, pkgName, weeklyData) {
 /**
  *
  * @param {string} username
- * @param {number} limit
+ * @param {number} displayLimit
  * @param {boolean} forceRefresh
  * @returns
  */
@@ -328,7 +332,22 @@ async function loadPackages(username, displayLimit, forceRefresh = false) {
   grid.innerHTML = `<div class="no-results" style="color:#f0883e;"><span class="big">⏳</span>正在搜索 ${username} 的包...</div>`
 
   try {
-    const data = await fetchRaw(username)
+    const data = await fetchRaw(username, {
+      onPackage(pkgDetail, done) {
+        if (done >= 1) {
+          const progressEl = grid.querySelector(".no-results")
+          progressEl?.remove()
+        } else {
+          const progressEl = grid.querySelector(".no-results")
+          if (progressEl) {
+            progressEl.innerHTML = `<span class="big">⏳</span>正在搜索 ${username} 的第 ${done} 个包...`
+          }
+        }
+        if (done <= displayLimit) {
+          appendCard(pkgDetail)
+        }
+      },
+    })
     writeCache(username, data.packages)
 
     const pkgDetails = data.packages.slice(0, displayLimit)
@@ -349,7 +368,7 @@ async function loadPackages(username, displayLimit, forceRefresh = false) {
       return
     }
 
-    // 渲染（实时数据）
+    // 重新排序渲染（替换流式卡片）
     await renderFromData(pkgDetails, username, displayLimit, false, null)
   } catch (err) {
     console.error(err)
@@ -444,122 +463,146 @@ function updateCacheInfo() {
 }
 
 // ============================================================
-//  9. 渲染卡片（含 Mermaid 图表）
+//  9. 卡片 DOM 创建
 // ============================================================
 /**
- *
+ * 创建单个卡片 DOM 元素（不含图表渲染）
+ * @param {FreshPackageDetail} pkg
+ * @returns {HTMLElement}
+ */
+function createCardElement(pkg) {
+  const card = document.createElement("article")
+  card.className = "card"
+
+  // 构建 GitHub 信息
+  let ghInfo = ""
+  if (pkg.github.owner && pkg.github.repo) {
+    const starDisplay = pkg.github.stars !== null ? pkg.github.stars : "--"
+    const commitDisplay = pkg.github.lastCommit || "--"
+    const commitTime = pkg.github.lastCommitDate
+      ? timeAgo(pkg.github.lastCommitDate)
+      : ""
+
+    const repoUrl = `https://github.com/${pkg.github.owner}/${pkg.github.repo}`
+    const commitUrl = `https://github.com/${pkg.github.owner}/${pkg.github.repo}/commits`
+
+    ghInfo = `
+      <div class="card-metrics" style="flex-wrap: nowrap;">
+          <a href="${repoUrl}" target="_blank" title="github stars ${starDisplay}">
+            <img alt="GitHub Repo stars" style="vertical-align: middle;" src="https://img.shields.io/github/stars/${pkg.github.owner}/${pkg.github.repo}">
+          </a>
+          //
+          <a href="${commitUrl}" target="_blank" style="align-items: center;max-width: 77%; white-space:nowrap;" title="GitHub Latest Commit: “${commitDisplay}” · ${new Date(pkg.github.lastCommitDate).toLocaleString()}">
+            🖥️ Commit
+            <span class="metric"><strong class="ellipsis" style="display: inline-block;max-width: 67%;vertical-align: text-bottom;">${commitDisplay.repeat(4)}</strong>${commitTime ? " · " + commitTime : ""}</span>
+          </a>
+      </div>
+    `
+  } else {
+    ghInfo = `
+      <div class="card-metrics">
+          <span class="metric">⭐ <strong>--</strong></span>
+          <span class="metric">💻 <strong>暂无 GitHub 数据</strong></span>
+      </div>
+    `
+  }
+
+  // 错误状态
+  if ("error" in pkg) {
+    card.innerHTML = `
+      <div class="card-header">
+          <span class="card-name">⚠️ ${pkg.name}</span>
+          <span class="card-version">--</span>
+      </div>
+      <div class="card-metrics" style="color:#f85149;">
+          ${pkg.error}
+      </div>
+    `
+    card.className = "card-error"
+    return card
+  }
+
+  // 正常卡片
+  const trendClass =
+    pkg.trend > 0 ? "trend-up" : pkg.trend < 0 ? "trend-down" : "trend-flat"
+  const trendArrow = pkg.trend > 0 ? "↑" : pkg.trend < 0 ? "↓" : "→"
+
+  const publishedDisplay = pkg.publishedAt ? timeAgo(pkg.publishedAt) : "--"
+  const createdDisplay = pkg.createdAt
+    ? new Date(pkg.createdAt).toISOString().slice(0, 10)
+    : "--"
+
+  const latestWeeklyTrend = `${trendArrow} ${Math.abs(pkg.trend)}%`
+  // @ts-expect-error
+  const latestWeekDownloads = pkg.weeklyData.at(-1).total
+
+  card.innerHTML = `
+      <a class="card-header" href="https://www.npmjs.com/package/${pkg.name}" target="_blank">
+          <span class="card-name">${pkg.name}</span>
+
+          <div style="white-space: nowrap;">
+            <img title="v${pkg.version}" src="https://img.shields.io/npm/v/${pkg.name}.svg?style=flat" alt="NPM Version" />
+            <img src="https://img.shields.io/npm/${latestWeekDownloads > 1000 ? "dw" : "dm"}/${pkg.name}.svg?style=flat" alt="npm downloads" />
+            <img src="https://img.shields.io/badge/yearly%20downloads-${pkg.totalDownloads.toLocaleString()}-blue?logo=npm&logoColor=cyan&style=flat" alt="Yearly downloads: ${pkg.totalDownloads}" />
+          </div>
+      </a>
+      <div class="chart-container" id="chart-${pkg.name.replace(/[^a-zA-Z0-9]/g, "-")}"
+          data-pkgname="${pkg.name}">
+      </div>
+      <div class="card-metrics">
+          <span title="latest week trend" style="display:flex; align-items: center; gap:0.1rem;">
+            <img src="https://img.shields.io/badge/Weekly%20Trend-blue?logo=npm&logoColor=cyan&style=for-the-badge" alt="latest week trend" />
+
+            <span  class="metric ${trendClass}">${latestWeeklyTrend}</span>
+          </span>
+          //
+          <span class="metric" title="${new Date(pkg.publishedAt).toLocaleString()}">🚀 发布 <strong>${publishedDisplay}</strong></span>
+          //
+          <span class="metric" title="${new Date(pkg.createdAt).toLocaleString()}">🤰 创建 <strong>${createdDisplay}</strong></span>
+      </div>
+      ${ghInfo}
+  `
+
+  return card
+}
+
+/**
+ * 追加单张卡片到 grid（含图表渲染）
+ * @param {FreshPackageDetail} pkg
+ */
+function appendCard(pkg) {
+  const card = createCardElement(pkg)
+  grid.appendChild(card)
+
+  if (card.classList.contains("card-error")) return
+
+  const container = card.querySelector(".chart-container")
+  if (container) {
+    renderChart(
+      // @ts-expect-error
+      container,
+      pkg.name,
+      pkg.weeklyData,
+    )
+  }
+}
+
+// ============================================================
+//  9B. 批量渲染卡片（含图表）
+// ============================================================
+/**
  * @param {FreshPackageDetail[]} pkgDetails
  */
 async function renderCards(pkgDetails) {
-  // 先清空并生成卡片 DOM
   grid.innerHTML = ""
   const cardElements = []
 
   for (const pkg of pkgDetails) {
-    const card = document.createElement("article")
-    card.className = "card"
-
-    // 构建 GitHub 信息
-    let ghInfo = ""
-    if (pkg.github.owner && pkg.github.repo) {
-      const starDisplay = pkg.github.stars !== null ? pkg.github.stars : "--"
-      const commitDisplay = pkg.github.lastCommit || "--"
-      const commitTime = pkg.github.lastCommitDate
-        ? timeAgo(pkg.github.lastCommitDate)
-        : ""
-
-      const repoUrl = `https://github.com/${pkg.github.owner}/${pkg.github.repo}`
-      const commitUrl = `https://github.com/${pkg.github.owner}/${pkg.github.repo}/commits`
-
-      // <span class="metric">⭐ <strong>${starDisplay}</strong></span>
-      ghInfo = `
-        <div class="card-metrics" style="flex-wrap: nowrap;">
-            <a href="${repoUrl}" target="_blank" title="github stars ${starDisplay}">
-              <img alt="GitHub Repo stars" style="vertical-align: middle;" src="https://img.shields.io/github/stars/${pkg.github.owner}/${pkg.github.repo}">
-            </a>
-            //
-            <a href="${commitUrl}" target="_blank" style="align-items: center;max-width: 77%; white-space:nowrap;" title="GitHub Latest Commit: “${commitDisplay}” · ${new Date(pkg.github.lastCommitDate).toLocaleString()}">
-              🖥️ Commit
-              <span class="metric"><strong class="ellipsis" style="display: inline-block;max-width: 67%;vertical-align: text-bottom;">${commitDisplay.repeat(4)}</strong>${commitTime ? " · " + commitTime : ""}</span>
-            </a>
-        </div>
-      `
-    } else {
-      ghInfo = `
-        <div class="card-metrics">
-            <span class="metric">⭐ <strong>--</strong></span>
-            <span class="metric">💻 <strong>暂无 GitHub 数据</strong></span>
-        </div>
-      `
-    }
-
-    // 错误状态
-    if ("error" in pkg) {
-      card.innerHTML = `
-        <div class="card-header">
-            <span class="card-name">⚠️ ${pkg.name}</span>
-            <span class="card-version">--</span>
-        </div>
-        <div class="card-metrics" style="color:#f85149;">
-            ${pkg.error}
-        </div>
-      `
-      card.className = "card-error"
-      grid.appendChild(card)
-      continue
-    }
-
-    // 正常卡片
-    const trendClass =
-      pkg.trend > 0 ? "trend-up" : pkg.trend < 0 ? "trend-down" : "trend-flat"
-    const trendArrow = pkg.trend > 0 ? "↑" : pkg.trend < 0 ? "↓" : "→"
-
-    const publishedDisplay = pkg.publishedAt ? timeAgo(pkg.publishedAt) : "--"
-    const createdDisplay = pkg.createdAt
-      ? new Date(pkg.createdAt).toISOString().slice(0, 10)
-      : "--"
-
-    // 将 .chart-container 的占位内容改为空，并添加 data 属性
-    // <span class="metric">📥 <strong>${pkg.totalDownloads.toLocaleString()}</strong></span>
-    // <span title="latest week trend" class="metric ${trendClass}">${trendArrow} ${Math.abs(pkg.trend)}%</span>
-
-    const latestWeeklyTrend = `${trendArrow} ${Math.abs(pkg.trend)}%`
-    // @ts-expect-error
-    const latestWeekDownloads = pkg.weeklyData.at(-1).total
-
-    card.innerHTML = `
-        <a class="card-header" href="https://www.npmjs.com/package/${pkg.name}" target="_blank">
-            <span class="card-name">${pkg.name}</span>
-
-            <div style="white-space: nowrap;">
-              <img title="v${pkg.version}" src="https://img.shields.io/npm/v/${pkg.name}.svg?style=flat" alt="NPM Version" />
-              <img src="https://img.shields.io/npm/${latestWeekDownloads > 1000 ? "dw" : "dm"}/${pkg.name}.svg?style=flat" alt="npm downloads" />
-              <img src="https://img.shields.io/badge/yearly%20downloads-${pkg.totalDownloads.toLocaleString()}-blue?logo=npm&logoColor=cyan&style=flat" alt="Yearly downloads: ${pkg.totalDownloads}" />
-            </div>
-        </a>
-        <div class="chart-container" id="chart-${pkg.name.replace(/[^a-zA-Z0-9]/g, "-")}" 
-            data-pkgname="${pkg.name}">
-            <!-- Chart.js 将在此渲染 Canvas -->
-        </div>
-        <div class="card-metrics">
-            <span title="latest week trend" style="display:flex; align-items: center; gap:0.1rem;">
-              <img src="https://img.shields.io/badge/Weekly%20Trend-blue?logo=npm&logoColor=cyan&style=for-the-badge" alt="latest week trend" />
-
-              <span  class="metric ${trendClass}">${latestWeeklyTrend}</span>
-            </span>
-            //
-            <span class="metric" title="${new Date(pkg.publishedAt).toLocaleString()}">🚀 发布 <strong>${publishedDisplay}</strong></span>
-            //
-            <span class="metric" title="${new Date(pkg.createdAt).toLocaleString()}">🤰 创建 <strong>${createdDisplay}</strong></span>
-        </div>
-        ${ghInfo}
-    `
-
+    const card = createCardElement(pkg)
     grid.appendChild(card)
     cardElements.push({ element: card, pkg })
   }
 
-  // 异步渲染 Mermaid 图表
   for (const { element, pkg } of cardElements) {
     const container = element.querySelector(".chart-container")
 
