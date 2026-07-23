@@ -740,12 +740,18 @@ async function renderCards(pkgDetails) {
 // ============================================================
 
 function init() {
-  const params = getUrlParams()
-  if (params.username) {
-    usernameInput.value = params.username
-    limitInput.value = String(params.limit)
+  const { username, limit } = getUrlParams()
+
+  if (username) {
+    usernameInput.value = username
+    limitInput.value = String(limit)
     // 尝试从缓存加载，无需强制刷新
-    loadPackages(params.username, params.limit, false)
+    loadPackages(username, limit, false)
+
+    usernameInput.parentElement?.insertAdjacentHTML(
+      "beforeend",
+      `<img src="https://unavatar.io/npm/${username}?size=16" alt="" style="width:2.5rem;border-radius: 50%;" />`,
+    )
   }
 
   // 表单提交
