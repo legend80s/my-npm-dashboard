@@ -12,7 +12,8 @@
 - [ ] 预期 legend80s 是 pelican sse-stuntman gallery-server ...
 - [ ] 目前有体验问题：
 - [ ] icon 最近在开发什么？按活跃时间排序（npm 近期发布或 GitHub 最近提交）icon 从 broken 到 ok
-
+- [ ] 现在的缓存有个问题，切换用户后，缓存被清空，导致下次搜索相同用户时，需要重新搜索。
+- [ ] dashboard 页面不展示所以包的 insights 只展示 limit 个包的 insights，但是背后会搜索所有 250 个包，这样用户点击 "查看更多" 时，已经加载了所有包的 insights，无需再搜索。性能会更好。
 
 1. 目前会搜索所有 250 个包，时间太长了，改成 10 个
 2. 搜索中显示『正在搜索 antfu 的包...』，应该显示进度『正在搜索 antfu 的第N个包...』
