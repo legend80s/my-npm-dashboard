@@ -447,7 +447,12 @@ async function renderFromData(
   // 渲染前统一按活跃时间排序（npm 发布时间或 GitHub 提交时间）
   pkgDetails.sort(byActiveAtDesc)
 
-  document.getElementById("sortAvatar").src = `https://avatars.githubusercontent.com/${username}?s=40`
+  /** @type {HTMLImageElement}  */
+  // @ts-expect-error
+  const avatar = document.getElementById("sortAvatar")
+  avatar.src = `https://avatars.githubusercontent.com/${username}?s=40`
+  avatar.hidden = false
+  avatar.insertAdjacentText("beforebegin", username)
 
   // 渲染卡片
   await renderCards(pkgDetails)
