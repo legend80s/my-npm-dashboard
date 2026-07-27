@@ -452,7 +452,10 @@ async function renderFromData(
   const avatar = document.getElementById("sortAvatar")
   avatar.src = `https://avatars.githubusercontent.com/${username}?s=40`
   avatar.hidden = false
-  avatar.insertAdjacentText("beforebegin", username)
+  avatar.insertAdjacentHTML(
+    "beforebegin",
+    `<span class="text-primary">${username}</span>`,
+  )
 
   // 渲染卡片
   await renderCards(pkgDetails)
@@ -533,7 +536,8 @@ function createCardElement(pkg) {
 
   // 正常卡片
   const trendArrow = pkg.trend > 0 ? "↑" : pkg.trend < 0 ? "↓" : "→"
-  const trendColor = pkg.trend > 0 ? "brightgreen" : pkg.trend < 0 ? "red" : "lightgrey"
+  const trendColor =
+    pkg.trend > 0 ? "brightgreen" : pkg.trend < 0 ? "red" : "lightgrey"
   const trendBadge = `https://img.shields.io/badge/weekly%20trend-${encodeURIComponent(`${trendArrow} ${Math.abs(pkg.trend)}%`)}-${trendColor}?logo=npm&logoColor=cyan&style=flat`
 
   const publishedDisplay = pkg.publishedAt ? timeAgo(pkg.publishedAt) : "--"
@@ -717,7 +721,7 @@ function renderHottest(hottest, username) {
 function renderHottestTrend(trend, username) {
   hottestTrendPkg.innerHTML = trend.name
     ? `<a href="insight.html?username=${encodeURIComponent(username)}&rank=trend" title="📊 排行榜页面" style="color:inherit;">${trend.name}</a> (+${trend.trend}%)`
-    : "-"
+    : "<span style='font-size: 0.8em;'>（无）近期下载量均下降</span>"
 }
 
 /**

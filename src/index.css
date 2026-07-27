@@ -7,6 +7,12 @@
 
 :root {
   font-size: clamp(16px, 100vw / 2560 * 28.6, 36px);
+
+  --color-primary: greenyellow;
+}
+
+.text-primary {
+  color: var(--color-primary);
 }
 
 body {
@@ -187,7 +193,7 @@ button:disabled {
   display: flex;
   justify-content: center;
   flex-wrap: wrap;
-  gap: 2rem;
+  gap: 2rem 1rem;
   padding-inline: 24px;
   padding-block: 12px 12px;
   /* background: #161b22; */

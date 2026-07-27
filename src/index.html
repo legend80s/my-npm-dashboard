@@ -102,40 +102,41 @@
 
     <!-- ===== STATS BAR ===== -->
     <h2 class="stats-bar" id="statsBar">
+      <!-- ===== SORT INFO ===== -->
+      <div
+        class="sort-info"
+        id="sortInfo"
+        style="
+          font-size: 0.85em;
+          color: #8b949e;
+          /* margin: -4px 16px 8px; */
+          padding: 0;
+          display: flex;
+          align-items: center;
+          gap: 6px;
+        "
+      >
+        <img
+          id="sortAvatar"
+          hidden
+          alt=""
+          style="width: 20px; height: 20px; border-radius: 50%"
+        />
+        <span title="按包活跃度排序：npm 近期发布或 GitHub 最近提交"
+          >最近在忙着开发什么？</span
+        >
+      </div>
       <!-- <span class="stat-item">📦 包数 <strong id="pkgCount">-</strong></span> -->
       <!-- <span class="stat-item">📥 周总下载 <strong id="totalDownloads">-</strong></span> -->
       <span class="stat-item">
-        🔥 最热包 <strong id="hottestPkg">-</strong>
+        <span style="font-size: 0.85em">🔥 最热包</span>
+        <strong id="hottestPkg">-</strong>
       </span>
       <span class="stat-item">
-        🚀 势头最猛 <strong id="hottestTrendPkg">-</strong>
+        <span style="font-size: 0.85em">🚀 势头最猛</span>
+        <strong id="hottestTrendPkg">-</strong>
       </span>
     </h2>
-
-    <!-- ===== SORT INFO ===== -->
-    <div
-      class="sort-info"
-      id="sortInfo"
-      style="
-        font-size: 0.85em;
-        color: #8b949e;
-        margin: -4px 16px 8px;
-        padding: 0;
-        display: flex;
-        align-items: center;
-        gap: 6px;
-      "
-    >
-      <img
-        id="sortAvatar"
-        hidden
-        alt=""
-        style="width: 20px; height: 20px; border-radius: 50%"
-      />
-      <span title="按包活跃度排序：npm 近期发布或 GitHub 最近提交"
-        >最近在忙着开发什么？</span
-      >
-    </div>
 
     <!-- ===== GRID ===== -->
     <div class="grid" id="grid">
