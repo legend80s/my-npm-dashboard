@@ -9,10 +9,15 @@
   font-size: clamp(16px, 100vw / 2560 * 28.6, 36px);
 
   --color-primary: greenyellow;
+  --color-gray: #8b949e;
 }
 
 .text-primary {
   color: var(--color-primary);
+}
+
+.text-gray {
+  color: var(--color-gray);
 }
 
 body {

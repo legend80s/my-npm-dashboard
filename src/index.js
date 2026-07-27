@@ -710,7 +710,7 @@ document.addEventListener("DOMContentLoaded", init)
  */
 function renderHottest(hottest, username) {
   hottestPkg.innerHTML = hottest.name
-    ? `<a href="insight.html?username=${encodeURIComponent(username)}&rank=weekly-downloads" title="📊 排行榜页面" style="color:inherit;">${hottest.name}</a> (Latest week downloads: ${hottest.latestWeekDownloads.toLocaleString()})`
+    ? `<a href="insight.html?username=${encodeURIComponent(username)}&rank=weekly-downloads" title="📊 排行榜页面" style="color:inherit;">${hottest.name} <span style="font-size: 0.85em;">(Latest week downloads: ${hottest.latestWeekDownloads.toLocaleString()})</span></a>`
     : "-"
 }
 
