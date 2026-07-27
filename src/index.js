@@ -532,16 +532,15 @@ function createCardElement(pkg) {
   }
 
   // 正常卡片
-  const trendClass =
-    pkg.trend > 0 ? "trend-up" : pkg.trend < 0 ? "trend-down" : "trend-flat"
   const trendArrow = pkg.trend > 0 ? "↑" : pkg.trend < 0 ? "↓" : "→"
+  const trendColor = pkg.trend > 0 ? "brightgreen" : pkg.trend < 0 ? "red" : "lightgrey"
+  const trendBadge = `https://img.shields.io/badge/weekly%20trend-${encodeURIComponent(`${trendArrow} ${Math.abs(pkg.trend)}%`)}-${trendColor}?logo=npm&logoColor=cyan&style=flat`
 
   const publishedDisplay = pkg.publishedAt ? timeAgo(pkg.publishedAt) : "--"
   const createdDisplay = pkg.createdAt
     ? new Date(pkg.createdAt).toISOString().slice(0, 10)
     : "--"
 
-  const latestWeeklyTrend = `${trendArrow} ${Math.abs(pkg.trend)}%`
   // @ts-expect-error
   const latestWeekDownloads = pkg.weeklyData.at(-1).total
 
@@ -559,11 +558,7 @@ function createCardElement(pkg) {
           data-pkgname="${pkg.name}">
       </div>
       <div class="card-metrics">
-          <span title="latest week trend" style="display:flex; align-items: center; gap:0.1rem;">
-            <img src="https://img.shields.io/badge/Weekly%20Trend-blue?logo=npm&logoColor=cyan&style=for-the-badge" alt="latest week trend" />
-
-            <span  class="metric ${trendClass}">${latestWeeklyTrend}</span>
-          </span>
+          <img src="${trendBadge}" title="latest week trend" alt="weekly trend: ${trendArrow} ${Math.abs(pkg.trend)}%" />
           //
           <span class="metric" title="${new Date(pkg.publishedAt).toLocaleString()}">🚀 发布 <strong>${publishedDisplay}</strong></span>
           //

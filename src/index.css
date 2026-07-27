@@ -342,16 +342,6 @@ button:disabled {
   font-weight: 600;
 }
 
-.card-metrics .trend-up {
-  color: #3fb950;
-}
-.card-metrics .trend-down {
-  color: #f85149;
-}
-.card-metrics .trend-flat {
-  color: #8b949e;
-}
-
 .card-footer {
   font-size: 0.75rem;
   color: #484f58;
