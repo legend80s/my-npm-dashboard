@@ -5,7 +5,7 @@
 // ============================================================
 
 /** npm search API 单次拉取最大数量 */
-export const MAX_SEARCH_SIZE = 10
+export const MAX_SEARCH_SIZE = 3
 
 /**
  * https://github.com/npm/registry/blob/main/docs/REGISTRY-API.md#get-v1search
@@ -20,9 +20,11 @@ export async function fetchUserPackages(username) {
     `size=${MAX_SEARCH_SIZE}`
 
   const res = await fetch(url)
+
   if (!res.ok) {
     throw new Error(`npm search 失败: ${res.status}`)
   }
+
   /** @type {NpmPkgSearchResp} */
   const data = await res.json()
 
@@ -37,9 +39,10 @@ export async function fetchUserPackages(username) {
 
   // 客户端按发布时间排序（最新在前）
   packages.sort((a, b) => {
-    const dateA = a.date ? new Date(a.date).getTime() : 0
-    const dateB = b.date ? new Date(b.date).getTime() : 0
-    return dateB - dateA
+    return Math.random() - 0.5
+    // const dateA = a.date ? new Date(a.date).getTime() : 0
+    // const dateB = b.date ? new Date(b.date).getTime() : 0
+    // return dateB - dateA
   })
 
   return { packages, dependents }

@@ -332,27 +332,37 @@ async function loadPackages(username, displayLimit, forceRefresh = false) {
   grid.innerHTML = `<div class="no-results" style="color:#f0883e;"><span class="big">⏳</span>正在搜索 ${username} 的包...</div>`
 
   try {
-    const data = await fetchRaw(username, {
-      onPackage(pkgDetail, done) {
+    /** @type {FreshPackageDetail[]} */
+    const collected = []
+    let statsUpdated = false
+
+    const dataPromise = fetchRaw(username, {
+      /** @param {FreshPackageDetail} pkgDetail @param {number} done @param {number} total */
+      onPackage(pkgDetail, done, total) {
+        if (done <= displayLimit) {
+          collected.push(pkgDetail)
+          appendCard(pkgDetail)
+        }
+
         if (done >= 1) {
           const progressEl = grid.querySelector(".no-results")
           progressEl?.remove()
-        } else {
-          const progressEl = grid.querySelector(".no-results")
-          if (progressEl) {
-            progressEl.innerHTML = `<span class="big">⏳</span>正在搜索 ${username} 的第 ${done} 个包...`
-          }
         }
-        if (done <= displayLimit) {
-          appendCard(pkgDetail)
+
+        if (done === Math.min(displayLimit, total) && !statsUpdated) {
+          statsUpdated = true
+          updateStats(collected, username, false, null)
+          reorderCardsByActiveAt(collected)
+          setUrlParams(username, displayLimit)
+          setLoading(false)
         }
       },
     })
+
+    const data = await dataPromise
     writeCache(username, data.packages)
 
-    const pkgDetails = data.packages.slice(0, displayLimit)
-
-    if (!pkgDetails.length) {
+    if (data.packages.length === 0) {
       grid.innerHTML = `
           <div class="no-results">
               <span class="big">😕</span>
@@ -362,14 +372,9 @@ async function loadPackages(username, displayLimit, forceRefresh = false) {
       hottestPkg.textContent = "-"
       hottestTrendPkg.textContent = "-"
       updateTime.textContent = "-"
-
       updateCacheInfo()
       setLoading(false)
-      return
     }
-
-    // 重新排序渲染（替换流式卡片）
-    await renderFromData(pkgDetails, username, displayLimit, false, null)
   } catch (err) {
     console.error(err)
     grid.innerHTML = `
@@ -378,9 +383,8 @@ async function loadPackages(username, displayLimit, forceRefresh = false) {
             ${err.message || "加载失败，请检查网络或重试"}
         </div>
     `
+    setLoading(false)
   }
-
-  setLoading(false)
 }
 
 function byActiveAtDesc(a, b) {
@@ -390,7 +394,106 @@ function byActiveAtDesc(a, b) {
 }
 
 /**
- * 从数据渲染页面（共享渲染逻辑）
+ * 更新统计信息（hottest/trend）和 UI 状态
+ * @param {FreshPackageDetail[]} pkgDetails
+ * @param {string} username
+ * @param {boolean} fromCache
+ * @param {number|null} cacheTimestamp
+ */
+function updateStats(pkgDetails, username, fromCache, cacheTimestamp) {
+  let hottest = { name: "", latestWeekDownloads: 0, downloads: 0 }
+  let hottestTrend = { name: "", trend: 0 }
+
+  for (const pkg of pkgDetails) {
+    const latest = pkg.weeklyData?.at(-1)?.total
+    if (latest && latest > hottest.latestWeekDownloads) {
+      hottest = {
+        downloads: pkg.totalDownloads,
+        name: pkg.name,
+        latestWeekDownloads: latest,
+      }
+    }
+    if (pkg.trend > hottestTrend.trend) {
+      hottestTrend = { name: pkg.name, trend: pkg.trend }
+    }
+  }
+
+  renderHottest(hottest, username)
+  renderHottestTrend(hottestTrend, username)
+
+  updateTime.textContent = getFreshnessLabel(fromCache, cacheTimestamp)
+  updateCacheInfo()
+
+  /** @type {HTMLElement} */
+  // @ts-expect-error
+  const cacheStatus = document.getElementById("cacheStatus")
+  cacheStatus.textContent = fromCache ? "" : "🔄 实时"
+  cacheStatus.style.color = fromCache ? "#8b949e" : "#3fb950"
+
+  /** @type {HTMLImageElement} */
+  // @ts-expect-error
+  const avatar = document.getElementById("sortAvatar")
+  avatar.src = `https://avatars.githubusercontent.com/${username}?s=40`
+  avatar.hidden = false
+
+  const sortInfo = document.getElementById("sortInfo")
+  if (!sortInfo?.querySelector(".text-primary")) {
+    avatar.insertAdjacentHTML(
+      "beforebegin",
+      `<span class="text-primary">${username}</span>`,
+    )
+  }
+}
+
+/**
+ * FLIP 动画：按活跃时间重排已展示的卡片
+ * @param {FreshPackageDetail[]} pkgDetails
+ */
+function reorderCardsByActiveAt(pkgDetails) {
+  const cardEls = [...grid.children].filter(
+    (el) => !el.classList.contains("no-results"),
+  )
+  if (cardEls.length < 2) return
+
+  const firstRects = cardEls.map((el) => el.getBoundingClientRect())
+
+  const sorted = [...pkgDetails].sort(byActiveAtDesc)
+  const nameToEl = {}
+  for (const el of cardEls) {
+    nameToEl[el.dataset.pkgName] = el
+  }
+
+  for (const pkg of sorted) {
+    const el = nameToEl[pkg.name]
+    if (el) grid.appendChild(el)
+  }
+
+  const lastRects = cardEls.map((el) => el.getBoundingClientRect())
+
+  requestAnimationFrame(() => {
+    for (let i = 0; i < cardEls.length; i++) {
+      const dx = firstRects[i].left - lastRects[i].left
+      const dy = firstRects[i].top - lastRects[i].top
+      if (dx === 0 && dy === 0) continue
+      cardEls[i].style.transform = `translate(${dx}px, ${dy}px)`
+      cardEls[i].style.transition = "none"
+    }
+    requestAnimationFrame(() => {
+      for (const el of cardEls) {
+        el.style.transition = "transform 0.5s ease"
+        el.style.transform = ""
+      }
+      setTimeout(() => {
+        for (const el of cardEls) {
+          el.style.transition = ""
+        }
+      }, 500)
+    })
+  })
+}
+
+/**
+ * 从数据渲染页面（缓存路径用）
  * @param {FreshPackageDetail[]} pkgDetails 包详情
  * @param {string} username 用户名
  * @param {number} limit 包数量限制
@@ -405,62 +508,12 @@ async function renderFromData(
   fromCache,
   cacheTimestamp,
 ) {
-  // 更新统计
-  // const total = pkgDetails.reduce((sum, p) => sum + (p.totalDownloads || 0), 0)
-  /** @type {Hottest} */
-  let hottest = { name: "", latestWeekDownloads: 0, downloads: 0 }
-  let hottestTrend = { name: "", trend: 0 }
+  updateStats(pkgDetails, username, fromCache, cacheTimestamp)
 
-  for (const pkg of pkgDetails) {
-    const latest = pkg.weeklyData?.at(-1)?.total
-    if (latest && latest > hottest.latestWeekDownloads) {
-      hottest = {
-        downloads: pkg.totalDownloads,
-        name: pkg.name,
-        latestWeekDownloads: latest,
-      }
-    }
-
-    if (pkg.trend > hottestTrend.trend) {
-      hottestTrend = { name: pkg.name, trend: pkg.trend }
-    }
-  }
-
-  // pkgCount.textContent = pkgDetails.length
-  // totalDownloads.textContent = total.toLocaleString()
-  renderHottest(hottest, username)
-  renderHottestTrend(hottestTrend, username)
-
-  updateTime.textContent = getFreshnessLabel(fromCache, cacheTimestamp)
-
-  // 更新缓存信息
-  updateCacheInfo()
-
-  // 显示缓存状态
-  /** @type {HTMLElement} */
-  // @ts-expect-error
-  const cacheStatus = document.getElementById("cacheStatus")
-
-  cacheStatus.textContent = fromCache ? "" : "🔄 实时"
-  cacheStatus.style.color = fromCache ? "#8b949e" : "#3fb950"
-
-  // 渲染前统一按活跃时间排序（npm 发布时间或 GitHub 提交时间）
   pkgDetails.sort(byActiveAtDesc)
 
-  /** @type {HTMLImageElement}  */
-  // @ts-expect-error
-  const avatar = document.getElementById("sortAvatar")
-  avatar.src = `https://avatars.githubusercontent.com/${username}?s=40`
-  avatar.hidden = false
-  avatar.insertAdjacentHTML(
-    "beforebegin",
-    `<span class="text-primary">${username}</span>`,
-  )
-
-  // 渲染卡片
   await renderCards(pkgDetails)
 
-  // 更新 URL
   setUrlParams(username, limit)
 }
 
@@ -485,6 +538,7 @@ function updateCacheInfo() {
 function createCardElement(pkg) {
   const card = document.createElement("article")
   card.className = "card"
+  card.dataset.pkgName = pkg.name
 
   // 构建 GitHub 信息
   let ghInfo = ""
@@ -506,7 +560,7 @@ function createCardElement(pkg) {
           //
           <a href="${commitUrl}" target="_blank" style="align-items: center;max-width: 77%; white-space:nowrap;" title="GitHub Latest Commit: “${commitDisplay}” · ${new Date(pkg.github.lastCommitDate).toLocaleString()}">
             🖥️ Commit
-            <span class="metric"><strong class="ellipsis" style="display: inline-block;max-width: 67%;vertical-align: text-bottom;">${commitDisplay.repeat(4)}</strong>${commitTime ? " · " + commitTime : ""}</span>
+            <span class="metric"><strong class="ellipsis" style="display: inline-block;max-width: 67%;vertical-align: text-bottom;">${commitDisplay.repeat(1)}</strong>${commitTime ? " · " + commitTime : ""}</span>
           </a>
       </div>
     `
@@ -582,17 +636,17 @@ function appendCard(pkg) {
   const card = createCardElement(pkg)
   grid.appendChild(card)
 
-  if (card.classList.contains("card-error")) return
+  if (card.classList.contains("card-error")) {
+    return
+  }
 
   const container = card.querySelector(".chart-container")
-  if (container) {
-    renderChart(
-      // @ts-expect-error
-      container,
-      pkg.name,
-      pkg.weeklyData,
-    )
-  }
+  renderChart(
+    // @ts-expect-error
+    container,
+    pkg.name,
+    pkg.weeklyData,
+  )
 }
 
 // ============================================================
@@ -613,6 +667,7 @@ async function renderCards(pkgDetails) {
 
   for (const { element, pkg } of cardElements) {
     const container = element.querySelector(".chart-container")
+    // console.log("renderChart 1")
 
     await renderChart(
       // @ts-expect-error

@@ -198,7 +198,7 @@ button:disabled {
   display: flex;
   justify-content: center;
   flex-wrap: wrap;
-  gap: 2rem 1rem;
+  gap: 1rem 1rem;
   padding-inline: 24px;
   padding-block: 12px 12px;
   /* background: #161b22; */
@@ -240,7 +240,7 @@ button:disabled {
     transform 0.15s;
   display: flex;
   flex-direction: column;
-  outline: 3px dotted transparent;
+  outline: calc(3 / 16 * 1rem) dotted transparent;
   container-type: inline-size;
 }
 .card:focus {
@@ -249,7 +249,7 @@ button:disabled {
 
 .card:hover {
   /* border-color: #58a6ff; */
-  outline-color: #58a6ff;
+  outline-color: var(--color-primary);
   /* add transition: ; */
   transition: outline 3s;
   /* transform: translateY(-2px); */

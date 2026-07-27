@@ -47,6 +47,16 @@ export function getCache(username, limit) {
         wd.endDate = new Date(wd.endDate)
       })
     })
+    console.log(
+      "pkgs1:",
+      pkgs.map((x) => x.name),
+    )
+
+    pkgs.sort(() => Math.random() - 0.5)
+    console.log(
+      "pkgs2:",
+      pkgs.map((x) => x.name),
+    )
 
     return { packages: pkgs, timestamp: data.timestamp }
   } catch (parseError) {
