@@ -1,5 +1,6 @@
 # TODO
 
+- [ ] antfu fast-npm-meta  Published 8 days ago 2026-7-29
 - [ ] 0 dependencies badge read yellow and green for 0 1-2 3-+∞
 - [ ] default light theme like npmjs.com
 - [ ] verbose mode and quiet mode
