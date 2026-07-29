@@ -1,5 +1,7 @@
 # TODO
 
+- [ ] antfu fast-npm-meta  Published 8 days ago 2026-7-29
+- [ ] 0 dependencies badge read yellow and green for 0 1-2 3-+∞
 - [ ] default light theme like npmjs.com
 - [ ] verbose mode and quiet mode
 - [x] pkg icon
@@ -14,6 +16,29 @@
 - [ ] icon 最近在开发什么？按活跃时间排序（npm 近期发布或 GitHub 最近提交）icon 从 broken 到 ok
 - [ ] 现在的缓存有个问题，切换用户后，缓存被清空，导致下次搜索相同用户时，需要重新搜索。
 - [ ] dashboard 页面不展示所以包的 insights 只展示 limit 个包的 insights，但是背后会搜索所有 250 个包，这样用户点击 "查看更多" 时，已经加载了所有包的 insights，无需再搜索。性能会更好。
+- [ ] date = `2026-07-17`; fetch(`https://api.github.com/search/issues?q=repo%3Aoven-sh%2Fbun%20type%3Aissue%20created%3A%3C%3D${date}%20-closed%3A%3C%3D${date}`).then(resp => resp.json()).then(resp => console.log(date, resp.total_count))
+- [ ] Insight 接入大模型 API Key 自动分析背后原因
+
+```md
+bun （https://github.com/oven-sh/bun）仓库未关闭 issue 数量如下 我想关注哪一天 issue 关闭最多。请画图描述趋势和洞察，并分析背后的原因：
+\```
+2026-07-27 4079
+2026-07-26 4079
+2026-07-25 4074
+2026-07-24 4601
+2026-07-23 5162
+2026-07-22 5155
+2026-07-21 5155
+2026-07-20 5152
+2026-07-19 5149
+2026-07-18 5146
+2026-07-17 5144
+2026-07-16 5144
+2026-07-01 5128
+2026-06-16 5091
+2026-06-01 5057
+\```
+```
 
 1. 目前会搜索所有 250 个包，时间太长了，改成 10 个
 2. 搜索中显示『正在搜索 antfu 的包...』，应该显示进度『正在搜索 antfu 的第N个包...』
