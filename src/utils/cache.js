@@ -26,7 +26,7 @@ export function getCache(username, limit) {
      */
     const data = JSON.parse(cached)
     // 验证缓存是否匹配当前请求
-    if (data.username !== username || data.limit !== limit) {
+    if (data.username !== username || data.packages.length < limit) {
       return null
     }
 

@@ -7,7 +7,7 @@ import { fetchJSON, sleep } from "./light-lodash.js"
 // ============================================================
 
 /** npm search API 单次拉取最大数量 */
-export const MAX_SEARCH_SIZE = 3
+export const MAX_SEARCH_SIZE = 30
 
 const DEV = true
 

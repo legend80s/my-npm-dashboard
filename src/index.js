@@ -2,13 +2,13 @@ import { Chart, registerables } from "chart.js"
 import {
   byActiveAtDesc,
   CACHE_TTL_IN_HOURS,
+  getCache,
   getCacheTTL,
 } from "./utils/cache.js"
 import {
   clearCache,
   fetchPackageDetails,
   fetchRaw,
-  readCache,
   writeCache,
 } from "./utils/data-loader.js"
 
@@ -337,9 +337,12 @@ async function loadPackages(username, displayLimit, forceRefresh = false) {
     return
   }
 
+  const { limit } = getUrlParams()
+  console.log("limit:", limit)
+
   // 尝试从缓存加载
   if (!forceRefresh) {
-    const cached = readCache(username)
+    const cached = getCache(username, limit)
     if (cached) {
       const pkgDetails = cached.packages.slice(0, displayLimit)
 
@@ -465,7 +468,7 @@ function updateStats(pkgDetails, username, fromCache, cacheTimestamp) {
   if (!sortInfo?.querySelector(".text-primary")) {
     avatar.insertAdjacentHTML(
       "beforebegin",
-      `<span class="text-primary">${username}</span>`,
+      `<span class="text-primary" style="font-size: 120%;">${username}</span>`,
     )
   }
 }
@@ -797,7 +800,7 @@ document.addEventListener("DOMContentLoaded", init)
  */
 function renderHottest(hottest, username) {
   hottestPkg.innerHTML = hottest.name
-    ? `<a href="insight.html?username=${encodeURIComponent(username)}&rank=weekly-downloads" title="📊 排行榜页面" style="color:inherit;">${hottest.name} <span style="font-size: 85%;">(Latest week downloads: <i class='text-primary'>${hottest.latestWeekDownloads.toLocaleString()}</i>)</span></a>`
+    ? `<a href="insight.html?username=${encodeURIComponent(username)}&rank=weekly-downloads" title="📊 排行榜页面" style="color:inherit;">${hottest.name} (<span style="font-size: 60%;">Latest week downloads <span class='text-primary' style='font-size: calc(20 / 16 * 1rem)'>${hottest.latestWeekDownloads.toLocaleString()}</span></span>)</a>`
     : "-"
 }
 
@@ -807,7 +810,7 @@ function renderHottest(hottest, username) {
  */
 function renderHottestTrend(trend, username) {
   hottestTrendPkg.innerHTML = trend.name
-    ? `<a href="insight.html?username=${encodeURIComponent(username)}&rank=trend" title="📊 排行榜页面" style="color:inherit;">${trend.name}</a> (+${trend.trend}%)`
+    ? `<a href="insight.html?username=${encodeURIComponent(username)}&rank=trend" title="📊 排行榜页面" style="color:inherit;">${trend.name}</a> (<span class='text-primary' style="font-size: 110%;">+${trend.trend}%</span>)`
     : "<span style='font-size: 0.8em;'>（无）<span style='font-size:80%;'>近期无下载量攀升的包</span></span>"
 }
 
