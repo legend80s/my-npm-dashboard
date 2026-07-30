@@ -10,11 +10,15 @@
     "tauri": "tauri",
     "typecheck": "tsgo --noEmit",
     "start": "node src/bin/index.js",
-    "dev": "node ./src/server/dev-server && pnpx live-server --port=3000 ./src"
+    "dev:api": "node --watch ./src/server/dev-server",
+    "dev:live": "live-server ./src --port=1123 --open=\"/?limit=3&username=antfu\"",
+    "dev": "concurrently --kill-others --names \"API,LIVE\" \"pnpm dev:api\" \"pnpm dev:live\""
   },
   "devDependencies": {
     "@tauri-apps/cli": "^2",
-    "@types/node": "^26.1.1"
+    "@types/node": "^26.1.1",
+    "concurrently": "^10.0.4",
+    "live-server": "^1.2.2"
   },
   "dependencies": {
     "chart.js": "^4.5.1"
