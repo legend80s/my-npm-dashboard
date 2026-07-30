@@ -2,7 +2,7 @@
 //  pkg-marmot 缓存数据类型定义
 // ============================================================
 
-type int = number
+import type { int } from "./utils/base.type.js"
 
 export type Hottest = { name: string; downloads: int; latestWeekDownloads: int }
 

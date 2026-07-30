@@ -1,11 +1,17 @@
 /** @import { NpmPkgDownloadsResp, NpmPkgResp, NpmPkgSearchResp } from './npmjs.type.js' */
 
+import { fetchJSON } from "./light-lodash.js"
+
 // ============================================================
 //  4. npm API 调用（浏览器端直接请求，支持 CORS）
 // ============================================================
 
 /** npm search API 单次拉取最大数量 */
 export const MAX_SEARCH_SIZE = 3
+
+const DEV = true
+
+const prefix = DEV ? "http://localhost:8787/" : ""
 
 /**
  * https://github.com/npm/registry/blob/main/docs/REGISTRY-API.md#get-v1search
@@ -15,18 +21,14 @@ export const MAX_SEARCH_SIZE = 3
  */
 export async function fetchUserPackages(username) {
   const url =
+    prefix +
     `https://registry.npmjs.org/-/v1/search?` +
     `text=maintainer:${encodeURIComponent(username)}&` +
     `size=${MAX_SEARCH_SIZE}`
 
-  const res = await fetch(url)
-
-  if (!res.ok) {
-    throw new Error(`npm search 失败: ${res.status}`)
-  }
-
-  /** @type {NpmPkgSearchResp} */
-  const data = await res.json()
+  const data = /** @type {NpmPkgSearchResp} */ (
+    await fetchJSON(url, { label: "npm search" })
+  )
 
   const packages = data.objects.map((o) => o.package)
 
@@ -39,10 +41,10 @@ export async function fetchUserPackages(username) {
 
   // 客户端按发布时间排序（最新在前）
   packages.sort((a, b) => {
-    return Math.random() - 0.5
-    // const dateA = a.date ? new Date(a.date).getTime() : 0
-    // const dateB = b.date ? new Date(b.date).getTime() : 0
-    // return dateB - dateA
+    // return Math.random() - 0.5
+    const dateA = a.date ? new Date(a.date).getTime() : 0
+    const dateB = b.date ? new Date(b.date).getTime() : 0
+    return dateB - dateA
   })
 
   return { packages, dependents }
@@ -55,12 +57,11 @@ export async function fetchUserPackages(username) {
  *
  */
 export async function fetchPackageMetadata(pkgName) {
-  const url = `https://registry.npmjs.org/${encodeURIComponent(pkgName)}`
-  const res = await fetch(url)
-  if (!res.ok) {
-    throw new Error(`获取 ${pkgName} 元数据失败: ${res.status}`)
-  }
-  return res.json()
+  const url = `${prefix}https://registry.npmjs.org/${encodeURIComponent(pkgName)}`
+  const res = await fetchJSON(url, { label: `获取 ${pkgName} 元数据` })
+
+  // @ts-expect-error
+  return res
 }
 
 /**
@@ -78,7 +79,7 @@ export async function fetchYearlyWeeklyDownloads(pkgName) {
   const formatDate = (d) => d.toISOString().slice(0, 10)
   const period = `${formatDate(startDate)}:${formatDate(endDate)}`
 
-  const url = `https://api.npmjs.org/downloads/range/${period}/${pkgName}`
+  const url = `${prefix}https://api.npmjs.org/downloads/range/${period}/${pkgName}`
   const res = await fetch(url)
 
   if (!res.ok) {
@@ -150,10 +151,14 @@ export async function fetchYearlyWeeklyDownloads(pkgName) {
   }
 }
 
-/** 获取 GitHub Star 数（浏览器端通过 CORS 代理） */
+/**
+ * 获取 GitHub Star 数（浏览器端通过 CORS 代理）
+ * @param {string} owner
+ * @param {string} repo
+ */
 export async function fetchGitHubStars(owner, repo) {
   // 使用公共 CORS 代理（免费，有请求限制）
-  const url = `https://api.github.com/repos/${encodeURIComponent(owner)}/${encodeURIComponent(repo)}`
+  const url = `${prefix}https://api.github.com/repos/${encodeURIComponent(owner)}/${encodeURIComponent(repo)}`
   const res = await fetch(url, {
     headers: {
       Accept: "application/vnd.github.v3+json",
@@ -171,19 +176,29 @@ export async function fetchGitHubStars(owner, repo) {
   return { stars: data.stargazers_count || 0, error: null }
 }
 
-/** 获取 GitHub 最近一次提交信息 */
+/**
+ * 获取 GitHub 最近一次提交信息
+ * @param {string} owner
+ * @param {string} repo
+ *
+ */
 export async function fetchGitHubLastCommit(owner, repo) {
-  const url = `https://api.github.com/repos/${encodeURIComponent(owner)}/${encodeURIComponent(repo)}/commits?per_page=1`
+  const url =
+    prefix +
+    `https://api.github.com/repos/${encodeURIComponent(owner)}/${encodeURIComponent(repo)}/commits?per_page=1`
   const res = await fetch(url, {
     headers: { Accept: "application/vnd.github.v3+json" },
   })
   if (!res.ok) {
-    if (res.status === 403)
+    if (res.status === 403) {
       return { message: null, date: null, error: "API 限流" }
+    }
     return { message: null, date: null, error: `HTTP ${res.status}` }
   }
   const data = await res.json()
-  if (!data.length) return { message: null, date: null, error: "无提交记录" }
+  if (!data.length) {
+    return { message: null, date: null, error: "无提交记录" }
+  }
   const commit = data[0].commit
   return {
     message: commit.message.split("\n")[0] || "无提交信息",
