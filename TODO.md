@@ -8,6 +8,7 @@
 - [x] pkg icon
 - [ ] watch mode bug: css changes not reflected. server restarted but page not refreshed use sse to notify client
 - [ ] 缓存如何设计
+- [ ] pnpm workspace
 - [ ] 最多5个包
 - [ ] 创建 2026-7-30 改成相对时间
 - [ ] 国际化
