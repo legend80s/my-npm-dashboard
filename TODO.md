@@ -10,6 +10,7 @@
 - [ ] 缓存如何设计
 - [ ] 最多5个包
 - [ ] 创建 2026-7-30 改成相对时间
+- [ ] 国际化
 - [ ] Pagination / show more than  limit  packages
 - [ ] Export / share rankings: install cli open `?limit=3&username=xxx`
 - [ ] Dark/light theme toggle
