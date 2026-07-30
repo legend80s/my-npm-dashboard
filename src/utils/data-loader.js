@@ -1,13 +1,26 @@
-/** @import { NpmPkgResp } from './npmjs.type.js' */
-/** @import { FreshPackageDetail } from '../index.type.js' */
+/** @import { NpmPkgResp, Package } from './npmjs.type.js' */
+/** @import { CaseSuccess, FreshPackageDetail } from '../index.type.js' */
+/** @import { int } from './base.type.js' */
 
-import { fetchUserPackages, fetchPackageMetadata, fetchYearlyWeeklyDownloads, fetchGitHubStars, fetchGitHubLastCommit } from "./api.js"
+import {
+  fetchDependentsCount,
+  fetchGitHubLastCommit,
+  fetchGitHubStars,
+  fetchPackageMetadata,
+  fetchUserPackages,
+  fetchYearlyWeeklyDownloads,
+} from "./api.js"
 import { CACHE_TTL_IN_MS } from "./cache.js"
 
 export const RANKING_TOP_N = 5
 
 const CACHE_KEY = "pkg-marmot-cache"
 
+/**
+ *
+ * @param {NpmPkgResp} pkgMeta
+ * @returns
+ */
 function parseGitHubRepo(pkgMeta) {
   const repo = pkgMeta.repository
   if (!repo) return null
@@ -61,7 +74,10 @@ export function readCache(username) {
  */
 export function writeCache(username, packages) {
   try {
-    localStorage.setItem(CACHE_KEY, JSON.stringify({ username, packages, timestamp: Date.now() }))
+    localStorage.setItem(
+      CACHE_KEY,
+      JSON.stringify({ username, packages, timestamp: Date.now() }),
+    )
   } catch (e) {
     console.warn("缓存保存失败:", e)
   }
@@ -75,6 +91,82 @@ export function clearCache() {
 }
 
 /**
+ *
+ * @param {Pick<Package, 'name' | 'version'> & { date?: string }} pkg
+ * @param {int} [dependents]
+ * @return {Promise<CaseSuccess>}
+ */
+export async function fetchPackageDetails({ name, version, date }, dependents) {
+  const meta = await fetchPackageMetadata(name)
+  const downloads = await fetchYearlyWeeklyDownloads(name)
+  version = meta["dist-tags"]?.latest || version || "--"
+  const publishedAt = meta.time[version] || meta.time.modified || date
+  const createdAt = meta.time.created
+
+  const latestVerData =
+    version !== "--"
+      ? // @ts-expect-error
+        meta.versions?.[version]
+      : null
+  const unpackedSize = latestVerData?.dist?.unpackedSize ?? null
+  const dependencyCount = Object.keys(latestVerData?.dependencies || {}).length
+  const versionCount = Object.keys(meta.versions || {}).length
+  dependents = dependents ?? (await fetchDependentsCount(name))
+
+  const github = {
+    owner: "",
+    repo: "",
+    stars: "",
+    lastCommit: "",
+    lastCommitDate: "",
+  }
+  const ghRepo = parseGitHubRepo(meta)
+  if (ghRepo) {
+    github.owner = ghRepo.owner
+    github.repo = ghRepo.repo
+    try {
+      const starData = await fetchGitHubStars(ghRepo.owner, ghRepo.repo)
+      github.stars = starData.stars
+    } catch {
+      /* silent */
+    }
+    try {
+      const commitData = await fetchGitHubLastCommit(ghRepo.owner, ghRepo.repo)
+      github.lastCommit = commitData.message
+      github.lastCommitDate = commitData.date
+    } catch {
+      /* silent */
+    }
+  }
+
+  let activeAt = publishedAt
+  if (
+    github.lastCommitDate &&
+    new Date(github.lastCommitDate) > new Date(activeAt || 0)
+  ) {
+    activeAt = github.lastCommitDate
+  }
+
+  const detail = {
+    name,
+    version,
+    publishedAt,
+    createdAt,
+    weeklyData: downloads.weekly,
+    totalDownloads: downloads.total,
+    trend: downloads.trend,
+    github,
+    activeAt,
+    unpackedSize,
+    dependencyCount,
+    versionCount,
+    dependents,
+  }
+
+  return detail
+}
+
+/**
  * 纯 API 拉取所有包数据（不含缓存读写副作用）
  * @param {string} username
  * @returns {Promise<{ packages: FreshPackageDetail[], username: string }>}
@@ -84,81 +176,41 @@ export function clearCache() {
  * @param {{ onPackage?: (pkg: FreshPackageDetail, done: number, total: number) => void }} [options]
  */
 export async function fetchRaw(username, options = {}) {
-  const { packages: pkgList, dependents: dependentsMap } = await fetchUserPackages(username)
+  const { packages: pkgList, dependents: dependentsMap } =
+    await fetchUserPackages(username)
+
+  const { onPackage } = options
 
   /** @type {FreshPackageDetail[]} */
   const pkgDetails = []
 
-  const { onPackage } = options
-
   for (const [index, pkg] of pkgList.entries()) {
     try {
-      const meta = await fetchPackageMetadata(pkg.name)
-      const downloads = await fetchYearlyWeeklyDownloads(pkg.name)
-      const version = meta["dist-tags"]?.latest || pkg.version || "--"
-      const publishedAt = meta.time?.[version] || pkg.date || null
-      const createdAt = meta.time?.created || null
-
-      const latestVerData = version !== "--" ? meta.versions?.[version] : null
-      const unpackedSize = latestVerData?.dist?.unpackedSize ?? null
-      const dependencyCount = Object.keys(latestVerData?.dependencies || {}).length
-      const versionCount = Object.keys(meta.versions || {}).length
-      const dependents = dependentsMap[pkg.name] || 0
-
-      const github = { owner: null, repo: null, stars: null, lastCommit: null, lastCommitDate: null }
-      const ghRepo = parseGitHubRepo(meta)
-      if (ghRepo) {
-        github.owner = ghRepo.owner
-        github.repo = ghRepo.repo
-        try {
-          const starData = await fetchGitHubStars(ghRepo.owner, ghRepo.repo)
-          github.stars = starData.stars
-        } catch { /* silent */ }
-        try {
-          const commitData = await fetchGitHubLastCommit(ghRepo.owner, ghRepo.repo)
-          github.lastCommit = commitData.message
-          github.lastCommitDate = commitData.date
-        } catch { /* silent */ }
-      }
-
-      let activeAt = publishedAt
-      if (github.lastCommitDate && new Date(github.lastCommitDate) > new Date(activeAt || 0)) {
-        activeAt = github.lastCommitDate
-      }
-
-      const detail = {
-        name: pkg.name,
-        version,
-        publishedAt,
-        createdAt,
-        weeklyData: downloads.weekly,
-        totalDownloads: downloads.total,
-        trend: downloads.trend,
-        github,
-        activeAt,
-        unpackedSize,
-        dependencyCount,
-        versionCount,
-        dependents,
-      }
+      const detail = await fetchPackageDetails(pkg, dependentsMap[pkg.name])
       pkgDetails.push(detail)
       onPackage?.(detail, index + 1, pkgList.length)
     } catch (err) {
-      const fallbackDetail = {
+      const fallbackDetail = /** @type {const} */ ({
         name: pkg.name,
         version: "--",
         publishedAt: null,
         createdAt: null,
         totalDownloads: 0,
         trend: 0,
-        github: { owner: null, repo: null, stars: null, lastCommit: null, lastCommitDate: null },
+        github: {
+          owner: "",
+          repo: "",
+          stars: "",
+          lastCommit: "",
+          lastCommitDate: "",
+        },
         activeAt: null,
         unpackedSize: null,
         dependencyCount: 0,
         versionCount: 0,
         dependents: 0,
         error: err instanceof Error ? err.message : String(err),
-      }
+      })
       pkgDetails.push(fallbackDetail)
       onPackage?.(fallbackDetail, index + 1, pkgList.length)
     }
@@ -177,10 +229,20 @@ export async function loadData(username, forceRefresh = false) {
   if (!forceRefresh) {
     const cached = readCache(username)
     if (cached) {
-      return { packages: cached.packages, username, fromCache: true, timestamp: cached.timestamp }
+      return {
+        packages: cached.packages,
+        username,
+        fromCache: true,
+        timestamp: cached.timestamp,
+      }
     }
   }
   const data = await fetchRaw(username)
   writeCache(username, data.packages)
-  return { packages: data.packages, username, fromCache: false, timestamp: Date.now() }
+  return {
+    packages: data.packages,
+    username,
+    fromCache: false,
+    timestamp: Date.now(),
+  }
 }

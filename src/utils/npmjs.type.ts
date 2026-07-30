@@ -47,7 +47,7 @@ interface Detail {
   maintenance: number
 }
 
-interface Package {
+export type Package = {
   name: string
   keywords: string[]
   version: string
@@ -295,4 +295,14 @@ interface Maintainer {
 
 interface Disttags {
   latest: string
+}
+export type ShieldIODependents = {
+  label: "dependents"
+  // "3"
+  message: string
+  color: "brightgreen"
+  link: []
+  name: "dependents"
+  // "3"
+  value: string
 }

@@ -1,4 +1,4 @@
-/** @import { NpmPkgDownloadsResp, NpmPkgResp, NpmPkgSearchResp } from './npmjs.type.js' */
+/** @import { NpmPkgDownloadsResp, NpmPkgResp, NpmPkgSearchResp, Package, ShieldIODependents } from './npmjs.type.js' */
 
 import { fetchJSON } from "./light-lodash.js"
 
@@ -17,7 +17,7 @@ const prefix = DEV ? "http://localhost:8787/" : ""
  * https://github.com/npm/registry/blob/main/docs/REGISTRY-API.md#get-v1search
  * 搜索用户维护的所有包，按发布时间排序
  * @param {string} username - npm 用户名
- * @returns {Promise<{ packages: Array<NpmPkgSearchResp['objects'][number]['package']>, dependents: Record<string, number> }>}
+ * @returns {Promise<{ packages: Package[], dependents: Record<string, number> }>}
  */
 export async function fetchUserPackages(username) {
   const url =
@@ -79,7 +79,7 @@ export async function fetchYearlyWeeklyDownloads(pkgName) {
   const formatDate = (d) => d.toISOString().slice(0, 10)
   const period = `${formatDate(startDate)}:${formatDate(endDate)}`
 
-  const url = `${prefix}https://api.npmjs.org/downloads/range/${period}/${pkgName}`
+  const url = `${prefix}https://api.npmjs.org/downloads/range/${period}/${encodeURIComponent(pkgName)}`
   const res = await fetch(url)
 
   if (!res.ok) {
@@ -205,4 +205,19 @@ export async function fetchGitHubLastCommit(owner, repo) {
     date: commit.committer?.date || null,
     error: null,
   }
+}
+
+/**
+ *
+ * @param {string} pkg
+ * @returns {Promise<import('./base.type.js').int>}
+ */
+export async function fetchDependentsCount(pkg) {
+  const url = `https://img.shields.io/librariesio/dependents/npm/${encodeURIComponent(pkg)}.json`
+
+  const json = /** @type {ShieldIODependents} */ (
+    await fetchJSON(url, { label: "fetch Dependents" })
+  )
+
+  return Number(json.value)
 }

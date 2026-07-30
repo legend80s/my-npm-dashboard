@@ -1,5 +1,10 @@
 import { Chart, registerables } from "chart.js"
-import { readCache, writeCache, fetchRaw, RANKING_TOP_N } from "./utils/data-loader.js"
+import {
+  readCache,
+  writeCache,
+  fetchRaw,
+  RANKING_TOP_N,
+} from "./utils/data-loader.js"
 
 Chart.register(...registerables)
 
@@ -10,22 +15,78 @@ Chart.register(...registerables)
 // ============================================================
 
 const RANKINGS = [
-  { key: "weekly-downloads", label: "🔥 最热包",    sortKey: (p) => p.weeklyData?.at(-1)?.total || 0,         format: (v) => v.toLocaleString(), unit: "" },
-  { key: "trend",            label: "🚀 势头最猛",  sortKey: (p) => p.trend,                                  format: (v) => `${v}%`, unit: "%" },
-  { key: "total-downloads",  label: "📥 下载总量",  sortKey: (p) => p.totalDownloads,                         format: (v) => v.toLocaleString(), unit: "" },
-  { key: "stars",            label: "⭐ GitHub Stars", sortKey: (p) => p.github?.stars || 0,                    format: (v) => v.toLocaleString(), unit: "" },
-  { key: "unpacked-size",    label: "📦 包体积",    sortKey: (p) => p.unpackedSize ?? 0,                      format: formatBytes, unit: "" },
-  { key: "dependencies",     label: "🔗 依赖数",    sortKey: (p) => p.dependencyCount,                        format: (v) => String(v), unit: "个" },
-  { key: "dependents",       label: "👥 被依赖数",  sortKey: (p) => p.dependents,                             format: (v) => v.toLocaleString(), unit: "" },
-  { key: "versions",         label: "🔢 版本数",    sortKey: (p) => p.versionCount,                           format: (v) => String(v), unit: "个" },
+  {
+    key: "weekly-downloads",
+    label: "🔥 最热包",
+    sortKey: (p) => p.weeklyData?.at(-1)?.total || 0,
+    format: (v) => v.toLocaleString(),
+    unit: "",
+  },
+  {
+    key: "trend",
+    label: "🚀 势头最猛",
+    sortKey: (p) => p.trend,
+    format: (v) => `${v}%`,
+    unit: "%",
+  },
+  {
+    key: "total-downloads",
+    label: "📥 下载总量",
+    sortKey: (p) => p.totalDownloads,
+    format: (v) => v.toLocaleString(),
+    unit: "",
+  },
+  {
+    key: "stars",
+    label: "⭐ GitHub Stars",
+    sortKey: (p) => p.github?.stars || 0,
+    format: (v) => v.toLocaleString(),
+    unit: "",
+  },
+  {
+    key: "unpacked-size",
+    label: "📦 包体积",
+    sortKey: (p) => p.unpackedSize ?? 0,
+    format: formatBytes,
+    unit: "",
+  },
+  {
+    key: "dependencies",
+    label: "🔗 依赖数",
+    sortKey: (p) => p.dependencyCount,
+    format: (v) => String(v),
+    unit: "个",
+  },
+  {
+    key: "dependents",
+    label: "👥 被依赖数",
+    sortKey: (p) => p.dependents,
+    format: (v) => v.toLocaleString(),
+    unit: "",
+  },
+  {
+    key: "versions",
+    label: "🔢 版本数",
+    sortKey: (p) => p.versionCount,
+    format: (v) => String(v),
+    unit: "个",
+  },
 ]
 
+/**
+ *
+ * @param {import('./utils/base.type.js').int} bytes
+ * @returns
+ */
 function formatBytes(bytes) {
   if (!bytes) return "0 B"
   const units = ["B", "KB", "MB"]
   let i = 0
   let val = bytes
-  while (val >= 1024 && i < units.length - 1) { val /= 1024; i++ }
+  while (val >= 1024 && i < units.length - 1) {
+    val /= 1024
+    i++
+  }
   return `${val.toFixed(1)} ${units[i]}`
 }
 
@@ -120,7 +181,9 @@ function renderRanking(key) {
   const ranking = RANKINGS.find((r) => r.key === key)
   if (!ranking) return
 
-  const sorted = [...allPackages].sort((a, b) => ranking.sortKey(b) - ranking.sortKey(a))
+  const sorted = [...allPackages].sort(
+    (a, b) => ranking.sortKey(b) - ranking.sortKey(a),
+  )
   const top = sorted.slice(0, RANKING_TOP_N)
   const first = sorted[0]
 
@@ -183,14 +246,16 @@ function renderChart(packages, ranking) {
     type: "bar",
     data: {
       labels,
-      datasets: [{
-        label: ranking.label,
-        data: values,
-        backgroundColor: colors,
-        borderColor: colors,
-        borderWidth: 1,
-        borderRadius: 4,
-      }],
+      datasets: [
+        {
+          label: ranking.label,
+          data: values,
+          backgroundColor: colors,
+          borderColor: colors,
+          borderWidth: 1,
+          borderRadius: 4,
+        },
+      ],
     },
     options: {
       responsive: true,
@@ -199,7 +264,11 @@ function renderChart(packages, ranking) {
         if (elements.length) {
           const idx = elements[0].index
           const pkg = packages[idx]
-          if (pkg) window.open(`https://www.npmjs.com/package/${encodeURIComponent(pkg.name)}`, "_blank")
+          if (pkg)
+            window.open(
+              `https://www.npmjs.com/package/${encodeURIComponent(pkg.name)}`,
+              "_blank",
+            )
         }
       },
       plugins: {

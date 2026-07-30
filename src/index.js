@@ -5,6 +5,7 @@ import {
   writeCache,
   clearCache,
   fetchRaw,
+  fetchPackageDetails,
 } from "./utils/data-loader.js"
 
 Chart.register(...registerables)
@@ -63,6 +64,11 @@ function getUrlParams() {
   }
 }
 
+/**
+ *
+ * @param {string} username
+ * @param {number} limit
+ */
 function setUrlParams(username, limit) {
   const params = new URLSearchParams()
   if (username) params.set("username", username)
@@ -609,13 +615,15 @@ function createCardElement(pkg) {
           <div style="white-space: nowrap;">
             <img title="v${pkg.version}" src="https://img.shields.io/npm/v/${pkg.name}.svg?style=flat" alt="NPM Version" />
             <img src="https://img.shields.io/npm/${latestWeekDownloads > 1000 ? "dw" : "dm"}/${pkg.name}.svg?style=flat" alt="npm downloads" />
-            <img src="https://img.shields.io/badge/yearly%20downloads-${pkg.totalDownloads.toLocaleString()}-blue?logo=npm&logoColor=cyan&style=flat" alt="Yearly downloads: ${pkg.totalDownloads}" />
+            <img src="https://img.shields.io/badge/yearly-${pkg.totalDownloads.toLocaleString()}-blue?logo=npm&logoColor=cyan&style=flat" alt="Yearly downloads: ${pkg.totalDownloads}" title="Yearly downloads: ${pkg.totalDownloads}" />
           </div>
       </a>
       <div class="chart-container" id="chart-${pkg.name.replace(/[^a-zA-Z0-9]/g, "-")}"
           data-pkgname="${pkg.name}">
       </div>
       <div class="card-metrics">
+          <img src="https://img.shields.io/librariesio/dependents/npm/${pkg.name}" title="dependents" alt="dependents" />
+          //
           <img src="${trendBadge}" title="latest week trend" alt="weekly trend: ${trendArrow} ${Math.abs(pkg.trend)}%" />
           //
           <span class="metric" title="${new Date(pkg.publishedAt).toLocaleString()}">🚀 发布 <strong>${publishedDisplay}</strong></span>
@@ -665,9 +673,14 @@ async function renderCards(pkgDetails) {
     cardElements.push({ element: card, pkg })
   }
 
-  for (const { element, pkg } of cardElements) {
+  for (let { element, pkg } of cardElements) {
     const container = element.querySelector(".chart-container")
-    // console.log("renderChart 1")
+    console.log("renderChart 1", pkg)
+
+    if ("error" in pkg) {
+      // fetch
+      pkg = await fetchPackageDetails(pkg)
+    }
 
     await renderChart(
       // @ts-expect-error
@@ -765,7 +778,7 @@ document.addEventListener("DOMContentLoaded", init)
  */
 function renderHottest(hottest, username) {
   hottestPkg.innerHTML = hottest.name
-    ? `<a href="insight.html?username=${encodeURIComponent(username)}&rank=weekly-downloads" title="📊 排行榜页面" style="color:inherit;">${hottest.name} <span style="font-size: 0.85em;">(Latest week downloads: ${hottest.latestWeekDownloads.toLocaleString()})</span></a>`
+    ? `<a href="insight.html?username=${encodeURIComponent(username)}&rank=weekly-downloads" title="📊 排行榜页面" style="color:inherit;">${hottest.name} <span style="font-size: 85%;">(Latest week downloads: <i class='text-primary'>${hottest.latestWeekDownloads.toLocaleString()}</i>)</span></a>`
     : "-"
 }
 
@@ -776,7 +789,7 @@ function renderHottest(hottest, username) {
 function renderHottestTrend(trend, username) {
   hottestTrendPkg.innerHTML = trend.name
     ? `<a href="insight.html?username=${encodeURIComponent(username)}&rank=trend" title="📊 排行榜页面" style="color:inherit;">${trend.name}</a> (+${trend.trend}%)`
-    : "<span style='font-size: 0.8em;'>（无）<span style='font-size:80%;'>近期下载量均下降</span></span>"
+    : "<span style='font-size: 0.8em;'>（无）<span style='font-size:80%;'>近期无下载量攀升的包</span></span>"
 }
 
 /**

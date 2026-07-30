@@ -121,9 +121,8 @@ function openBrowser(url) {
 
 /**
  * 启动静态文件服务器
- * 
- * @param {{root:string; port:number; open:boolean}} options
- 
+ *
+ * @param {{ root: string; port: undefined | number; open: boolean }} options
  */
 export function startServer({ port = PORT, root, open = true }) {
   const server = createServer(async (req, res) => {
