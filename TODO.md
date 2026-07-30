@@ -9,6 +9,7 @@
 - [ ] watch mode bug: css changes not reflected. server restarted but page not refreshed use sse to notify client
 - [ ] 缓存如何设计
 - [ ] 最多5个包
+- [ ] 创建 2026-7-30 改成相对时间
 - [ ] Pagination / show more than  limit  packages
 - [ ] Export / share rankings: install cli open `?limit=3&username=xxx`
 - [ ] Dark/light theme toggle

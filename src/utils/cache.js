@@ -4,7 +4,7 @@
 //  11. 缓存管理（localStorage）
 // ============================================================
 
-const CACHE_KEY = "pkg-marmot-cache"
+export const CACHE_KEY = "pkg-marmot-cache"
 export const CACHE_TTL_IN_HOURS = 12 // 12小时
 export const CACHE_TTL_IN_MS = CACHE_TTL_IN_HOURS * 60 * 60 * 1000 // 12小时（毫秒）
 
@@ -47,14 +47,14 @@ export function getCache(username, limit) {
         wd.endDate = new Date(wd.endDate)
       })
     })
+
     console.log(
-      "pkgs1:",
+      "pkgs before sorting:",
       pkgs.map((x) => x.name),
     )
-
-    pkgs.sort(() => Math.random() - 0.5)
+    pkgs.sort(byActiveAtDesc)
     console.log(
-      "pkgs2:",
+      "pkgs after sorting:",
       pkgs.map((x) => x.name),
     )
 
@@ -122,4 +122,16 @@ export function getCacheTTL() {
     console.error("getCacheTTL 缓存读取失败:", parseError)
     return "--"
   }
+}
+
+/**
+ *
+ * @param {Pick<FreshPackageDetail, 'activeAt'>} a
+ * @param {Pick<FreshPackageDetail, 'activeAt'>} b
+ * @returns
+ */
+export function byActiveAtDesc(a, b) {
+  const dateA = a.activeAt ? new Date(a.activeAt).getTime() : 0
+  const dateB = b.activeAt ? new Date(b.activeAt).getTime() : 0
+  return dateB - dateA
 }

@@ -1,11 +1,15 @@
 import { Chart, registerables } from "chart.js"
-import { CACHE_TTL_IN_HOURS, getCacheTTL } from "./utils/cache.js"
 import {
+  byActiveAtDesc,
+  CACHE_TTL_IN_HOURS,
+  getCacheTTL,
+} from "./utils/cache.js"
+import {
+  clearCache,
+  fetchPackageDetails,
+  fetchRaw,
   readCache,
   writeCache,
-  clearCache,
-  fetchRaw,
-  fetchPackageDetails,
 } from "./utils/data-loader.js"
 
 Chart.register(...registerables)
@@ -101,23 +105,37 @@ function setLoading(loading) {
 //  5. 数据聚合
 // ============================================================
 
-// ============================================================
-//  6. 相对时间格式化
-// ============================================================
+/**
+ * 6. 相对时间格式化
+ * @param {string} dateStr
+ * @returns
+ */
 function timeAgo(dateStr) {
-  if (!dateStr) return "未知"
+  if (!dateStr) {
+    return "未知"
+  }
   const diff = Date.now() - new Date(dateStr).getTime()
   const seconds = Math.floor(diff / 1000)
-  if (seconds < 60) return "刚刚"
+  if (seconds < 60) {
+    return "刚刚"
+  }
   const minutes = Math.floor(seconds / 60)
-  if (minutes < 60) return `${minutes} 分钟前`
+  if (minutes < 60) {
+    return `${minutes} 分钟前`
+  }
   const hours = Math.floor(minutes / 60)
-  if (hours < 24) return `${hours} 小时前`
+  if (hours < 24) {
+    return `${hours} 小时前`
+  }
   const days = Math.floor(hours / 24)
-  if (days < 30) return `${days} 天前`
+  if (days < 30) {
+    return `${days} 天前`
+  }
   const months = Math.floor(days / 30)
-  if (months < 12) return `${months} 个月前`
-  return `${Math.floor(months / 12)} 年前`
+  if (months < 12) {
+    return `${months} 个月前`
+  }
+  return `${(months / 12).toFixed(1).replace(/.0$/, "")} 年前`
 }
 
 // ============================================================
@@ -386,17 +404,14 @@ async function loadPackages(username, displayLimit, forceRefresh = false) {
     grid.innerHTML = `
         <div class="no-results">
             <span class="big">❌</span>
-            ${err.message || "加载失败，请检查网络或重试"}
+            ${
+              // @ts-expect-error
+              err.message || "加载失败，请检查网络或重试"
+            }
         </div>
     `
     setLoading(false)
   }
-}
-
-function byActiveAtDesc(a, b) {
-  const dateA = a.activeAt ? new Date(a.activeAt).getTime() : 0
-  const dateB = b.activeAt ? new Date(b.activeAt).getTime() : 0
-  return dateB - dateA
 }
 
 /**
@@ -601,9 +616,7 @@ function createCardElement(pkg) {
   const trendBadge = `https://img.shields.io/badge/weekly%20trend-${encodeURIComponent(`${trendArrow} ${Math.abs(pkg.trend)}%`)}-${trendColor}?logo=npm&logoColor=cyan&style=flat`
 
   const publishedDisplay = pkg.publishedAt ? timeAgo(pkg.publishedAt) : "--"
-  const createdDisplay = pkg.createdAt
-    ? new Date(pkg.createdAt).toISOString().slice(0, 10)
-    : "--"
+  const createdDisplay = pkg.createdAt ? timeAgo(pkg.createdAt) : "--"
 
   // @ts-expect-error
   const latestWeekDownloads = pkg.weeklyData.at(-1).total
@@ -628,7 +641,7 @@ function createCardElement(pkg) {
           //
           <span class="metric" title="${new Date(pkg.publishedAt).toLocaleString()}">🚀 发布 <strong>${publishedDisplay}</strong></span>
           //
-          <span class="metric" title="${new Date(pkg.createdAt).toLocaleString()}">🤰 创建 <strong>${createdDisplay}</strong></span>
+          <span class="metric" title="${new Date(pkg.createdAt).toLocaleString()}">🤰 诞生于 <strong>${createdDisplay}</strong></span>
       </div>
       ${ghInfo}
   `

@@ -1,5 +1,5 @@
 /** @import { NpmPkgResp, Package } from './npmjs.type.js' */
-/** @import { CaseSuccess, FreshPackageDetail } from '../index.type.js' */
+/** @import { CacheData, CaseSuccess, FreshPackageDetail } from '../index.type.js' */
 /** @import { int } from './base.type.js' */
 
 import {
@@ -10,11 +10,9 @@ import {
   fetchUserPackages,
   fetchYearlyWeeklyDownloads,
 } from "./api.js"
-import { CACHE_TTL_IN_MS } from "./cache.js"
+import { byActiveAtDesc, CACHE_KEY, CACHE_TTL_IN_MS } from "./cache.js"
 
 export const RANKING_TOP_N = 5
-
-const CACHE_KEY = "pkg-marmot-cache"
 
 /**
  *
@@ -44,9 +42,16 @@ function parseGitHubRepo(pkgMeta) {
 export function readCache(username) {
   try {
     const raw = localStorage.getItem(CACHE_KEY)
-    if (!raw) return null
+    if (!raw) {
+      return null
+    }
+    /**
+     * @type {CacheData}
+     */
     const data = JSON.parse(raw)
-    if (data.username !== username) return null
+    if (data.username !== username) {
+      return null
+    }
     if (Date.now() - data.timestamp > CACHE_TTL_IN_MS) {
       localStorage.removeItem(CACHE_KEY)
       return null
@@ -60,6 +65,17 @@ export function readCache(username) {
         }
       }
     }
+
+    console.log(
+      "pkgs before sorting:",
+      pkgs.map((x) => x.name),
+    )
+    pkgs.sort(byActiveAtDesc)
+    console.log(
+      "pkgs after sorting:",
+      pkgs.map((x) => x.name),
+    )
+
     return { packages: pkgs, timestamp: data.timestamp }
   } catch {
     localStorage.removeItem(CACHE_KEY)

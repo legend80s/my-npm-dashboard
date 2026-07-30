@@ -1,6 +1,6 @@
 /** @import { NpmPkgDownloadsResp, NpmPkgResp, NpmPkgSearchResp, Package, ShieldIODependents } from './npmjs.type.js' */
 
-import { fetchJSON } from "./light-lodash.js"
+import { fetchJSON, sleep } from "./light-lodash.js"
 
 // ============================================================
 //  4. npm API 调用（浏览器端直接请求，支持 CORS）
@@ -69,6 +69,8 @@ export async function fetchPackageMetadata(pkgName) {
  * @param {string} pkgName - 包名
  */
 export async function fetchYearlyWeeklyDownloads(pkgName) {
+  // await sleep(3000)
+
   // 计算日期范围：从今天往前推 364 天
   const now = new Date()
   const endDate = new Date(now)
