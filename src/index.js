@@ -12,6 +12,8 @@ import {
   writeCache,
 } from "./utils/data-loader.js"
 
+import { timeAgo as resolveRelativeTime } from "./utils/light-lodash.js"
+
 Chart.register(...registerables)
 
 /** @import { CacheData, FreshPackageDetail, Hottest, PackageDetail } from './index.type.js' */
@@ -108,9 +110,11 @@ function setLoading(loading) {
 /**
  * 6. 相对时间格式化
  * @param {string} dateStr
- * @returns
+ * @returns {string}
  */
 function timeAgo(dateStr) {
+  return resolveRelativeTime(new Date(dateStr))
+
   if (!dateStr) {
     return "未知"
   }
@@ -617,6 +621,8 @@ function createCardElement(pkg) {
 
   const publishedDisplay = pkg.publishedAt ? timeAgo(pkg.publishedAt) : "--"
   const createdDisplay = pkg.createdAt ? timeAgo(pkg.createdAt) : "--"
+
+  console.log("pkg.createdAt:", pkg.createdAt)
 
   // @ts-expect-error
   const latestWeekDownloads = pkg.weeklyData.at(-1).total
