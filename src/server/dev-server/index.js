@@ -5,6 +5,7 @@ import { serve } from "@hono/node-server"
 import { Hono } from "hono"
 // import { cache } from "hono/cache"
 import { logger } from "hono/logger"
+import { cors } from "hono/cors"
 
 // import { cache } from "@hono/node-server/cache" // 注意这个导入路径
 
@@ -22,6 +23,7 @@ app.use("*", async (c, next) => {
 })
 
 app.use(logger())
+app.use("/*", cors())
 
 // global.caches not available in nodejs
 // app.get(

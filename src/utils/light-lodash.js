@@ -1,4 +1,6 @@
 /** @import { int } from './base.type.js' */
+const YELLOW = `\x1b[33m`
+const RESET = `\x1b[0m`
 
 /**
  *
@@ -16,7 +18,7 @@ export function sleep(ms) {
  */
 export async function fetchJSON(url, { label, verbose = false }) {
   if (verbose) {
-    console.log(`  [fetchJSON]`, label, url)
+    console.log(`${YELLOW}  [fetchJSON]`, label, url, RESET)
   }
   const res = await fetch(url)
 

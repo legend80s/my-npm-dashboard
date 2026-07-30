@@ -5,6 +5,9 @@ import { createServer } from "node:http"
 import { extname, join, normalize, sep } from "node:path"
 
 const debugging = false
+const PORT = 8878
+const LIMIT = 3
+const NPM_USERNAME = "antfu"
 
 /**
  * MIME 类型映射
@@ -25,14 +28,22 @@ const MIME_TYPES = {
   ".wasm": "application/wasm",
 }
 
+/**
+ *
+ * @param {string} filePath
+ * @returns
+ */
 function getMimeType(filePath) {
   const ext = extname(filePath).toLowerCase()
+  // @ts-expect-error
   return MIME_TYPES[ext] || "application/octet-stream"
 }
 
 /**
  * 安全解析路径，防止目录遍历攻击
  * 修复 Windows 路径问题
+ * @param {string} root
+ * @param {string} url
  */
 function safePath(root, url) {
   // 去掉查询参数
@@ -78,6 +89,7 @@ function safePath(root, url) {
 
 /**
  * 打开浏览器
+ * @param {string} url
  */
 function openBrowser(url) {
   const platform = process.platform
@@ -109,14 +121,21 @@ function openBrowser(url) {
 
 /**
  * 启动静态文件服务器
+ * 
+ * @param {{root:string; port:number; open:boolean}} options
+ 
  */
-export function startServer({ port, root, open = true }) {
+export function startServer({ port = PORT, root, open = true }) {
   const server = createServer(async (req, res) => {
     console.log(`[${new Date().toISOString()}] ${req.method} ${req.url}`)
 
     try {
       // 解析请求路径
-      const filePath = safePath(root, req.url)
+      const filePath = safePath(
+        root,
+        // @ts-expect-error
+        req.url,
+      )
 
       if (!filePath) {
         console.warn(`    [WARN] [403] 路径被拒绝: ${req.url}`)
@@ -201,7 +220,7 @@ export function startServer({ port, root, open = true }) {
   })
 
   server.listen(port, () => {
-    const url = `http://localhost:${port}`
+    const url = `http://localhost:${port}?limit=${LIMIT}&username=${NPM_USERNAME}`
     const launchInfo = {
       "🐿️": "My npm Dashboard",
       "📡 服务器已启动": `${url}`,

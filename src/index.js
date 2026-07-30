@@ -776,7 +776,7 @@ function renderHottest(hottest, username) {
 function renderHottestTrend(trend, username) {
   hottestTrendPkg.innerHTML = trend.name
     ? `<a href="insight.html?username=${encodeURIComponent(username)}&rank=trend" title="📊 排行榜页面" style="color:inherit;">${trend.name}</a> (+${trend.trend}%)`
-    : "<span style='font-size: 0.8em;'>（无）近期下载量均下降</span>"
+    : "<span style='font-size: 0.8em;'>（无）<span style='font-size:80%;'>近期下载量均下降</span></span>"
 }
 
 /**

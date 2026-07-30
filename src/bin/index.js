@@ -3,7 +3,7 @@
 import { join } from "node:path"
 import { startServer } from "../server/index.js"
 
-const PORT = process.env.PORT || 3000
+const PORT = process.env.PORT
 // const rootDir = new URL("..", import.meta.url).pathname
 
 startServer({
