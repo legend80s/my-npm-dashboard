@@ -1,9 +1,9 @@
 import { Chart, registerables } from "chart.js"
 import {
-  readCache,
-  writeCache,
   fetchRaw,
   RANKING_TOP_N,
+  readCache,
+  writeCache,
 } from "./utils/data-loader.js"
 
 Chart.register(...registerables)

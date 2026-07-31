@@ -50,10 +50,11 @@ const DIVISIONS = /** @type {const} */ ([
 /**
  *
  * @param {Date} date
- * @returns
+ * @returns {string}
  */
 export function timeAgo(date) {
-  let duration = (date.getTime() - Date.now()) / 1000
+  const secondsAgo = (date.getTime() - Date.now()) / 1000
+  let duration = secondsAgo
 
   for (const division of DIVISIONS) {
     if (Math.abs(duration) < division.amount) {
@@ -61,4 +62,11 @@ export function timeAgo(date) {
     }
     duration /= division.amount
   }
+
+  console.error("[timeAgo] Impossible branch reached", {
+    date,
+    duration,
+    secondsAgo,
+  })
+  throw new Error("Impossible branch reached")
 }

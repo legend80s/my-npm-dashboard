@@ -1,4 +1,5 @@
 import { Chart, registerables } from "chart.js"
+import { MAX_SEARCH_SIZE } from "./utils/api.js"
 import {
   byActiveAtDesc,
   CACHE_TTL_IN_HOURS,
@@ -11,7 +12,6 @@ import {
   fetchRaw,
   writeCache,
 } from "./utils/data-loader.js"
-
 import { timeAgo as resolveRelativeTime } from "./utils/light-lodash.js"
 
 Chart.register(...registerables)
@@ -22,41 +22,49 @@ Chart.register(...registerables)
 // ============================================================
 //  1. DOM refs
 // ============================================================
-/** @type {HTMLFormElement} */
-// @ts-expect-error
-const form = document.getElementById("searchForm")
-/** @type {HTMLInputElement} */
-// @ts-expect-error
-const usernameInput = document.getElementById("usernameInput")
-/** @type {HTMLInputElement} */
-// @ts-expect-error
-const limitInput = document.getElementById("limitInput")
-/** @type {HTMLInputElement} */
-// @ts-expect-error
-const searchBtn = document.getElementById("searchBtn")
+
+const form = /** @type {HTMLFormElement} */ (
+  document.getElementById("searchForm")
+)
+
+const usernameInput = /** @type {HTMLInputElement} */ (
+  document.getElementById("usernameInput")
+)
+
+const limitInput = /** @type {HTMLInputElement} */ (
+  document.getElementById("limitInput")
+)
+
+const searchBtn = /** @type {HTMLInputElement} */ (
+  document.getElementById("searchBtn")
+)
 // const statusBadge = document.getElementById("statusBadge")
-/** @type {HTMLInputElement} */
-// @ts-expect-error
-const grid = document.getElementById("grid")
+
+const grid = /** @type {HTMLInputElement} */ (document.getElementById("grid"))
 // const pkgCount = document.getElementById("pkgCount")
 // const totalDownloads = document.getElementById("totalDownloads")
-/** @type {HTMLInputElement} */
-// @ts-expect-error
-const hottestPkg = document.getElementById("hottestPkg")
-/** @type {HTMLInputElement} */
-// @ts-expect-error
-const hottestTrendPkg = document.getElementById("hottestTrendPkg")
-/** @type {HTMLInputElement} */
-// @ts-expect-error
-const updateTime = document.getElementById("updateTime")
+
+const hottestPkg = /** @type {HTMLInputElement} */ (
+  document.getElementById("hottestPkg")
+)
+
+const hottestTrendPkg = /** @type {HTMLInputElement} */ (
+  document.getElementById("hottestTrendPkg")
+)
+
+const updateTime = /** @type {HTMLInputElement} */ (
+  document.getElementById("updateTime")
+)
 
 const config = {
   pkgLimit: 4,
+  MAX_SEARCH_SIZE,
 }
 
 console.log("1 limitInput.value:", limitInput.value)
 
 limitInput.value = String(config.pkgLimit)
+limitInput.max = String(config.MAX_SEARCH_SIZE)
 console.log("2 limitInput.value:", limitInput.value)
 
 // ============================================================
@@ -115,6 +123,7 @@ function setLoading(loading) {
 function timeAgo(dateStr) {
   return resolveRelativeTime(new Date(dateStr))
 
+  // biome-ignore lint/correctness/noUnreachable: <explanation>
   if (!dateStr) {
     return "未知"
   }
@@ -182,7 +191,9 @@ async function renderChart(container, pkgName, weeklyData) {
     container.appendChild(canvas)
 
     // 创建图表实例
-    const ctx = canvas.getContext("2d")
+    const ctx = /** @type {CanvasRenderingContext2D} */ (
+      canvas.getContext("2d")
+    )
     const chart = new Chart(ctx, {
       type: "line",
       data: {
@@ -460,16 +471,16 @@ function updateStats(pkgDetails, username, fromCache, cacheTimestamp) {
 
   /** @type {HTMLImageElement} */
   // @ts-expect-error
-  const avatar = document.getElementById("sortAvatar")
-  avatar.src = `https://avatars.githubusercontent.com/${username}?s=40`
-  avatar.hidden = false
+  const sortAvatar = document.getElementById("sortAvatar")
+  sortAvatar.src = `https://avatars.githubusercontent.com/${username}?s=40`
+  sortAvatar.hidden = false
 
-  const sortInfo = document.getElementById("sortInfo")
-  if (!sortInfo?.querySelector(".text-primary")) {
-    avatar.insertAdjacentHTML(
-      "beforebegin",
-      `<span class="text-primary" style="font-size: 120%;">${username}</span>`,
-    )
+  const sortInfo = /** @type {HTMLElement} */ (
+    document.getElementById("sortInfo")
+  )
+  const usernameElement = sortInfo.querySelector(".text-primary")
+  if (usernameElement && usernameElement.textContent.trim() !== username) {
+    usernameElement.textContent = username
   }
 }
 

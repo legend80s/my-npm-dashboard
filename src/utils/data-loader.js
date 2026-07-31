@@ -21,16 +21,18 @@ export const RANKING_TOP_N = 5
  */
 function parseGitHubRepo(pkgMeta) {
   const repo = pkgMeta.repository
-  if (!repo) return null
-  if (typeof repo === "string") {
-    const match = repo.match(/github\.com[:/]([^/]+)\/([^/.]+)/)
-    if (match) return { owner: match[1], repo: match[2] }
+
+  if (!repo) {
     return null
   }
+
   if (repo.url) {
     const match = repo.url.match(/github\.com[:/]([^/]+)\/([^/.]+)/)
-    if (match) return { owner: match[1], repo: match[2] }
+    if (match) {
+      return { owner: match[1], repo: match[2] }
+    }
   }
+
   return null
 }
 
@@ -60,7 +62,9 @@ export function readCache(username) {
     for (const pkg of pkgs) {
       if (pkg.weeklyData) {
         for (const w of pkg.weeklyData) {
+          // @ts-expect-error
           w.startDate = new Date(w.startDate)
+          // @ts-expect-error
           w.endDate = new Date(w.endDate)
         }
       }

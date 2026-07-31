@@ -13,6 +13,8 @@ const DEV = true
 
 const prefix = DEV ? "http://localhost:8787/" : ""
 
+// console.log("DEV:", DEV)
+
 /**
  * https://github.com/npm/registry/blob/main/docs/REGISTRY-API.md#get-v1search
  * 搜索用户维护的所有包，按发布时间排序
@@ -30,6 +32,8 @@ export async function fetchUserPackages(username) {
     await fetchJSON(url, { label: "npm search" })
   )
 
+  // console.log("data:", data)
+
   const packages = data.objects.map((o) => o.package)
 
   // Extract dependents map
@@ -46,6 +50,12 @@ export async function fetchUserPackages(username) {
     const dateB = b.date ? new Date(b.date).getTime() : 0
     return dateB - dateA
   })
+
+  // console.log("packages:", packages)
+  // console.log(
+  //   "packages:",
+  //   packages.map((x) => x.name),
+  // )
 
   return { packages, dependents }
 }
