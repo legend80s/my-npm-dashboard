@@ -6,6 +6,14 @@ const host = "https://api.github.com"
 export const github = new Hono()
 export const githubPath = `/${host}`
 
+// [API]   [fetchJSON] github repo https://api.github.com/repos/quansync-dev/quansync
+// [API] TypeError: fetch failed
+// [API]     at node:internal/deps/undici/undici:13510:13
+// [API]     code: 'UNABLE_TO_VERIFY_LEAF_SIGNATURE'
+
+// add NODE_TLS_REJECT_UNAUTHORIZED=0 to env to disable ssl verification
+process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0"
+
 github.get("/repos/:owner/:repo", async (c) => {
   // fetch https://api.github.com/repos/legend80s/marmot
   const owner = c.req.param("owner")
