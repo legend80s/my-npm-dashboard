@@ -10,8 +10,8 @@
     "tauri": "tauri",
     "typecheck": "tsgo --noEmit",
     "start": "node src/bin/index.js",
-    "dev:api": "cd src/server && pnpm i && node --watch ./dev-server",
-    "dev:live": "live-server ./src --port=1123 --open=\"/?limit=3&username=antfu\"",
+    "dev:api": "cd src/server && pnpm i --frozen-lockfile && NODE_ENV=development --watch ./dev-server",
+    "dev:live": "live-server ./src --port=1123 --open=\"?limit=3&username=antfu\"",
     "dev": "concurrently --kill-others --names \"API,LIVE\" \"pnpm dev:api\" \"pnpm dev:live\""
   },
   "devDependencies": {
