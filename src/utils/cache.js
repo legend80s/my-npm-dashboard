@@ -42,10 +42,11 @@ export function getCache(username, limit) {
     const pkgs = data.packages
 
     pkgs.forEach((pkg) => {
-      pkg.weeklyData?.forEach((wd) => {
-        wd.startDate = new Date(wd.startDate)
-        wd.endDate = new Date(wd.endDate)
-      })
+      "weeklyData" in pkg &&
+        pkg.weeklyData?.forEach((wd) => {
+          wd.startDate = new Date(wd.startDate)
+          wd.endDate = new Date(wd.endDate)
+        })
     })
 
     console.log(
@@ -126,12 +127,12 @@ export function getCacheTTL() {
 
 /**
  *
- * @param {Pick<FreshPackageDetail, 'activeAt'>} a
- * @param {Pick<FreshPackageDetail, 'activeAt'>} b
+ * @param {Pick<FreshPackageDetail, 'publishedAt'>} a
+ * @param {Pick<FreshPackageDetail, 'publishedAt'>} b
  * @returns
  */
 export function byActiveAtDesc(a, b) {
-  const dateA = a.activeAt ? new Date(a.activeAt).getTime() : 0
-  const dateB = b.activeAt ? new Date(b.activeAt).getTime() : 0
+  const dateA = a.publishedAt ? new Date(a.publishedAt).getTime() : 0
+  const dateB = b.publishedAt ? new Date(b.publishedAt).getTime() : 0
   return dateB - dateA
 }
