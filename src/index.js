@@ -933,7 +933,7 @@ function updateAllChartColors() {
   const s = getComputedStyle(document.documentElement)
   const gridColor = s.getPropertyValue("--border-muted").trim()
   const tickColor = s.getPropertyValue("--text-muted").trim()
-  const accentColor = s.getPropertyValue("--accent").trim()
+  const accentColor = s.getPropertyValue("--accent-green").trim()
 
   for (const chart of charts) {
     chart.options.scales.x.grid.color = gridColor
