@@ -1,21 +1,8 @@
 import { Chart, registerables } from "chart.js"
 import { MAX_SEARCH_SIZE } from "./utils/api.js"
-import {
-  byActiveAtDesc,
-  CACHE_TTL_IN_HOURS,
-  getCache,
-  getCacheTTL,
-} from "./utils/cache.js"
-import {
-  clearCache,
-  fetchPackageDetails,
-  fetchRaw,
-  writeCache,
-} from "./utils/data-loader.js"
-import {
-  numberToLocaleString,
-  timeAgo as resolveRelativeTime,
-} from "./utils/light-lodash.js"
+import { byActiveAtDesc, CACHE_TTL_IN_HOURS, getCache, getCacheTTL } from "./utils/cache.js"
+import { clearCache, fetchPackageDetails, fetchRaw, writeCache } from "./utils/data-loader.js"
+import { numberToLocaleString, timeAgo as resolveRelativeTime } from "./utils/light-lodash.js"
 
 Chart.register(...registerables)
 
@@ -26,38 +13,24 @@ Chart.register(...registerables)
 //  1. DOM refs
 // ============================================================
 
-const form = /** @type {HTMLFormElement} */ (
-  document.getElementById("searchForm")
-)
+const form = /** @type {HTMLFormElement} */ (document.getElementById("searchForm"))
 
-const usernameInput = /** @type {HTMLInputElement} */ (
-  document.getElementById("usernameInput")
-)
+const usernameInput = /** @type {HTMLInputElement} */ (document.getElementById("usernameInput"))
 
-const limitInput = /** @type {HTMLInputElement} */ (
-  document.getElementById("limitInput")
-)
+const limitInput = /** @type {HTMLInputElement} */ (document.getElementById("limitInput"))
 
-const searchBtn = /** @type {HTMLInputElement} */ (
-  document.getElementById("searchBtn")
-)
+const searchBtn = /** @type {HTMLInputElement} */ (document.getElementById("searchBtn"))
 // const statusBadge = document.getElementById("statusBadge")
 
 const grid = /** @type {HTMLInputElement} */ (document.getElementById("grid"))
 // const pkgCount = document.getElementById("pkgCount")
 // const totalDownloads = document.getElementById("totalDownloads")
 
-const hottestPkg = /** @type {HTMLInputElement} */ (
-  document.getElementById("hottestPkg")
-)
+const hottestPkg = /** @type {HTMLInputElement} */ (document.getElementById("hottestPkg"))
 
-const hottestTrendPkg = /** @type {HTMLInputElement} */ (
-  document.getElementById("hottestTrendPkg")
-)
+const hottestTrendPkg = /** @type {HTMLInputElement} */ (document.getElementById("hottestTrendPkg"))
 
-const updateTime = /** @type {HTMLInputElement} */ (
-  document.getElementById("updateTime")
-)
+const updateTime = /** @type {HTMLInputElement} */ (document.getElementById("updateTime"))
 
 const config = {
   pkgLimit: 4,
@@ -90,9 +63,7 @@ function setUrlParams(username, limit) {
   const params = new URLSearchParams()
   if (username) params.set("username", username)
   if (limit) params.set("limit", String(limit))
-  const newUrl =
-    window.location.pathname +
-    (params.toString() ? "?" + params.toString() : "")
+  const newUrl = window.location.pathname + (params.toString() ? "?" + params.toString() : "")
   window.history.replaceState({}, "", newUrl)
 }
 
@@ -173,11 +144,7 @@ async function renderChart(container, pkgName, weeklyData) {
     weeklyData,
   })
   // 检查数据是否有效
-  if (
-    !weeklyData ||
-    weeklyData.length === 0 ||
-    weeklyData.every((w) => w.total === 0)
-  ) {
+  if (!weeklyData || weeklyData.length === 0 || weeklyData.every((w) => w.total === 0)) {
     container.innerHTML = `<div class="chart-placeholder">📊 暂无下载数据</div>`
     return
   }
@@ -196,9 +163,7 @@ async function renderChart(container, pkgName, weeklyData) {
     container.appendChild(canvas)
 
     // 创建图表实例
-    const ctx = /** @type {CanvasRenderingContext2D} */ (
-      canvas.getContext("2d")
-    )
+    const ctx = /** @type {CanvasRenderingContext2D} */ (canvas.getContext("2d"))
     const chart = new Chart(ctx, {
       type: "line",
       data: {
@@ -362,13 +327,7 @@ async function loadPackages(username, displayLimit, forceRefresh = false) {
     if (cached) {
       const pkgDetails = cached.packages.slice(0, displayLimit)
 
-      await renderFromData(
-        pkgDetails,
-        username,
-        displayLimit,
-        true,
-        cached.timestamp,
-      )
+      await renderFromData(pkgDetails, username, displayLimit, true, cached.timestamp)
       setLoading(false)
       return
     }
@@ -480,9 +439,7 @@ function updateStats(pkgDetails, username, fromCache, cacheTimestamp) {
   sortAvatar.src = `https://avatars.githubusercontent.com/${username}?s=64`
   sortAvatar.hidden = false
 
-  const sortInfo = /** @type {HTMLElement} */ (
-    document.getElementById("sortInfo")
-  )
+  const sortInfo = /** @type {HTMLElement} */ (document.getElementById("sortInfo"))
   const usernameElement = sortInfo.querySelector(".text-primary")
   if (usernameElement && usernameElement.textContent.trim() !== username) {
     usernameElement.textContent = username
@@ -494,9 +451,7 @@ function updateStats(pkgDetails, username, fromCache, cacheTimestamp) {
  * @param {FreshPackageDetail[]} pkgDetails
  */
 function reorderCardsByActiveAt(pkgDetails) {
-  const cardEls = [...grid.children].filter(
-    (el) => !el.classList.contains("no-results"),
-  )
+  const cardEls = [...grid.children].filter((el) => !el.classList.contains("no-results"))
   if (cardEls.length < 2) return
 
   const firstRects = cardEls.map((el) => el.getBoundingClientRect())
@@ -545,13 +500,7 @@ function reorderCardsByActiveAt(pkgDetails) {
  * @param {number | null} cacheTimestamp - 缓存写入时间戳（仅 fromCache=true 时有效）
  * @returns {Promise<void>}
  */
-async function renderFromData(
-  pkgDetails,
-  username,
-  limit,
-  fromCache,
-  cacheTimestamp,
-) {
+async function renderFromData(pkgDetails, username, limit, fromCache, cacheTimestamp) {
   updateStats(pkgDetails, username, fromCache, cacheTimestamp)
 
   pkgDetails.sort(byActiveAtDesc)
@@ -589,9 +538,7 @@ function createCardElement(pkg) {
   if (pkg.github.owner && pkg.github.repo) {
     const starDisplay = pkg.github.stars !== null ? pkg.github.stars : "--"
     const commitDisplay = pkg.github.lastCommit || "--"
-    const commitTime = pkg.github.lastCommitDate
-      ? timeAgo(pkg.github.lastCommitDate)
-      : ""
+    const commitTime = pkg.github.lastCommitDate ? timeAgo(pkg.github.lastCommitDate) : ""
 
     const repoUrl = `https://github.com/${pkg.github.owner}/${pkg.github.repo}`
     const commitUrl = `https://github.com/${pkg.github.owner}/${pkg.github.repo}/commits`
@@ -634,8 +581,7 @@ function createCardElement(pkg) {
 
   // 正常卡片
   const trendArrow = pkg.trend > 0 ? "↑" : pkg.trend < 0 ? "↓" : "→"
-  const trendColor =
-    pkg.trend > 0 ? "brightgreen" : pkg.trend < 0 ? "red" : "lightgrey"
+  const trendColor = pkg.trend > 0 ? "brightgreen" : pkg.trend < 0 ? "red" : "lightgrey"
   const trendBadge = `https://img.shields.io/badge/weekly%20trend-${encodeURIComponent(`${trendArrow} ${Math.abs(pkg.trend)}%`)}-${trendColor}?logo=npm&logoColor=cyan&style=flat`
 
   const publishedDisplay = pkg.publishedAt ? timeAgo(pkg.publishedAt) : "--"
@@ -940,20 +886,31 @@ function makeEndLeaf() {
           </svg>`
 }
 
-const settings = /** @type {HTMLElement} */ (
-  document.getElementById("settings")
-)
+const settings = /** @type {HTMLElement} */ (document.getElementById("settings"))
 
 // 监听自定义 change 事件
 // @ts-expect-error
-settings.addEventListener(
-  "chart-provider-change",
-  (/** @type {CustomEvent<{ provider: string }>} */ e) => {
-    const provider = e.detail.provider
-    console.log("当前计数:", provider)
-    // 更新页面其他元素
-    document.querySelectorAll(".chart-container")?.forEach((container) => {
-      container.parentElement?.setAttribute("data-provider", provider)
-    })
-  },
-)
+settings.addEventListener("chart-provider-change", (/** @type {CustomEvent<{ provider: string }>} */ e) => {
+  const provider = e.detail.provider
+  console.log("当前计数:", provider)
+  // 更新页面其他元素
+  document.querySelectorAll(".chart-container")?.forEach((container) => {
+    container.parentElement?.setAttribute("data-provider", provider)
+  })
+})
+
+// theme-change
+// @ts-expect-error
+settings.addEventListener("theme-change", (/** @type {CustomEvent<{ theme: string }>} */ e) => {
+  const theme = e.detail.theme
+  console.log("当前主题:", theme)
+  // 更新页面其他元素
+  document.body.setAttribute("data-theme", theme)
+  // update all the npmx embed charts
+  const imgs = /** @type {NodeListOf<HTMLImageElement>} */ (document.querySelectorAll(".npmx-embed-downloads-chart"))
+  imgs.forEach((img) => {
+    const src = new URL(img.src)
+    src.searchParams.set("mode", theme === "dark" ? "dark" : "light")
+    img.src = src.toString()
+  })
+})

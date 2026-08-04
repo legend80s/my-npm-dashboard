@@ -29,6 +29,12 @@
       overlay 0.3s allow-discrete;
     translate: 100% 0;
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+
+    .body {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
   }
 
   .drawer[open] {
@@ -47,6 +53,7 @@
   }
 
   .drawer h2 {
+    margin-top: 0;
     margin-bottom: 0.75rem;
     font-size: 1.25rem;
   }
@@ -87,6 +94,7 @@
     gap: 8px;
     justify-content: flex-end;
     padding-top: 16px;
+    flex: 1;
   }
 </style>
 
@@ -102,30 +110,41 @@
 <dialog id="createDrawer" class="drawer">
   <h2>Settings</h2>
 
-  <fieldset id="xxx">
-    <legend>Select a chart provider</legend>
+  <section class="body">
+    <fieldset id="chartProviderWrapper">
+      <legend>Select a chart provider</legend>
+      <div>
+        <input
+          type="radio"
+          id="chart.js"
+          name="chartProvider"
+          value="chart.js"
+          checked
+        />
+        <label for="chart.js">Custom using Chart.js</label>
+      </div>
+      <div>
+        <input type="radio" id="npmx" name="chartProvider" value="npmx" />
+        <label for="npmx">npmx</label>
+      </div>
+    </fieldset>
 
-    <div>
-      <input
-        type="radio"
-        id="chart.js"
-        name="chartProvider"
-        value="chart.js"
-        checked
-      />
-      <label for="chart.js">Custom using Chart.js</label>
-    </div>
-
-    <div>
-      <input type="radio" id="npmx" name="chartProvider" value="npmx" />
-      <label for="npmx">npmx</label>
-    </div>
-  </fieldset>
-
-  <div class="drawer-actions">
+    <fieldset id="themeSwitcher">
+      <legend>Select a theme</legend>
+      <div>
+        <input type="radio" id="dark" name="theme" value="dark" checked />
+        <label for="dark"> Dark</label>
+      </div>
+      <div>
+        <input type="radio" id="light" name="theme" value="light" />
+        <label for="light">Light</label>
+      </div>
+    </fieldset>
+  </section>
+  <!-- <div class="drawer-actions">
     <button type="button" class="btn-secondary" onclick="createDrawer.close()">
       Cancel
     </button>
     <button type="button" onclick="submitNewScenario()">Create</button>
-  </div>
+  </div> -->
 </dialog>
