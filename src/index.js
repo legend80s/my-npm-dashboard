@@ -164,6 +164,14 @@ async function renderChart(container, pkgName, weeklyData) {
     container.appendChild(canvas)
 
     // 创建图表实例
+    const rootStyle = getComputedStyle(document.documentElement)
+    // const chartGridColor = "#d8dee4"
+    const chartGridColor = rootStyle.getPropertyValue("--border-muted").trim()
+    console.log({ chartGridColor })
+    // const chartGridColor = rootStyle.getPropertyValue("--border-muted").trim() || "#21262d"
+    const chartTickColor = rootStyle.getPropertyValue("--text-muted").trim() || "#8b949e"
+    const chartAccentColor = rootStyle.getPropertyValue("--accent").trim() || "#58a6ff"
+
     const ctx = /** @type {CanvasRenderingContext2D} */ (canvas.getContext("2d"))
     const chart = new Chart(ctx, {
       type: "line",
@@ -173,12 +181,12 @@ async function renderChart(container, pkgName, weeklyData) {
           {
             label: "周下载量",
             data: dataPoints,
-            borderColor: "#58a6ff",
+            borderColor: chartAccentColor,
             backgroundColor: "rgba(88, 166, 255, 0.1)",
             borderWidth: 2,
             pointRadius: 0.8,
             pointHoverRadius: 4,
-            pointBackgroundColor: "#58a6ff",
+            pointBackgroundColor: chartAccentColor,
             tension: 0.3,
             fill: true,
           },
@@ -235,11 +243,12 @@ async function renderChart(container, pkgName, weeklyData) {
             // type: "category", // 显式指定类型
 
             grid: {
-              color: "#21262d",
-              drawBorder: false,
+              color: chartGridColor,
+              // drawOnChartArea: false,
+              // drawTicks: false,
             },
             ticks: {
-              color: "#8b949e",
+              color: chartTickColor,
               font: {
                 size: 8,
               },
@@ -254,11 +263,11 @@ async function renderChart(container, pkgName, weeklyData) {
             // type: "linear", // 显式指定类型
 
             grid: {
-              color: "#21262d",
+              color: chartGridColor,
               drawBorder: false,
             },
             ticks: {
-              color: "#8b949e",
+              color: chartTickColor,
               font: {
                 size: 8,
               },
@@ -336,7 +345,7 @@ async function loadPackages(username, displayLimit, forceRefresh = false) {
 
   // 缓存未命中或强制刷新
   setLoading(true)
-  grid.innerHTML = `<div class="no-results" style="color:#f0883e;"><span class="big">⏳</span>正在搜索 ${username} 的包...</div>`
+  grid.innerHTML = `<div class="no-results" style="color:var(--orange);"><span class="big">⏳</span>正在搜索 ${username} 的包...</div>`
 
   try {
     /** @type {FreshPackageDetail[]} */
@@ -435,7 +444,7 @@ function updateStats(pkgDetails, username, fromCache, cacheTimestamp) {
   // @ts-expect-error
   const cacheStatus = document.getElementById("cacheStatus")
   cacheStatus.textContent = fromCache ? "" : "🔄 实时"
-  cacheStatus.style.color = fromCache ? "#8b949e" : "#3fb950"
+  cacheStatus.style.color = fromCache ? "var(--text-muted)" : "var(--accent-green)"
 
   /** @type {HTMLImageElement} */
   // @ts-expect-error
@@ -575,7 +584,7 @@ function createCardElement(pkg) {
           <span class="card-name">⚠️ ${pkg.name}</span>
           <span class="card-version">--</span>
       </div>
-      <div class="card-metrics" style="color:#f85149;">
+      <div class="card-metrics" style="color:var(--red);">
           ${pkg.error}
       </div>
     `
@@ -910,8 +919,10 @@ settings.addEventListener("chart-provider-change", (/** @type {CustomEvent<{ pro
 settings.addEventListener("theme-change", (/** @type {CustomEvent<{ theme: string }>} */ e) => {
   const theme = e.detail.theme
   console.log("当前主题:", theme)
-  // 更新页面其他元素
-  document.body.setAttribute("data-theme", theme)
+
+  document.documentElement.setAttribute("data-theme", theme)
+  localStorage.setItem("theme", theme)
+
   // update all the npmx embed charts
   const imgs = /** @type {NodeListOf<HTMLImageElement>} */ (document.querySelectorAll(".npmx-embed-downloads-chart"))
   imgs.forEach((img) => {

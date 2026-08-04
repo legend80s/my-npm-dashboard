@@ -232,6 +232,10 @@ function renderChart(packages, ranking) {
   const values = packages.map((p) => ranking.sortKey(p))
   const colors = packages.map((_, i) => (i === 0 ? "rgba(88, 166, 255, 1)" : "rgba(88, 166, 255, 0.35)"))
 
+  const rootStyle = getComputedStyle(document.documentElement)
+  const gridColor = rootStyle.getPropertyValue("--border-muted").trim() || "#21262d"
+  const tickColor = rootStyle.getPropertyValue("--text-muted").trim() || "#8b949e"
+
   const ctx = chartCanvas.getContext("2d")
   chartInstance = new Chart(ctx, {
     type: "bar",
@@ -277,13 +281,13 @@ function renderChart(packages, ranking) {
       },
       scales: {
         x: {
-          grid: { color: "#21262d", drawBorder: false },
-          ticks: { color: "#8b949e", font: { size: 11 } },
+          grid: { color: gridColor, drawBorder: false },
+          ticks: { color: tickColor, font: { size: 11 } },
         },
         y: {
-          grid: { color: "#21262d", drawBorder: false },
+          grid: { color: gridColor, drawBorder: false },
           ticks: {
-            color: "#8b949e",
+            color: tickColor,
             font: { size: 11 },
             callback: (v) => ranking.format(v),
           },

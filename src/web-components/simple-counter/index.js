@@ -61,6 +61,13 @@ class SimpleCounter extends HTMLElement {
         }),
       )
     })
+
+    // sync radio state with current theme
+    const current = document.documentElement.getAttribute("data-theme") || "dark"
+    const radio = /** @type {HTMLInputElement | null} */ (
+      shadowRoot.querySelector(`#themeSwitcher input[value="${current}"]`)
+    )
+    if (radio) radio.checked = true
   }
 
   /**
