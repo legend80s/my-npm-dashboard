@@ -94,10 +94,7 @@ export function readCache(username) {
  */
 export function writeCache(username, packages) {
   try {
-    localStorage.setItem(
-      CACHE_KEY,
-      JSON.stringify({ username, packages, timestamp: Date.now() }),
-    )
+    localStorage.setItem(CACHE_KEY, JSON.stringify({ username, packages, timestamp: Date.now() }))
   } catch (e) {
     console.warn("缓存保存失败:", e)
   }
@@ -114,11 +111,12 @@ export function clearCache() {
  *
  * @param {Pick<Package, 'name' | 'version'> & { date?: string }} pkg
  * @param {int} [dependents]
+ * @param {boolean} [forceRefresh]
  * @return {Promise<CaseSuccess>}
  */
-export async function fetchPackageDetails({ name, version, date }, dependents) {
-  const meta = await fetchPackageMetadata(name)
-  const downloads = await fetchYearlyWeeklyDownloads(name)
+export async function fetchPackageDetails({ name, version, date }, dependents, forceRefresh = false) {
+  const meta = await fetchPackageMetadata(name, forceRefresh)
+  const downloads = await fetchYearlyWeeklyDownloads(name, forceRefresh)
   version = meta["dist-tags"]?.latest || version || "--"
   const publishedAt = meta.time[version] || meta.time.modified || date
   const createdAt = meta.time.created
@@ -145,13 +143,13 @@ export async function fetchPackageDetails({ name, version, date }, dependents) {
     github.owner = ghRepo.owner
     github.repo = ghRepo.repo
     try {
-      const starData = await fetchGitHubStars(ghRepo.owner, ghRepo.repo)
+      const starData = await fetchGitHubStars(ghRepo.owner, ghRepo.repo, forceRefresh)
       github.stars = starData.stars
     } catch {
       /* silent */
     }
     try {
-      const commitData = await fetchGitHubLastCommit(ghRepo.owner, ghRepo.repo)
+      const commitData = await fetchGitHubLastCommit(ghRepo.owner, ghRepo.repo, forceRefresh)
       github.lastCommit = commitData.message
       github.lastCommitDate = commitData.date
     } catch {
@@ -160,10 +158,7 @@ export async function fetchPackageDetails({ name, version, date }, dependents) {
   }
 
   let activeAt = publishedAt
-  if (
-    github.lastCommitDate &&
-    new Date(github.lastCommitDate) > new Date(activeAt || 0)
-  ) {
+  if (github.lastCommitDate && new Date(github.lastCommitDate) > new Date(activeAt || 0)) {
     activeAt = github.lastCommitDate
   }
 
@@ -193,20 +188,18 @@ export async function fetchPackageDetails({ name, version, date }, dependents) {
  */
 /**
  * @param {string} username
- * @param {{ onPackage?: (pkg: FreshPackageDetail, done: number, total: number) => void }} [options]
+ * @param {{ onPackage?: (pkg: FreshPackageDetail, done: number, total: number) => void, forceRefresh?: boolean }} [options]
  */
 export async function fetchRaw(username, options = {}) {
-  const { packages: pkgList, dependents: dependentsMap } =
-    await fetchUserPackages(username)
-
-  const { onPackage } = options
+  const { onPackage, forceRefresh = false } = options
+  const { packages: pkgList, dependents: dependentsMap } = await fetchUserPackages(username, forceRefresh)
 
   /** @type {FreshPackageDetail[]} */
   const pkgDetails = []
 
   for (const [index, pkg] of pkgList.entries()) {
     try {
-      const detail = await fetchPackageDetails(pkg, dependentsMap[pkg.name])
+      const detail = await fetchPackageDetails(pkg, dependentsMap[pkg.name], forceRefresh)
       pkgDetails.push(detail)
       onPackage?.(detail, index + 1, pkgList.length)
     } catch (err) {

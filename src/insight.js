@@ -1,10 +1,5 @@
 import { Chart, registerables } from "chart.js"
-import {
-  fetchRaw,
-  RANKING_TOP_N,
-  readCache,
-  writeCache,
-} from "./utils/data-loader.js"
+import { fetchRaw, RANKING_TOP_N, readCache, writeCache } from "./utils/data-loader.js"
 
 Chart.register(...registerables)
 
@@ -181,9 +176,7 @@ function renderRanking(key) {
   const ranking = RANKINGS.find((r) => r.key === key)
   if (!ranking) return
 
-  const sorted = [...allPackages].sort(
-    (a, b) => ranking.sortKey(b) - ranking.sortKey(a),
-  )
+  const sorted = [...allPackages].sort((a, b) => ranking.sortKey(b) - ranking.sortKey(a))
   const top = sorted.slice(0, RANKING_TOP_N)
   const first = sorted[0]
 
@@ -237,9 +230,7 @@ function renderChart(packages, ranking) {
 
   const labels = packages.map((p) => p.name)
   const values = packages.map((p) => ranking.sortKey(p))
-  const colors = packages.map((_, i) =>
-    i === 0 ? "rgba(88, 166, 255, 1)" : "rgba(88, 166, 255, 0.35)",
-  )
+  const colors = packages.map((_, i) => (i === 0 ? "rgba(88, 166, 255, 1)" : "rgba(88, 166, 255, 0.35)"))
 
   const ctx = chartCanvas.getContext("2d")
   chartInstance = new Chart(ctx, {
@@ -264,11 +255,7 @@ function renderChart(packages, ranking) {
         if (elements.length) {
           const idx = elements[0].index
           const pkg = packages[idx]
-          if (pkg)
-            window.open(
-              `https://www.npmjs.com/package/${encodeURIComponent(pkg.name)}`,
-              "_blank",
-            )
+          if (pkg) window.open(`https://www.npmjs.com/package/${encodeURIComponent(pkg.name)}`, "_blank")
         }
       },
       plugins: {

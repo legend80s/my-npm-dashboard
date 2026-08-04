@@ -76,14 +76,7 @@ async function fetchUsingProxy(url, opt) {
       json = await fetchJSON(currentUrl, opt)
     } catch (fetchGithubRepoError) {
       lastError = fetchGithubRepoError
-      debugging &&
-        console.warn(
-          YELLOW,
-          "WARN",
-          `"${currentUrl}"`,
-          fetchGithubRepoError,
-          RESET,
-        )
+      debugging && console.warn(YELLOW, "WARN", `"${currentUrl}"`, fetchGithubRepoError, RESET)
     }
   }
 

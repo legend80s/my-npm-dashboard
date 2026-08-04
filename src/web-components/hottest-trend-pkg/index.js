@@ -7,9 +7,7 @@ class HottestTrendPkg extends HTMLElement {
 
   async connectedCallback() {
     // 动态加载模板
-    const response = await fetch(
-      "./web-components/hottest-trend-pkg/index.html",
-    )
+    const response = await fetch("./web-components/hottest-trend-pkg/index.html")
     const template = await response.text()
 
     // console.log("template:", template)

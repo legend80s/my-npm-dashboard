@@ -23,12 +23,13 @@ const prefix = DEV ? "http://localhost:8787/" : ""
  * @param {string} username - npm 用户名
  * @returns {Promise<{ packages: Package[], dependents: Record<string, number> }>}
  */
-export async function fetchUserPackages(username) {
+export async function fetchUserPackages(username, forceRefresh = false) {
+  const cacheBust = forceRefresh && DEV ? `&_t=${Date.now()}` : ""
   const url =
     prefix +
     `https://registry.npmjs.org/-/v1/search?` +
     `text=maintainer:${encodeURIComponent(username)}` +
-    `&size=${MAX_SEARCH_SIZE}`
+    `&size=${MAX_SEARCH_SIZE}${cacheBust}`
   // ""
   // NPM Bug: not return all by publish time.
 
@@ -68,8 +69,9 @@ export async function fetchUserPackages(username) {
  * @returns {Promise<NpmPkgResp>}
  *
  */
-export async function fetchPackageMetadata(pkgName) {
-  const url = `${prefix}https://registry.npmjs.org/${encodeURIComponent(pkgName)}`
+export async function fetchPackageMetadata(pkgName, forceRefresh = false) {
+  const cacheBust = forceRefresh && DEV ? `?_t=${Date.now()}` : ""
+  const url = `${prefix}https://registry.npmjs.org/${encodeURIComponent(pkgName)}${cacheBust}`
   const res = await fetchJSON(url, { label: `获取 ${pkgName} 元数据` })
 
   // @ts-expect-error
@@ -80,7 +82,7 @@ export async function fetchPackageMetadata(pkgName) {
  * 获取最近一年（52周）的周聚合下载量
  * @param {string} pkgName - 包名
  */
-export async function fetchYearlyWeeklyDownloads(pkgName) {
+export async function fetchYearlyWeeklyDownloads(pkgName, forceRefresh = false) {
   // await sleep(3000)
 
   // 计算日期范围：从今天往前推 364 天
@@ -93,7 +95,8 @@ export async function fetchYearlyWeeklyDownloads(pkgName) {
   const formatDate = (d) => d.toISOString().slice(0, 10)
   const period = `${formatDate(startDate)}:${formatDate(endDate)}`
 
-  const url = `${prefix}https://api.npmjs.org/downloads/range/${period}/${encodeURIComponent(pkgName)}`
+  const cacheBust = forceRefresh && DEV ? `?_t=${Date.now()}` : ""
+  const url = `${prefix}https://api.npmjs.org/downloads/range/${period}/${encodeURIComponent(pkgName)}${cacheBust}`
   const res = await fetch(url)
 
   if (!res.ok) {
@@ -169,9 +172,10 @@ export async function fetchYearlyWeeklyDownloads(pkgName) {
  * @param {string} owner
  * @param {string} repo
  */
-export async function fetchGitHubStars(owner, repo) {
+export async function fetchGitHubStars(owner, repo, forceRefresh = false) {
   // 使用公共 CORS 代理（免费，有请求限制）
-  const url = `${prefix}https://api.github.com/repos/${encodeURIComponent(owner)}/${encodeURIComponent(repo)}`
+  const cacheBust = forceRefresh && DEV ? `?_t=${Date.now()}` : ""
+  const url = `${prefix}https://api.github.com/repos/${encodeURIComponent(owner)}/${encodeURIComponent(repo)}${cacheBust}`
   const res = await fetch(url, {
     headers: {
       Accept: "application/vnd.github.v3+json",
@@ -195,9 +199,11 @@ export async function fetchGitHubStars(owner, repo) {
  * @param {string} repo
  *
  */
-export async function fetchGitHubLastCommit(owner, repo) {
+export async function fetchGitHubLastCommit(owner, repo, forceRefresh = false) {
+  const cacheBust = forceRefresh && DEV ? `&_t=${Date.now()}` : ""
   const url =
-    prefix + `https://api.github.com/repos/${encodeURIComponent(owner)}/${encodeURIComponent(repo)}/commits?per_page=1`
+    prefix +
+    `https://api.github.com/repos/${encodeURIComponent(owner)}/${encodeURIComponent(repo)}/commits?per_page=1${cacheBust}`
   const res = await fetch(url, {
     headers: { Accept: "application/vnd.github.v3+json" },
   })

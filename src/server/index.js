@@ -57,8 +57,7 @@ function safePath(root, url) {
   const relativePath = decoded.replace(/\//g, sep)
 
   // 如果是根路径，relativePath 可能是空字符串或 \
-  const normalizedRelative =
-    relativePath === sep || relativePath === "" ? "" : relativePath
+  const normalizedRelative = relativePath === sep || relativePath === "" ? "" : relativePath
 
   // 拼接完整路径
   let fullPath = join(root, normalizedRelative)
@@ -71,9 +70,7 @@ function safePath(root, url) {
   const normalizedRoot = normalize(root)
 
   // 确保 root 以路径分隔符结尾，防止 "root" 匹配到 "root2"
-  const rootWithSep = normalizedRoot.endsWith(sep)
-    ? normalizedRoot
-    : normalizedRoot + sep
+  const rootWithSep = normalizedRoot.endsWith(sep) ? normalizedRoot : normalizedRoot + sep
 
   // 检查 fullPath 是否在 root 目录内
   if (!fullPath.startsWith(rootWithSep) && fullPath !== normalizedRoot) {

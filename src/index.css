@@ -24,8 +24,7 @@
 }
 
 body {
-  font-family:
-    -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   background: #0d1117;
   color: #e6edf3;
   min-height: 100vh;
@@ -130,8 +129,8 @@ button:disabled {
   flex-wrap: wrap;
 }
 
-.header-right input[type='text'],
-.header-right input[type='number'] {
+.header-right input[type="text"],
+.header-right input[type="number"] {
   padding: 8px 14px;
   border-radius: 8px;
   border: 1px solid #30363d;
@@ -144,12 +143,12 @@ button:disabled {
   text-align: center;
 }
 
-.header-right input[type='text']:focus,
-.header-right input[type='number']:focus {
+.header-right input[type="text"]:focus,
+.header-right input[type="number"]:focus {
   border-color: #58a6ff;
 }
 
-.header-right input[type='number'] {
+.header-right input[type="number"] {
   width: calc(74 / 16 * 1rem);
 }
 
@@ -256,7 +255,7 @@ button:disabled {
     display: none;
   }
 
-  &[data-provider='npmx'] {
+  &[data-provider="npmx"] {
     .npmx-embed-downloads-chart {
       display: block;
     }
@@ -441,8 +440,8 @@ button:disabled {
     align-items: stretch;
   }
 
-  .header-right input[type='text'],
-  .header-right input[type='number'] {
+  .header-right input[type="text"],
+  .header-right input[type="number"] {
     width: 100%;
   }
 

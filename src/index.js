@@ -344,6 +344,7 @@ async function loadPackages(username, displayLimit, forceRefresh = false) {
     let statsUpdated = false
 
     const dataPromise = fetchRaw(username, {
+      forceRefresh,
       /** @param {FreshPackageDetail} pkgDetail @param {number} done @param {number} total */
       onPackage(pkgDetail, done, total) {
         refreshBtn.textContent = `🔄 刷新 ${done}/${total}`

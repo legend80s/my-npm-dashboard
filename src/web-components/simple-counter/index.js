@@ -18,9 +18,7 @@ class SimpleCounter extends HTMLElement {
 
     // 绑定事件
     // @ts-expect-error
-    shadowRoot
-      .querySelector("button")
-      .addEventListener("click", () => this.openModal(shadowRoot))
+    shadowRoot.querySelector("button").addEventListener("click", () => this.openModal(shadowRoot))
 
     const createDrawer = shadowRoot.getElementById("createDrawer")
 
@@ -33,40 +31,36 @@ class SimpleCounter extends HTMLElement {
       }
     })
 
-    shadowRoot
-      .querySelector("#chartProviderWrapper")
-      ?.addEventListener("change", (event) => {
-        // Handle radio button change
-        // console.log("Radio button changed:", event.target.value)
+    shadowRoot.querySelector("#chartProviderWrapper")?.addEventListener("change", (event) => {
+      // Handle radio button change
+      // console.log("Radio button changed:", event.target.value)
 
-        const provider = /** @type {'npmx' | 'chart.js'} */ (
-          // @ts-expect-error
-          event.target.value
-        )
+      const provider = /** @type {'npmx' | 'chart.js'} */ (
+        // @ts-expect-error
+        event.target.value
+      )
 
-        // 触发自定义事件（方便外部监听）
-        this.dispatchEvent(
-          new CustomEvent("chart-provider-change", {
-            detail: { provider },
-          }),
-        )
-      })
+      // 触发自定义事件（方便外部监听）
+      this.dispatchEvent(
+        new CustomEvent("chart-provider-change", {
+          detail: { provider },
+        }),
+      )
+    })
 
     // theme themeSwitcher
-    shadowRoot
-      .querySelector("#themeSwitcher")
-      ?.addEventListener("change", (event) => {
-        const theme = /** @type {'light' | 'dark'} */ (
-          // @ts-expect-error
-          event.target.value
-        )
-        // 触发自定义事件（方便外部监听）
-        this.dispatchEvent(
-          new CustomEvent("theme-change", {
-            detail: { theme },
-          }),
-        )
-      })
+    shadowRoot.querySelector("#themeSwitcher")?.addEventListener("change", (event) => {
+      const theme = /** @type {'light' | 'dark'} */ (
+        // @ts-expect-error
+        event.target.value
+      )
+      // 触发自定义事件（方便外部监听）
+      this.dispatchEvent(
+        new CustomEvent("theme-change", {
+          detail: { theme },
+        }),
+      )
+    })
   }
 
   /**
