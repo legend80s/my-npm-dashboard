@@ -7,7 +7,8 @@ import { fetchJSON, sleep } from "./light-lodash.js"
 // ============================================================
 
 /** npm search API 单次拉取最大数量 */
-export const MAX_SEARCH_SIZE = 30
+// 190 https://registry.npmjs.org/-/v1/search?text=maintainer:antfu&sort=date&size=190 才可以拉取到 2026-7-31 16:14:49 一小时之前发布的 magic-string-stack
+export const MAX_SEARCH_SIZE = 100
 
 const DEV = true
 
@@ -25,8 +26,10 @@ export async function fetchUserPackages(username) {
   const url =
     prefix +
     `https://registry.npmjs.org/-/v1/search?` +
-    `text=maintainer:${encodeURIComponent(username)}&` +
-    `size=${MAX_SEARCH_SIZE}`
+    `text=maintainer:${encodeURIComponent(username)}` +
+    `&size=${MAX_SEARCH_SIZE}`
+  // ""
+  // NPM Bug: not return all by publish time.
 
   const data = /** @type {NpmPkgSearchResp} */ (
     await fetchJSON(url, { label: "npm search" })

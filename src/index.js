@@ -12,7 +12,10 @@ import {
   fetchRaw,
   writeCache,
 } from "./utils/data-loader.js"
-import { timeAgo as resolveRelativeTime } from "./utils/light-lodash.js"
+import {
+  numberToLocaleString,
+  timeAgo as resolveRelativeTime,
+} from "./utils/light-lodash.js"
 
 Chart.register(...registerables)
 
@@ -103,11 +106,13 @@ let isLoading = false
 //   statusBadge.className = type ? "status-badge " + type : ""
 // }
 
+const old = searchBtn.textContent
+
 /** @param {boolean} loading */
 function setLoading(loading) {
   isLoading = loading
   searchBtn.disabled = loading
-  searchBtn.textContent = loading ? "⏳ 加载中..." : "🔍 搜索"
+  searchBtn.textContent = loading ? "⏳..." : old
   // setStatus(loading ? "加载中..." : "", loading ? "loading" : "")
 }
 
@@ -472,7 +477,7 @@ function updateStats(pkgDetails, username, fromCache, cacheTimestamp) {
   /** @type {HTMLImageElement} */
   // @ts-expect-error
   const sortAvatar = document.getElementById("sortAvatar")
-  sortAvatar.src = `https://avatars.githubusercontent.com/${username}?s=40`
+  sortAvatar.src = `https://avatars.githubusercontent.com/${username}?s=64`
   sortAvatar.hidden = false
 
   const sortInfo = /** @type {HTMLElement} */ (
@@ -576,7 +581,7 @@ function updateCacheInfo() {
  */
 function createCardElement(pkg) {
   const card = document.createElement("article")
-  card.className = "card"
+  card.className = "card card--package"
   card.dataset.pkgName = pkg.name
 
   // 构建 GitHub 信息
@@ -642,30 +647,51 @@ function createCardElement(pkg) {
   const latestWeekDownloads = pkg.weeklyData.at(-1).total
 
   card.innerHTML = `
-      <a class="card-header" href="https://www.npmjs.com/package/${pkg.name}" target="_blank">
-          <span class="card-name">${pkg.name}</span>
+      <header class="card-header">
+          <a class="card-name" href="https://www.npmjs.com/package/${pkg.name}" target="_blank">${pkg.name}</a>
 
           <div style="white-space: nowrap;">
             <img title="v${pkg.version}" src="https://img.shields.io/npm/v/${pkg.name}.svg?style=flat" alt="NPM Version" />
             <img src="https://img.shields.io/npm/${latestWeekDownloads > 1000 ? "dw" : "dm"}/${pkg.name}.svg?style=flat" alt="npm downloads" />
-            <img src="https://img.shields.io/badge/yearly-${pkg.totalDownloads.toLocaleString()}-blue?logo=npm&logoColor=cyan&style=flat" alt="Yearly downloads: ${pkg.totalDownloads}" title="Yearly downloads: ${pkg.totalDownloads}" />
+            <img src="https://img.shields.io/badge/yearly-${numberToLocaleString(pkg.totalDownloads)}-blue?logo=npm&logoColor=cyan&style=flat" alt="Yearly downloads: ${pkg.totalDownloads}" title="Yearly downloads: ${pkg.totalDownloads}" />
           </div>
-      </a>
+      </header>
       <div class="chart-container" id="chart-${pkg.name.replace(/[^a-zA-Z0-9]/g, "-")}"
           data-pkgname="${pkg.name}">
       </div>
+
+      <img class="npmx-embed-downloads-chart" src="https://npmx.dev/api/embed/downloads.svg?packages=${encodeURIComponent(pkg.name)}&metric=downloads&mode=light&granularity=weekly&locale=en-US&accent=oklch%280.51+0.13+162.4%29&yLabel=Weekly+Downloads" style="height: 100%;/* aspect-ratio: 1 / 1; */width: 100%;object-fit: cover;">
+      
       <div class="card-metrics">
           <img src="https://img.shields.io/librariesio/dependents/npm/${pkg.name}" title="dependents" alt="dependents" />
           //
           <img src="${trendBadge}" title="latest week trend" alt="weekly trend: ${trendArrow} ${Math.abs(pkg.trend)}%" />
           //
-          <span class="metric" title="${new Date(pkg.publishedAt).toLocaleString()}">🚀 发布 <strong>${publishedDisplay}</strong></span>
+          <img src="https://img.shields.io/badge/🚀%20发布-${publishedDisplay}-brightgreen?logoColor=cyan" title="${new Date(pkg.publishedAt).toLocaleString()}" alt="weekly trend: ↑ 1%">
           //
-          <span class="metric" title="${new Date(pkg.createdAt).toLocaleString()}">🤰 诞生于 <strong>${createdDisplay}</strong></span>
+          <img src="https://img.shields.io/badge/🤰%20诞生于-${createdDisplay}-brightgreen?logoColor=cyan" title="${new Date(pkg.createdAt).toLocaleString()}" alt="weekly trend: ↑ 1%">
+
       </div>
       ${ghInfo}
   `
-
+  // <span class="metric" title="${new Date(pkg.publishedAt).toLocaleString()}">🚀 发布 <strong>${publishedDisplay}</strong></span>
+  // <span class="metric" title="${new Date(pkg.createdAt).toLocaleString()}">🤰 诞生于 <strong>${createdDisplay}</strong></span>
+  {
+    /* <span class="slash" style="
+  height: 1.2em;
+  transform: rotate(22deg);
+  width: 0.16em;
+  background: var(--color-primary);
+  border-radius: 1em;
+"></span> */
+  }
+  //   <span class="dot" style="
+  //   border: 1px solid;
+  //   width: 0.5em;
+  //   aspect-ratio: 1;
+  //   border-radius: 50%;
+  //   background: var(--color-primary);
+  // "></span>
   return card
 }
 
@@ -739,7 +765,7 @@ function init() {
 
     usernameInput.parentElement?.insertAdjacentHTML(
       "beforeend",
-      `<img src="https://avatars.githubusercontent.com/${username}?s=64" alt="github user icon" style="width: 5vw; border-radius: 50%;" />`,
+      `<img src="https://avatars.githubusercontent.com/${username}?s=128" alt="github user icon" style="width: 5vw; border-radius: 50%;" />`,
       // `<img src="https://unavatar.io/npm/${username}?size=16" alt="" style="width:2.5rem;border-radius: 50%;" />`,
     )
   }
@@ -809,9 +835,19 @@ document.addEventListener("DOMContentLoaded", init)
  * @param {Hottest} hottest
  * @param {string} username
  */
-function renderHottest(hottest, username) {
-  hottestPkg.innerHTML = hottest.name
-    ? `<a href="insight.html?username=${encodeURIComponent(username)}&rank=weekly-downloads" title="📊 排行榜页面" style="color:inherit;">${hottest.name} (<span style="font-size: 60%;">Latest week downloads <span class='text-primary' style='font-size: calc(20 / 16 * 1rem)'>${hottest.latestWeekDownloads.toLocaleString()}</span></span>)</a>`
+function renderHottest({ name, latestWeekDownloads }, username) {
+  const [startLeaf, endLeaf] = makeLeaves()
+  hottestPkg.innerHTML = name
+    ? `<div style="display: flex; align-items: center;">
+    ${startLeaf}
+      <a href="https://www.npmjs.com/${encodeURIComponent(name)}" title="当前最热包 🔥 | 前往 npm" style="color:inherit; font-weight: bold;" target="_blank">
+        ${name}
+      </a>
+    ${endLeaf}
+    <span style="margin-inline-start: 0.2em;">(🔥</span><a href="insight.html?username=${encodeURIComponent(username)}&rank=weekly-downloads" target="_blank" title="📊 前往洞察页面" style="font-size: 60%;">
+      Last 7 Days Downloads <span class='text-primary' style='font-size: calc(20 / 16 * 1rem)'>${numberToLocaleString(latestWeekDownloads)}</span>
+    </a>)
+    </div>`
     : "-"
 }
 
@@ -819,9 +855,15 @@ function renderHottest(hottest, username) {
  * @param {{ name: string; trend: number }} trend
  * @param {string} username
  */
-function renderHottestTrend(trend, username) {
-  hottestTrendPkg.innerHTML = trend.name
-    ? `<a href="insight.html?username=${encodeURIComponent(username)}&rank=trend" title="📊 排行榜页面" style="color:inherit;">${trend.name}</a> (<span class='text-primary' style="font-size: 110%;">+${trend.trend}%</span>)`
+function renderHottestTrend({ name, trend }, username) {
+  const [startLeaf, endLeaf] = makeLeaves()
+
+  hottestTrendPkg.innerHTML = name
+    ? `${startLeaf}
+      <a href="https://www.npmjs.com/package/${encodeURIComponent(name)}" target="_blank" title="当前增速最快包 🚀 | 前往 npm" style="color:inherit;">
+        ${name}
+      </a>
+    ${endLeaf} <span style="margin-inline-start: 0.2em;">(</span><a href="insight.html?username=${encodeURIComponent(username)}&rank=trend" target="_blank" title="📊 前往洞察页面" class='text-primary' style="font-size: 110%;">🚀+${trend}%</a>)`
     : "<span style='font-size: 0.8em;'>（无）<span style='font-size:80%;'>近期无下载量攀升的包</span></span>"
 }
 
@@ -875,3 +917,43 @@ function getFreshnessLabel(fromCache, cacheTimestamp) {
 
   return timeDisplay
 }
+
+/**
+ *
+ * @returns {[startLeaf: string, endLeaf: string]}
+ */
+function makeLeaves() {
+  const endLeaf = makeEndLeaf()
+
+  const startLeaf = endLeaf.replace("transform: scaleX(-1)", "")
+
+  return [startLeaf, endLeaf]
+}
+
+/**
+ * copy from https://cn.guidetoiceland.is/travel-iceland/drive/reykjavik
+ */
+function makeEndLeaf() {
+  return `<svg viewBox="0 0 22 39" class="_loXYJ4 reviewScoreLeaf text-primary" style="width: 1em; transform: scaleX(-1)" fill="currentColor">
+            <title>left-reviewScoreLeaf</title>
+            <path d="M16.431 36.965c-.094-.03-.188-.048-.268-.09-.689-.364-1.378-.73-2.052-1.112-.116-.066-.189-.221-.203-.34-.08-.635-.102-1.275-.225-1.903a3.243 3.243 0 00-.464-1.148c-.66-.998-1.378-1.973-2.081-2.966-.218 1.465-.21 2.924.246 4.402-.087-.06-.174-.12-.254-.192a67.614 67.614 0 01-1.544-1.507c-.08-.084-.138-.251-.094-.34.681-1.233.522-2.483.167-3.745-.225-.813-.443-1.626-.653-2.446-.05-.197-.058-.4-.152-.604-.87 1.627-1.233 3.314-.805 5.174-.123-.114-.196-.15-.225-.204a129.72 129.72 0 01-1.457-2.524c-.051-.09-.044-.245.021-.317.733-.819 1.204-1.722 1.32-2.733.138-1.238.218-2.482.319-3.72a.759.759 0 00-.036-.304c-.653.67-1.131 1.429-1.653 2.17-.537.766-.776 1.597-.798 2.476-.036 0-.065.006-.102.006-.08-.28-.18-.556-.232-.837a59.824 59.824 0 01-.333-1.98c-.015-.071.014-.185.072-.227.725-.532 1.247-1.184 1.69-1.884.805-1.262 1.269-2.631 1.755-3.995.029-.083.05-.167.029-.287-.363.305-.726.61-1.088.91-.24.197-.464.406-.718.591-.928.688-1.436 1.555-1.668 2.548-.021.084-.065.156-.094.233-.029-.006-.058-.006-.087-.012.029-.466.036-.939.087-1.405.065-.562.174-1.124.283-1.686a.461.461 0 01.21-.282c1.32-.7 2.4-1.572 3.19-2.715.443-.646 1.038-1.214 1.567-1.818.094-.107.196-.21.275-.34-1.718.574-3.284 1.315-4.394 2.595l-.101-.066c.224-.496.435-.999.674-1.49.225-.484.471-.872 1.196-1.088 1.284-.382 2.335-1.142 3.38-1.871.543-.383 1.094-.748 1.646-1.125.123-.09.246-.185.348-.31-.82.023-1.596.215-2.342.46-.747.245-1.458.556-2.22.849.037-.072.066-.15.124-.215.428-.485.856-.963 1.298-1.436a.502.502 0 01.326-.137c1.429-.03 2.748-.377 4.017-.891.682-.275 1.385-.515 2.074-.772a.737.737 0 00.268-.161 12.32 12.32 0 00-4.698.233c.08-.072.145-.143.232-.203.152-.114.311-.222.464-.335.587-.455 1.138-.802 2.088-.634 1.378.24 2.792.024 4.177-.12.5-.054 1.008-.095 1.508-.15a.496.496 0 00.247-.095c-1.64-.544-3.285-1.035-5.112-.658a2.907 2.907 0 00-.131-.137c.094-.024.196-.024.275-.066.276-.144.544-.293.805-.455a4.875 4.875 0 011.835-.705 3.626 3.626 0 001.922-.957c.493-.473.971-.963 1.442-1.453.116-.12.182-.276.276-.413h-.218c-.26.084-.514.173-.783.257-.819.251-1.682.43-2.458.76-.826.352-1.407.927-1.465 1.764-.007.078-.137.173-.232.227-.826.407-1.66.801-2.494 1.202-.043.024-.109.024-.16.03-.021-.018-.043-.03-.072-.048 1.341-.945 1.87-2.195 2.16-3.612-1.558.718-2.863 1.573-3.675 2.829-.334.508-.312 1.082-.08 1.644.167-.03.29-.053.413-.077.015.018.022.036.036.053-.776.598-1.559 1.197-2.335 1.795.559-1.394 0-2.745-.123-4.115-.602.76-1.182 1.513-1.653 2.314-.638 1.083-.515 2.201.007 3.296.08.167.05.269-.058.406-.493.616-.964 1.238-1.443 1.854-.043.054-.094.102-.138.156-.029 0-.058 0-.087-.006.087-1.447.095-2.883-.913-4.192-.066.125-.124.22-.16.322-.34.97-.718 1.932-1.008 2.913-.311 1.029.138 1.944.812 2.78.138.168.189.276.11.461-.334.838-.653 1.68-.98 2.518-.029.084-.072.162-.108.245-.08-.071-.095-.125-.087-.179.087-.915-.204-1.752-.776-2.53-.24-.323-.45-.658-.682-.98-.218-.3-.457-.587-.682-.88-.043.006-.087.018-.137.024-.044 1.059-.11 2.123-.116 3.182-.008.765.18 1.507.667 2.17.326.45.732.862 1.392.934-.073 1.19-.145 2.374-.225 3.564-.573-1.896-2.32-3.056-3.915-4.318-.015.144.021.263.058.389.217.861.391 1.74.667 2.59.406 1.267 1.16 2.362 2.646 2.984.232.095.493.137.747.209.283 1.082.58 2.219.892 3.433-.094-.096-.138-.126-.167-.168-.471-.741-1.16-1.321-1.994-1.776C2.132 23.856 1.06 23.294 0 22.732v.12c.044.041.102.083.13.13.472.79.965 1.58 1.415 2.381.819 1.471 2.131 2.452 4.024 2.907.428.101.464.083.53-.24.68 1.065 1.37 2.141 2.11 3.296-1.988-1.376-4.293-1.86-6.679-2.117.37.305.79.568 1.088.909.892 1.022 2.059 1.758 3.386 2.332 1.08.466 2.24.646 3.466.448.109-.017.283.066.377.144.74.634 1.501 1.292 2.262 1.944.073.06.138.131.204.197l-.051.06c-1.16-.341-2.364-.467-3.59-.43-1.203.035-2.407.107-3.669.167.08.101.095.125.11.131 1.725.76 3.436 1.567 5.416 1.812 1.225.15 2.4.036 3.502-.46.101-.048.29-.012.406.036 1.08.496 2.16 1.005 3.241 1.507"></path>
+          </svg>`
+}
+
+const settings = /** @type {HTMLElement} */ (
+  document.getElementById("settings")
+)
+
+// 监听自定义 change 事件
+// @ts-expect-error
+settings.addEventListener(
+  "chart-provider-change",
+  (/** @type {CustomEvent<{ provider: string }>} */ e) => {
+    const provider = e.detail.provider
+    console.log("当前计数:", provider)
+    // 更新页面其他元素
+    document.querySelectorAll(".chart-container")?.forEach((container) => {
+      container.parentElement?.setAttribute("data-provider", provider)
+    })
+  },
+)

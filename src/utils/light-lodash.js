@@ -1,6 +1,7 @@
 /** @import { int } from './base.type.js' */
-const YELLOW = `\x1b[33m`
-const RESET = `\x1b[0m`
+export const YELLOW = `\x1b[33m`
+export const RED = `\x1b[31m`
+export const RESET = `\x1b[0m`
 
 /**
  *
@@ -69,4 +70,55 @@ export function timeAgo(date) {
     secondsAgo,
   })
   throw new Error("Impossible branch reached")
+}
+
+/**
+ *
+ * @param {int} num
+ * @param {Parameters<typeof Number.prototype.toLocaleString>[0]} locale
+ * @returns
+ */
+export function numberToLocaleString(num, locale = navigator.language) {
+  if (locale === "zh-CN") {
+    return numberToChineseWan(num)
+  }
+
+  return num.toLocaleString(locale)
+}
+
+/**
+ *
+ * @param {int} num
+ * @returns {string}
+ */
+function numberToChineseWan(num, depth = 1) {
+  if (num < 1_0000) {
+    return num.toString()
+  }
+
+  let unit = " 万 "
+  if (depth >= 2) {
+    unit = " 亿 "
+  }
+
+  const wan = Math.floor(num / 1_0000)
+  const qian = num % 1_0000
+
+  return `${numberToChineseWan(wan, depth + 1)}${unit}${qian}`
+}
+
+if (import.meta.main) {
+  const { test } = await import("node:test")
+  const { deepStrictEqual } = await import("node:assert")
+
+  test("numberToChineseWan", () => {
+    // @ts-expect-error
+    deepStrictEqual(numberToChineseWan(305_3975), "305 万 3975")
+    // @ts-expect-error
+    deepStrictEqual(numberToChineseWan(3975), "3975")
+    // @ts-expect-error
+    deepStrictEqual(numberToChineseWan(1_2305_3975), "1 亿 2305 万 3975")
+    // @ts-expect-error
+    deepStrictEqual(numberToChineseWan(2305_3975), "2305 万 3975")
+  })
 }

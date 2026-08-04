@@ -1,0 +1,131 @@
+<style>
+  .fixed {
+    position: fixed;
+  }
+
+  button {
+    background: transparent;
+    border: none;
+    font-size: 1.5em;
+  }
+
+  .drawer {
+    margin: 0 0 0 auto;
+    height: 100vh;
+    max-height: 100vh;
+    width: 30rem;
+    max-width: 90vw;
+    border: 0;
+    border-radius: 0;
+    padding: 24px;
+    box-sizing: border-box;
+    &:open {
+      display: flex;
+    }
+    flex-direction: column;
+    transition:
+      translate 0.3s,
+      display 0.3s allow-discrete,
+      overlay 0.3s allow-discrete;
+    translate: 100% 0;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  }
+
+  .drawer[open] {
+    translate: 0 0;
+  }
+
+  @starting-style {
+    .drawer[open] {
+      translate: 100% 0;
+    }
+  }
+
+  .drawer::backdrop {
+    background: rgba(0, 0, 0, 0.3);
+    transition: opacity 0.3s;
+  }
+
+  .drawer h2 {
+    margin-bottom: 0.75rem;
+    font-size: 1.25rem;
+  }
+
+  .drawer label {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: #666;
+    margin-bottom: 0.25rem;
+  }
+
+  .drawer textarea {
+    flex: 1;
+    min-height: 180px;
+    font-family: var(--ds-font-family-code);
+    font-size: 0.75rem;
+    resize: vertical;
+  }
+
+  .drawer .path-hint {
+    font-size: 0.8rem;
+    color: #666;
+    background: #f5f5f5;
+    padding: 8px 12px;
+    border-radius: 4px;
+    margin-bottom: 16px;
+    word-break: break-all;
+    line-height: 1.5;
+  }
+
+  .drawer .path-hint code {
+    background: transparent;
+    padding: 0;
+  }
+
+  .drawer-actions {
+    display: flex;
+    gap: 8px;
+    justify-content: flex-end;
+    padding-top: 16px;
+  }
+</style>
+
+<button
+  id="settingsBtn"
+  type="button"
+  class="p-2 rounded-full bg-gray-700 hover:bg-gray-600 transition text-gray-200"
+  style="cursor: pointer; top: 3rem; right: 1rem"
+>
+  ⚙️
+</button>
+
+<dialog id="createDrawer" class="drawer">
+  <h2>Settings</h2>
+
+  <fieldset id="xxx">
+    <legend>Select a chart provider</legend>
+
+    <div>
+      <input
+        type="radio"
+        id="chart.js"
+        name="chartProvider"
+        value="chart.js"
+        checked
+      />
+      <label for="chart.js">Custom using Chart.js</label>
+    </div>
+
+    <div>
+      <input type="radio" id="npmx" name="chartProvider" value="npmx" />
+      <label for="npmx">npmx</label>
+    </div>
+  </fieldset>
+
+  <div class="drawer-actions">
+    <button type="button" class="btn-secondary" onclick="createDrawer.close()">
+      Cancel
+    </button>
+    <button type="button" onclick="submitNewScenario()">Create</button>
+  </div>
+</dialog>

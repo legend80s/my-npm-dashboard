@@ -214,7 +214,7 @@ button:disabled {
   gap: 6px;
 }
 
-.stats-bar .stat-item strong {
+.stats-bar .stat-item {
   color: #e6edf3;
 }
 
@@ -245,6 +245,31 @@ button:disabled {
 }
 .card:focus {
   outline-color: #58a6ff;
+}
+
+.card--package {
+  .npmx-embed-downloads-chart {
+    display: none;
+  }
+
+  &[data-provider='npmx'] {
+    .npmx-embed-downloads-chart {
+      display: block;
+    }
+    .chart-container {
+      display: none;
+    }
+  }
+
+  /* .chart-container {
+    display: none;
+  } */
+
+  /* &[data-provider='chart.js'] {
+    .chart-container {
+      display: block;
+    }
+  } */
 }
 
 .card:hover {
@@ -328,7 +353,7 @@ button:disabled {
 /* ===== Card Metrics ===== */
 .card-metrics {
   display: flex;
-  align-items: center;
+  align-items: end;
   flex-wrap: wrap;
   gap: 10px;
   font-size: 0.75rem;
