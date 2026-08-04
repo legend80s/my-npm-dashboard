@@ -19,6 +19,9 @@
 .text-gray {
   color: var(--color-gray);
 }
+.text-gold {
+  color: gold;
+}
 
 body {
   font-family:
