@@ -184,8 +184,36 @@ async function renderChart(container, pkgName, weeklyData) {
     const chartAccentColor = rootStyle.getPropertyValue("--accent-green").trim() || "#58a6ff"
 
     const ctx = /** @type {CanvasRenderingContext2D} */ (canvas.getContext("2d"))
+
+    const crosshairPlugin = {
+      id: "crosshair",
+      afterDraw(/** @type {Chart} */ chart) {
+        if (chart.tooltip?.opacity === 0 || !chart.tooltip?.dataPoints?.length) {
+          return
+        }
+        const dp = chart.tooltip.dataPoints[0]
+        // @ts-expect-error
+        const x = dp.element.x
+        // @ts-expect-error
+        const y = dp.element.y
+        const { bottom } = chart.chartArea
+        // @ts-expect-error
+        const color = chart.data.datasets[0].borderColor
+        ctx.save()
+        ctx.beginPath()
+        ctx.moveTo(x, y)
+        ctx.lineTo(x, bottom)
+        ctx.lineWidth = 1
+        ctx.strokeStyle = /** @type {string} */ (color)
+        ctx.setLineDash([4, 3])
+        ctx.stroke()
+        ctx.restore()
+      },
+    }
+
     const chart = new Chart(ctx, {
       type: "line",
+      plugins: [crosshairPlugin],
       data: {
         labels: labels,
         datasets: [
