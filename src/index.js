@@ -22,30 +22,30 @@ const usernameInput = /** @type {HTMLInputElement} */ (document.getElementById("
 
 const limitInput = /** @type {HTMLInputElement} */ (document.getElementById("limitInput"))
 
-const searchBtn = /** @type {HTMLInputElement} */ (document.getElementById("searchBtn"))
+const searchBtn = /** @type {HTMLButtonElement} */ (document.getElementById("searchBtn"))
 // const statusBadge = document.getElementById("statusBadge")
 const refreshBtn = /** @type {HTMLButtonElement} */ (document.getElementById("refreshBtn"))
 
-const grid = /** @type {HTMLInputElement} */ (document.getElementById("grid"))
+const grid = /** @type {HTMLDivElement} */ (document.getElementById("grid"))
 // const pkgCount = document.getElementById("pkgCount")
 // const totalDownloads = document.getElementById("totalDownloads")
 
-const hottestPkg = /** @type {HTMLInputElement} */ (document.getElementById("hottestPkg"))
+const hottestPkg = /** @type {HTMLDivElement} */ (document.getElementById("hottestPkg"))
 
-const hottestTrendPkg = /** @type {HTMLInputElement} */ (document.getElementById("hottestTrendPkg"))
+const hottestTrendPkg = /** @type {HTMLDivElement} */ (document.getElementById("hottestTrendPkg"))
 
-const updateTime = /** @type {HTMLInputElement} */ (document.getElementById("updateTime"))
+const updateTime = /** @type {HTMLDivElement} */ (document.getElementById("updateTime"))
 
 const config = {
   pkgLimit: 4,
   MAX_SEARCH_SIZE,
 }
 
-console.log("1 limitInput.value:", limitInput.value)
+// console.log("1 limitInput.value:", limitInput.value)
 
 limitInput.value = String(config.pkgLimit)
 limitInput.max = String(config.MAX_SEARCH_SIZE)
-console.log("2 limitInput.value:", limitInput.value)
+// console.log("2 limitInput.value:", limitInput.value)
 
 // ============================================================
 //  2. URL 参数读写
@@ -257,7 +257,7 @@ async function renderChart(container, pkgName, weeklyData) {
                 if (!week) {
                   return ""
                 }
-                return ` Weekly: ${week.total.toLocaleString()}`
+                return ` Weekly: ${numberToLocaleString(week.total)}`
               },
               // afterLabel: (context) => {
               //   const index = context.dataIndex
@@ -588,6 +588,8 @@ function createCardElement(pkg) {
   card.className = "card card--package"
   card.dataset.pkgName = pkg.name
 
+  const cardIndex = grid.children.length + 1
+
   // 构建 GitHub 信息
   let ghInfo = ""
   if (pkg.github.owner && pkg.github.repo) {
@@ -649,7 +651,7 @@ function createCardElement(pkg) {
 
   card.innerHTML = `
       <header class="card-header">
-          <a class="card-name" href="https://www.npmjs.com/package/${pkg.name}" target="_blank">${pkg.name}</a>
+          <a class="card-name" href="https://www.npmjs.com/package/${pkg.name}" target="_blank">${cardIndex}. ${pkg.name}</a>
 
           <div style="white-space: nowrap;">
             <img title="v${pkg.version}" src="https://img.shields.io/npm/v/${pkg.name}.svg?style=flat" alt="NPM Version" />
