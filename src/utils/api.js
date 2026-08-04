@@ -8,7 +8,8 @@ import { fetchJSON, sleep } from "./light-lodash.js"
 
 /** npm search API 单次拉取最大数量 */
 // 190 https://registry.npmjs.org/-/v1/search?text=maintainer:antfu&sort=date&size=190 才可以拉取到 2026-7-31 16:14:49 一小时之前发布的 magic-string-stack
-export const MAX_SEARCH_SIZE = 100
+export const MAX_SEARCH_SIZE = 10
+// export const MAX_SEARCH_SIZE = 100
 
 const DEV = true
 
@@ -31,9 +32,7 @@ export async function fetchUserPackages(username) {
   // ""
   // NPM Bug: not return all by publish time.
 
-  const data = /** @type {NpmPkgSearchResp} */ (
-    await fetchJSON(url, { label: "npm search" })
-  )
+  const data = /** @type {NpmPkgSearchResp} */ (await fetchJSON(url, { label: "npm search" }))
 
   // console.log("data:", data)
 
@@ -156,8 +155,7 @@ export async function fetchYearlyWeeklyDownloads(pkgName) {
   // 计算趋势：比较最近两周的下载量
   const latest = weeklyData.at(-1)?.total || 0
   const secondHalf = weeklyData.at(-2)?.total || 0
-  const trend =
-    latest === 0 ? 0 : Math.round(((latest - secondHalf) / secondHalf) * 100)
+  const trend = latest === 0 ? 0 : Math.round(((latest - secondHalf) / secondHalf) * 100)
 
   return {
     weekly: weeklyData,
@@ -199,8 +197,7 @@ export async function fetchGitHubStars(owner, repo) {
  */
 export async function fetchGitHubLastCommit(owner, repo) {
   const url =
-    prefix +
-    `https://api.github.com/repos/${encodeURIComponent(owner)}/${encodeURIComponent(repo)}/commits?per_page=1`
+    prefix + `https://api.github.com/repos/${encodeURIComponent(owner)}/${encodeURIComponent(repo)}/commits?per_page=1`
   const res = await fetch(url, {
     headers: { Accept: "application/vnd.github.v3+json" },
   })
@@ -230,9 +227,7 @@ export async function fetchGitHubLastCommit(owner, repo) {
 export async function fetchDependentsCount(pkg) {
   const url = `https://img.shields.io/librariesio/dependents/npm/${encodeURIComponent(pkg)}.json`
 
-  const json = /** @type {ShieldIODependents} */ (
-    await fetchJSON(url, { label: "fetch Dependents" })
-  )
+  const json = /** @type {ShieldIODependents} */ (await fetchJSON(url, { label: "fetch Dependents" }))
 
   return Number(json.value)
 }

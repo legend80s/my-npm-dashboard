@@ -151,13 +151,13 @@ button:disabled {
 }
 
 .header-right button {
-  padding: 8px 14px;
+  font-size: 1.6rem;
+  padding: 0 1.5rem;
   border-radius: 8px;
   border: none;
   background: var(--color-primary);
   /* background: #238636; */
   color: #fff;
-  font-size: 0.875rem;
   font-weight: 600;
   cursor: pointer;
   transition: background 0.2s;
