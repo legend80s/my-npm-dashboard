@@ -463,6 +463,18 @@ button:disabled {
   margin-bottom: 16px;
 }
 
+/* ===== Loading Spin ===== */
+@keyframes spin-pause {
+  0% { transform: rotate(0deg); }
+  50% { transform: rotate(360deg); }
+  50.01%, 100% { transform: rotate(360deg); }
+}
+
+.loading-spin {
+  display: inline-block;
+  animation: spin-pause 1.6s ease-in-out infinite;
+}
+
 /* ===== Responsive ===== */
 @media (max-width: 600px) {
   .header {

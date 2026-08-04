@@ -303,7 +303,8 @@ function renderChart(packages, ranking) {
 // ============================================================
 function showStatus(emoji, msg) {
   statusMsg.style.display = "block"
-  statusMsg.innerHTML = `<span class="big">${emoji}</span>${msg}`
+  const spinClass = emoji === "⏳" ? " loading-spin" : ""
+  statusMsg.innerHTML = `<span class="big${spinClass}">${emoji}</span>${msg}`
 }
 
 function hideStatus() {

@@ -88,7 +88,11 @@ const old = searchBtn.textContent
 function setLoading(loading) {
   isLoading = loading
   searchBtn.disabled = loading
-  searchBtn.textContent = loading ? "⏳..." : old
+  if (loading) {
+    searchBtn.innerHTML = '<span class="loading-spin">⏳</span>'
+  } else {
+    searchBtn.textContent = old
+  }
   // setStatus(loading ? "加载中..." : "", loading ? "loading" : "")
 }
 
@@ -388,7 +392,7 @@ async function loadPackages(username, displayLimit, forceRefresh = false) {
 
   // 缓存未命中或强制刷新
   setLoading(true)
-  grid.innerHTML = `<div class="no-results" style="color:var(--orange);"><span class="big">⏳</span>正在搜索 ${username} 的包...</div>`
+  grid.innerHTML = `<div class="no-results" style="color:var(--orange);"><span class="big loading-spin">⏳</span>正在搜索 ${username} 的包...</div>`
 
   try {
     /** @type {FreshPackageDetail[]} */
