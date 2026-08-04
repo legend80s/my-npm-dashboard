@@ -1,7 +1,8 @@
 import { Hono } from "hono"
-import { fetchJSON } from "../../../utils/light-lodash.js"
+import { fetchJSON, RED, RESET, YELLOW } from "../../../utils/light-lodash.js"
 
 const host = "https://api.github.com"
+const debugging = false
 
 export const github = new Hono()
 export const githubPath = `/${host}`
@@ -14,14 +15,26 @@ export const githubPath = `/${host}`
 // add NODE_TLS_REJECT_UNAUTHORIZED=0 to env to disable ssl verification
 process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0"
 
+// empty string -> no proxy
+const proxies = new Set([
+  "",
+  process.env.GITHUB_PROXY || "",
+  "https://gh-proxy.org/",
+  "https://v4.gh-proxy.org/",
+  "https://v6.gh-proxy.org/",
+  "https://cdn.gh-proxy.org/",
+])
+  .values()
+  .toArray()
+
 github.get("/repos/:owner/:repo", async (c) => {
-  // fetch https://api.github.com/repos/legend80s/marmot
+  // fetch https://api.github.com/repos/legend80s/pocket
   const owner = c.req.param("owner")
   const repo = c.req.param("repo")
 
   const url = `${host}/repos/${owner}/${repo}`
 
-  const json = await fetchJSON(url, {
+  const json = await fetchUsingProxy(url, {
     label: "github repo",
     verbose: true,
   })
@@ -31,16 +44,58 @@ github.get("/repos/:owner/:repo", async (c) => {
 
 // const url = `https://api.github.com/repos/${encodeURIComponent(owner)}/${encodeURIComponent(repo)}/commits?per_page=1`
 github.get("/repos/:owner/:repo/commits", async (c) => {
-  // fetch https://api.github.com/repos/legend80s/marmot/commits?per_page=1
+  // fetch https://api.github.com/repos/legend80s/pocket/commits?per_page=1
   const owner = c.req.param("owner")
   const repo = c.req.param("repo")
 
   const url = `${host}/repos/${owner}/${repo}/commits?per_page=1`
 
-  const json = await fetchJSON(url, {
+  const json = await fetchUsingProxy(url, {
     label: "github commits",
     verbose: true,
   })
 
   return c.json(json)
 })
+
+/**
+ * Roust github API using a proxies.
+ * @type {typeof fetchJSON}
+ */
+async function fetchUsingProxy(url, opt) {
+  let json
+  let currentUrl = ""
+  let lastError = null
+
+  proxies.sort(() => (Math.random() > 0.5 ? -1 : 1)) // shuffle proxies for load balancing
+
+  for (const proxy of proxies) {
+    currentUrl = `${proxy}${url}`
+
+    try {
+      json = await fetchJSON(currentUrl, opt)
+    } catch (fetchGithubRepoError) {
+      lastError = fetchGithubRepoError
+      debugging &&
+        console.warn(
+          YELLOW,
+          "WARN",
+          `"${currentUrl}"`,
+          fetchGithubRepoError,
+          RESET,
+        )
+    }
+  }
+
+  if (!json) {
+    if (!lastError) {
+      const msg = `[fetchUsingProxy] nil lastError (IMPOSSIBLE). Could not fetch "${url}" using any of the proxies`
+      console.error(RED, msg, RESET)
+      throw new Error(msg)
+    }
+
+    throw lastError
+  }
+
+  return json
+}
