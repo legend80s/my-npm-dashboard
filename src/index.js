@@ -21,6 +21,7 @@ const limitInput = /** @type {HTMLInputElement} */ (document.getElementById("lim
 
 const searchBtn = /** @type {HTMLInputElement} */ (document.getElementById("searchBtn"))
 // const statusBadge = document.getElementById("statusBadge")
+const refreshBtn = /** @type {HTMLButtonElement} */ (document.getElementById("refreshBtn"))
 
 const grid = /** @type {HTMLInputElement} */ (document.getElementById("grid"))
 // const pkgCount = document.getElementById("pkgCount")
@@ -345,6 +346,8 @@ async function loadPackages(username, displayLimit, forceRefresh = false) {
     const dataPromise = fetchRaw(username, {
       /** @param {FreshPackageDetail} pkgDetail @param {number} done @param {number} total */
       onPackage(pkgDetail, done, total) {
+        refreshBtn.textContent = `🔄 刷新 ${done}/${total}`
+
         if (done <= displayLimit) {
           collected.push(pkgDetail)
           appendCard(pkgDetail)
