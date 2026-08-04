@@ -75,6 +75,7 @@ function setUrlParams(username, limit) {
 //  3. 状态管理
 // ============================================================
 let isLoading = false
+let currentDisplayTotal = 0
 
 // function setStatus(text, type = "") {
 //   statusBadge.textContent = text
@@ -403,6 +404,7 @@ async function loadPackages(username, displayLimit, forceRefresh = false) {
         if (done <= displayLimit) {
           collected.push(pkgDetail)
           appendCard(pkgDetail)
+          currentDisplayTotal = Math.min(displayLimit, total)
         }
 
         if (done >= 1) {
@@ -583,11 +585,11 @@ function updateCacheInfo() {
  * @param {FreshPackageDetail} pkg
  * @returns {HTMLElement}
  */
-function createCardElement(pkg) {
+function createCardElement(pkg, totalCount = 0) {
   const card = document.createElement("article")
   card.className = "card card--package"
   card.dataset.pkgName = pkg.name
-
+  /** @type {number} */
   const cardIndex = grid.children.length + 1
 
   // 构建 GitHub 信息
@@ -651,7 +653,7 @@ function createCardElement(pkg) {
 
   card.innerHTML = `
       <header class="card-header">
-          <a class="card-name" href="https://www.npmjs.com/package/${pkg.name}" target="_blank">${cardIndex}. ${pkg.name}</a>
+          <a class="card-name" href="https://www.npmjs.com/package/${pkg.name}" target="_blank">${totalCount > 4 ? `${cardIndex}. ` : ""}${pkg.name}</a>
 
           <div style="white-space: nowrap;">
             <img title="v${pkg.version}" src="https://img.shields.io/npm/v/${pkg.name}.svg?style=flat" alt="NPM Version" />
@@ -703,7 +705,7 @@ function createCardElement(pkg) {
  * @param {FreshPackageDetail} pkg
  */
 function appendCard(pkg) {
-  const card = createCardElement(pkg)
+  const card = createCardElement(pkg, currentDisplayTotal)
   grid.appendChild(card)
 
   if (card.classList.contains("card-error")) {
@@ -730,7 +732,7 @@ async function renderCards(pkgDetails) {
   const cardElements = []
 
   for (const pkg of pkgDetails) {
-    const card = createCardElement(pkg)
+    const card = createCardElement(pkg, pkgDetails.length)
     grid.appendChild(card)
     cardElements.push({ element: card, pkg })
   }
