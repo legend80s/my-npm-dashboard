@@ -23,7 +23,7 @@
       href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='80'>🐿️</text></svg>"
     /> -->
 
-    <link rel="icon" type="image/svg+xml" href="/npm.svg" />
+    <link rel="icon" type="image/svg+xml" href="/closed-npm.svg" />
 
     <!-- "beautiful-mermaid": "https://unpkg.com/beautiful-mermaid@1.1.3/dist/index.js" -->
     <script type="importmap">
@@ -46,14 +46,14 @@
     <link rel="stylesheet" href="index.css" />
     <script>
       (function () {
-        var saved = localStorage.getItem("theme");
+        var saved = localStorage.getItem('theme');
         var theme =
-          saved === "light" || saved === "dark"
+          saved === 'light' || saved === 'dark'
             ? saved
-            : window.matchMedia("(prefers-color-scheme: light)").matches
-              ? "light"
-              : "dark";
-        document.documentElement.setAttribute("data-theme", theme);
+            : window.matchMedia('(prefers-color-scheme: light)').matches
+              ? 'light'
+              : 'dark';
+        document.documentElement.setAttribute('data-theme', theme);
       })();
     </script>
   </head>

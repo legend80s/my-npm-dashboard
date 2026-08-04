@@ -6,6 +6,9 @@ import { numberToLocaleString, timeAgo as resolveRelativeTime } from "./utils/li
 
 Chart.register(...registerables)
 
+/** @type {Set<Chart>} */
+const charts = new Set()
+
 /** @import { CacheData, FreshPackageDetail, Hottest, PackageDetail } from './index.type.js' */
 /** @import { NpmPkgDownloadsResp, NpmPkgResp, NpmPkgSearchResp } from './utils/npmjs.type.js' */
 
@@ -163,6 +166,14 @@ async function renderChart(container, pkgName, weeklyData) {
     container.innerHTML = "" // 清空容器
     container.appendChild(canvas)
 
+    // clean up any previous chart on this container
+    // @ts-expect-error
+    const prev = container.__chart
+    if (prev) {
+      charts.delete(prev)
+      prev.destroy()
+    }
+
     // 创建图表实例
     const rootStyle = getComputedStyle(document.documentElement)
     // const chartGridColor = "#d8dee4"
@@ -170,7 +181,7 @@ async function renderChart(container, pkgName, weeklyData) {
     console.log({ chartGridColor })
     // const chartGridColor = rootStyle.getPropertyValue("--border-muted").trim() || "#21262d"
     const chartTickColor = rootStyle.getPropertyValue("--text-muted").trim() || "#8b949e"
-    const chartAccentColor = rootStyle.getPropertyValue("--accent").trim() || "#58a6ff"
+    const chartAccentColor = rootStyle.getPropertyValue("--accent-green").trim() || "#58a6ff"
 
     const ctx = /** @type {CanvasRenderingContext2D} */ (canvas.getContext("2d"))
     const chart = new Chart(ctx, {
@@ -183,8 +194,8 @@ async function renderChart(container, pkgName, weeklyData) {
             data: dataPoints,
             borderColor: chartAccentColor,
             backgroundColor: "rgba(88, 166, 255, 0.1)",
-            borderWidth: 2,
-            pointRadius: 0.8,
+            borderWidth: 1.5,
+            pointRadius: 0,
             pointHoverRadius: 4,
             pointBackgroundColor: chartAccentColor,
             tension: 0.3,
@@ -289,6 +300,9 @@ async function renderChart(container, pkgName, weeklyData) {
         },
       },
     })
+    // @ts-expect-error
+    container.__chart = chart
+    charts.add(chart)
   } catch (error) {
     console.error("Chart.js 渲染失败:", error)
     container.innerHTML = `<div class="chart-placeholder">📊 图表加载失败</div>`
@@ -915,6 +929,23 @@ settings.addEventListener("chart-provider-change", (/** @type {CustomEvent<{ pro
 })
 
 // theme-change
+function updateAllChartColors() {
+  const s = getComputedStyle(document.documentElement)
+  const gridColor = s.getPropertyValue("--border-muted").trim()
+  const tickColor = s.getPropertyValue("--text-muted").trim()
+  const accentColor = s.getPropertyValue("--accent").trim()
+
+  for (const chart of charts) {
+    chart.options.scales.x.grid.color = gridColor
+    chart.options.scales.x.ticks.color = tickColor
+    chart.options.scales.y.grid.color = gridColor
+    chart.options.scales.y.ticks.color = tickColor
+    chart.data.datasets[0].borderColor = accentColor
+    chart.data.datasets[0].pointBackgroundColor = accentColor
+    chart.update("none")
+  }
+}
+
 // @ts-expect-error
 settings.addEventListener("theme-change", (/** @type {CustomEvent<{ theme: string }>} */ e) => {
   const theme = e.detail.theme
@@ -922,6 +953,8 @@ settings.addEventListener("theme-change", (/** @type {CustomEvent<{ theme: strin
 
   document.documentElement.setAttribute("data-theme", theme)
   localStorage.setItem("theme", theme)
+
+  updateAllChartColors()
 
   // update all the npmx embed charts
   const imgs = /** @type {NodeListOf<HTMLImageElement>} */ (document.querySelectorAll(".npmx-embed-downloads-chart"))

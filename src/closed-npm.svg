@@ -2,7 +2,7 @@
   <title>npm-closed-top-bottom</title>
   
   <!-- 1. 黑色圆角底座 -->
-  <rect width="24" height="24" rx="2" fill="#CB3837"/>
+  <rect width="24" height="24" rx="2" fill="#000"/>
   
   <!-- 2. 完整的白色底座（底部完全封闭） -->
   <path d="M 5 5 
@@ -13,5 +13,5 @@
         fill="#FFFFFF"/>
         
   <!-- 3. 中间挖空的黑色方块（上下各留了1个单位白边） -->
-  <rect x="11" y="7" width="3" height="11" fill="#CB3837"/>
+  <rect x="11" y="7" width="3" height="11" fill="#000"/>
 </svg>
