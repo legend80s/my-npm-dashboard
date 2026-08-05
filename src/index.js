@@ -6,6 +6,9 @@ import { numberToLocaleString, timeAgo as resolveRelativeTime } from "./utils/li
 
 Chart.register(...registerables)
 
+import "./web-components/simple-counter/index.js"
+import "./web-components/badge-dependencies/index.js"
+
 /** @type {Set<Chart>} */
 const charts = new Set()
 
@@ -650,7 +653,7 @@ function createCardElement(pkg) {
 
   // 正常卡片
   const trendArrow = pkg.trend > 0 ? "↑" : pkg.trend < 0 ? "↓" : "→"
-  const trendColor = pkg.trend > 0 ? "brightgreen" : pkg.trend < 0 ? "red" : "lightgrey"
+  const trendColor = pkg.trend > 0 ? "brightgreen" : pkg.trend < 0 ? "yellow" : "lightgrey"
   const trendBadge = `https://img.shields.io/badge/weekly%20trend-${encodeURIComponent(`${trendArrow} ${Math.abs(pkg.trend)}%`)}-${trendColor}?logo=npm&logoColor=cyan&style=flat`
 
   const publishedDisplay = pkg.publishedAt ? timeAgo(pkg.publishedAt) : "--"
@@ -679,6 +682,8 @@ function createCardElement(pkg) {
       
       <div class="card-metrics">
           <img src="https://img.shields.io/librariesio/dependents/npm/${pkg.name}" title="dependents" alt="dependents" />
+          //
+          <badge-dependencies name="${pkg.name}" dependency-count="${pkg.dependencyCount}"></badge-dependencies>
           //
           <img src="${trendBadge}" title="latest week trend" alt="weekly trend: ${trendArrow} ${Math.abs(pkg.trend)}%" />
           //
