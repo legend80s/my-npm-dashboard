@@ -190,10 +190,13 @@ button:disabled {
 
 .header-right button {
   font-size: 1.6rem;
-  padding: 0 1.5rem;
-  border-radius: 8px;
+  padding: 0 0.25rem;
+  /* padding: 0 1.5rem; */
+  /* border-radius: 8px; */
   border: none;
-  background: var(--accent-green);
+  background: transparent;
+
+  /* background: var(--accent-green); */
   /* background: #238636; */
   color: var(--btn-text);
   font-weight: 600;
@@ -202,7 +205,8 @@ button:disabled {
 }
 
 .header-right button:hover {
-  background: var(--accent-green-hover);
+  background: var(--border);
+  /* background: var(--accent-green-hover); */
 }
 
 .header-right button:disabled {
