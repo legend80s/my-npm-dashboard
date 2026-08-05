@@ -8,6 +8,7 @@ Chart.register(...registerables)
 
 import "./web-components/simple-counter/index.js"
 import "./web-components/badge-dependencies/index.js"
+import "./web-components/fancy-separator.js"
 
 /** @type {Set<Chart>} */
 const charts = new Set()
@@ -684,15 +685,21 @@ function createCardElement(pkg) {
       
       <div class="card-metrics">
           <a href="https://www.npmjs.com/package/${name}?activeTab=dependents"><img src="https://img.shields.io/librariesio/dependents/npm/${name}" title="dependents" alt="dependents" style="vertical-align: bottom;" /></a>
-          //
-          <badge-dependencies name="${name}" dependency-count="${pkg.dependencyCount}"></badge-dependencies>
-          //
-          <img src="${trendBadge}" title="latest week trend" alt="weekly trend: ${trendArrow} ${Math.abs(pkg.trend)}%" />
-          //
-          <img src="https://img.shields.io/badge/🚀%20发布-${publishedDisplay}-brightgreen?logoColor=cyan" title="${new Date(pkg.publishedAt).toLocaleString()}" alt="weekly trend: ↑ 1%">
-          //
-          <img src="https://img.shields.io/badge/🤰%20诞生于-${createdDisplay}-brightgreen?logoColor=cyan" title="${new Date(pkg.createdAt).toLocaleString()}" alt="weekly trend: ↑ 1%">
 
+          <fancy-separator></fancy-separator>
+
+          <badge-dependencies name="${name}" dependency-count="${pkg.dependencyCount}"></badge-dependencies>
+          <fancy-separator></fancy-separator>
+          
+          <img src="${trendBadge}" title="latest week trend" alt="weekly trend: ${trendArrow} ${Math.abs(pkg.trend)}%" />
+
+          <fancy-separator></fancy-separator>
+
+          <img src="https://img.shields.io/badge/🚀%20发布-${publishedDisplay}-brightgreen?logoColor=cyan" title="${new Date(pkg.publishedAt).toLocaleString()}" alt="weekly trend: ↑ 1%">
+          
+          <fancy-separator></fancy-separator>
+          
+          <img src="https://img.shields.io/badge/🤰%20诞生于-${createdDisplay}-brightgreen?logoColor=cyan" title="${new Date(pkg.createdAt).toLocaleString()}" alt="weekly trend: ↑ 1%">
       </div>
       ${ghInfo}
   `

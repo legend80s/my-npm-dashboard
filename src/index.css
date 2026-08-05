@@ -415,6 +415,12 @@ button:disabled {
   font-size: 0.75rem;
   color: var(--accent-green);
   margin-bottom: 6px;
+
+  fancy-separator {
+    padding-bottom: 2px;
+    /* should be fixed otherwise wont align center on lg screen */
+    font-size: 16px;
+  }
 }
 
 @container (min-width: 620px) {
