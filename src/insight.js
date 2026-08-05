@@ -349,10 +349,12 @@ function renderChart(packages, ranking, container) {
           borderColor: colors,
           borderWidth: 1,
           borderRadius: 4,
+          barPercentage: 0.3,
         },
       ],
     },
     options: {
+      indexAxis: "y",
       responsive: true,
       maintainAspectRatio: false,
       onClick: (_, elements) => {
@@ -367,7 +369,7 @@ function renderChart(packages, ranking, container) {
         tooltip: {
           callbacks: {
             label: (ctx) => {
-              const val = ctx.parsed.y
+              const val = ctx.parsed.x
               const pkg = packages[ctx.dataIndex]
               if (!pkg) return `${ranking.label}: ${ranking.format(val)}`
               const lines = [`${ranking.label}: ${ranking.format(val)}`]
@@ -382,16 +384,16 @@ function renderChart(packages, ranking, container) {
       scales: {
         x: {
           grid: { color: gridColor, drawBorder: false },
-          ticks: { color: tickColor, font: { size: 11 } },
-        },
-        y: {
-          grid: { color: gridColor, drawBorder: false },
           ticks: {
             color: tickColor,
             font: { size: 11 },
             callback: (v) => ranking.format(v),
           },
           beginAtZero: true,
+        },
+        y: {
+          grid: { color: gridColor, drawBorder: false },
+          ticks: { color: tickColor, font: { size: 11 } },
         },
       },
     },
