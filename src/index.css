@@ -270,6 +270,19 @@ button:disabled {
   /* 40 vw to make 2 card in one line at least in md or lg screen (> 1200px) */
   grid-template-columns: repeat(auto-fill, minmax(32vw, 1fr));
   gap: 18px;
+
+  counter-reset: item;
+}
+
+/* Minimal styling: no need to show index when there are less than 5 items */
+.grid:has(> .card:nth-child(5)) header a::before {
+  content: counter(item) ". ";
+  /* color: var(--text-muted); */
+  font-weight: bold;
+}
+
+.card {
+  counter-increment: item;
 }
 
 /* ===== Card ===== */
@@ -283,11 +296,19 @@ button:disabled {
     transform 0.15s;
   display: flex;
   flex-direction: column;
-  outline: calc(3 / 16 * 1rem) dotted transparent;
+  outline: calc(3 / 16 * 1rem) ridge transparent;
   container-type: inline-size;
-}
-.card:focus {
-  outline-color: var(--accent);
+
+  &:hover {
+    /* border-color: var(--accent); */
+    outline-color: var(--accent-green);
+    /* add transition: ; */
+    transition: outline 2s;
+    /* transform: translateY(-2px); */
+  }
+  &:focus {
+    outline-color: var(--accent);
+  }
 }
 
 .card--package {
@@ -313,14 +334,6 @@ button:disabled {
       display: block;
     }
   } */
-}
-
-.card:hover {
-  /* border-color: var(--accent); */
-  outline-color: var(--accent-green);
-  /* add transition: ; */
-  transition: outline 3s;
-  /* transform: translateY(-2px); */
 }
 
 .card-header {

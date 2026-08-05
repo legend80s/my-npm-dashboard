@@ -8,7 +8,7 @@ import { fetchJSON, sleep } from "./light-lodash.js"
 
 /** npm search API 单次拉取最大数量 */
 // 190 https://registry.npmjs.org/-/v1/search?text=maintainer:antfu&sort=date&size=190 才可以拉取到 2026-7-31 16:14:49 一小时之前发布的 magic-string-stack
-export const MAX_SEARCH_SIZE = 10
+export const MAX_SEARCH_SIZE = 5
 // export const MAX_SEARCH_SIZE = 100
 
 const DEV = true
