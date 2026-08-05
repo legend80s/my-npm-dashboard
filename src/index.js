@@ -987,6 +987,7 @@ settings.addEventListener(
     const provider = e.detail.provider
     console.log("当前 provider:", provider)
     document.documentElement.setAttribute("data-provider", provider)
+    localStorage.setItem("provider", provider)
     // 更新页面其他元素
 
     // change all the a links from npmjs.com to npmx.dev

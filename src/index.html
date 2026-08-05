@@ -54,6 +54,10 @@
               ? 'light'
               : 'dark';
         document.documentElement.setAttribute('data-theme', theme);
+
+        var savedProvider = localStorage.getItem('provider');
+        var provider = savedProvider === 'npmx' || savedProvider === 'npm' ? savedProvider : 'npm';
+        document.documentElement.setAttribute('data-provider', provider);
       })();
     </script>
   </head>
