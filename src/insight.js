@@ -1,5 +1,6 @@
 import { Chart, registerables } from "chart.js"
 import { fetchRaw, RANKING_TOP_N, readCache, writeCache } from "./utils/data-loader.js"
+import { timeAgo } from "./utils/light-lodash.js"
 
 Chart.register(...registerables)
 
@@ -9,6 +10,71 @@ Chart.register(...registerables)
 //  Config & Rankings
 // ============================================================
 
+/**
+ * @typedef {object} MetricDescriptor
+ * @property {string} label
+ * @property {(p: import('./index.type.js').FreshPackageDetail) => { value: string, color?: string, title?: string }} get
+ */
+
+/** @type {Record<string, MetricDescriptor>} */
+const METRIC = {
+  weekly: {
+    label: "📥 周下载",
+    get: (p) => ({ value: (p.weeklyData?.at(-1)?.total ?? 0).toLocaleString() }),
+  },
+  yearly: {
+    label: "📥 年下载",
+    get: (p) => ({ value: (p.totalDownloads ?? 0).toLocaleString() }),
+  },
+  trend: {
+    label: "🚀 趋势",
+    get: (p) => ({
+      value: `${p.trend > 0 ? "+" : ""}${p.trend}%`,
+      color: p.trend > 0 ? "#3fb950" : p.trend < 0 ? "#f85149" : "#8b949e",
+    }),
+  },
+  stars: {
+    label: "⭐ Stars",
+    get: (p) => ({ value: (p.github?.stars ?? 0).toLocaleString() }),
+  },
+  lastCommit: {
+    label: "🕐 最近提交",
+    get: (p) => {
+      if (!p.github?.lastCommitDate) return { value: "—" }
+      const date = new Date(p.github.lastCommitDate)
+      return { value: timeAgo(date), title: date.toLocaleString() }
+    },
+  },
+  size: {
+    label: "📦 体积",
+    get: (p) => ({ value: formatBytes(p.unpackedSize ?? 0) }),
+  },
+  deps: {
+    label: "🔗 依赖",
+    get: (p) => ({ value: String(p.dependencyCount ?? 0) }),
+  },
+  dependents: {
+    label: "👥 被依赖",
+    get: (p) => ({ value: (p.dependents ?? 0).toLocaleString() }),
+  },
+  versions: {
+    label: "🔢 版本",
+    get: (p) => ({ value: String(p.versionCount ?? 0) }),
+  },
+  version: {
+    label: "📌 最新版本",
+    get: (p) => ({ value: p.version && p.version !== "--" ? p.version : "—" }),
+  },
+  publishedAt: {
+    label: "🕒 发布时间",
+    get: (p) => {
+      if (!p.publishedAt) return { value: "—" }
+      const date = new Date(p.publishedAt)
+      return { value: timeAgo(date), title: date.toLocaleString() }
+    },
+  },
+}
+
 const RANKINGS = [
   {
     key: "weekly-downloads",
@@ -16,6 +82,7 @@ const RANKINGS = [
     sortKey: (p) => p.weeklyData?.at(-1)?.total || 0,
     format: (v) => v.toLocaleString(),
     unit: "",
+    metrics: [METRIC.weekly, METRIC.yearly, METRIC.trend],
   },
   {
     key: "trend",
@@ -23,6 +90,7 @@ const RANKINGS = [
     sortKey: (p) => p.trend,
     format: (v) => `${v}%`,
     unit: "%",
+    metrics: [METRIC.trend, METRIC.weekly],
   },
   {
     key: "total-downloads",
@@ -30,6 +98,7 @@ const RANKINGS = [
     sortKey: (p) => p.totalDownloads,
     format: (v) => v.toLocaleString(),
     unit: "",
+    metrics: [METRIC.yearly, METRIC.weekly, METRIC.trend],
   },
   {
     key: "stars",
@@ -37,6 +106,7 @@ const RANKINGS = [
     sortKey: (p) => p.github?.stars || 0,
     format: (v) => v.toLocaleString(),
     unit: "",
+    metrics: [METRIC.stars, METRIC.lastCommit],
   },
   {
     key: "unpacked-size",
@@ -44,6 +114,7 @@ const RANKINGS = [
     sortKey: (p) => p.unpackedSize ?? 0,
     format: formatBytes,
     unit: "",
+    metrics: [METRIC.size, METRIC.deps],
   },
   {
     key: "dependencies",
@@ -51,6 +122,7 @@ const RANKINGS = [
     sortKey: (p) => p.dependencyCount,
     format: (v) => String(v),
     unit: "个",
+    metrics: [METRIC.deps, METRIC.size],
   },
   {
     key: "dependents",
@@ -58,6 +130,7 @@ const RANKINGS = [
     sortKey: (p) => p.dependents,
     format: (v) => v.toLocaleString(),
     unit: "",
+    metrics: [METRIC.dependents, METRIC.yearly],
   },
   {
     key: "versions",
@@ -65,6 +138,7 @@ const RANKINGS = [
     sortKey: (p) => p.versionCount,
     format: (v) => String(v),
     unit: "个",
+    metrics: [METRIC.versions, METRIC.version, METRIC.publishedAt],
   },
 ]
 
@@ -284,6 +358,11 @@ function scrollToRank() {
 // ============================================================
 //  Hero card
 // ============================================================
+/**
+ * @param {import('./index.type.js').FreshPackageDetail} pkg
+ * @param {{ label: string, sortKey: (p: import('./index.type.js').FreshPackageDetail) => number, format: (v: number) => string, metrics: MetricDescriptor[] }} ranking
+ * @param {HTMLElement} container
+ */
 function renderHero(pkg, ranking, container) {
   if (!pkg) {
     container.innerHTML = '<div style="color:#8b949e;padding:1rem;">暂无数据</div>'
@@ -300,17 +379,21 @@ function renderHero(pkg, ranking, container) {
     <div class="hero-name"><a href="https://www.npmjs.com/package/${encodeURIComponent(pkg.name)}" target="_blank">${escapeHtml(pkg.name)}</a></div>
     <div class="hero-primary">${ranking.label}: ${primaryStr}</div>
     <div class="hero-metrics">
-      <span>📥 周下载 <strong>${pkg.weeklyData?.at(-1)?.total?.toLocaleString() || 0}</strong></span>
-      <span>📥 年下载 <strong>${pkg.totalDownloads.toLocaleString()}</strong></span>
-      <span>🚀 趋势 <strong style="color:${pkg.trend > 0 ? "#3fb950" : pkg.trend < 0 ? "#f85149" : "#8b949e"}">${pkg.trend > 0 ? "+" : ""}${pkg.trend}%</strong></span>
-      <span>⭐ Stars <strong>${pkg.github?.stars?.toLocaleString() || 0}</strong></span>
-      <span>📦 体积 <strong>${formatBytes(pkg.unpackedSize ?? 0)}</strong></span>
-      <span>🔗 依赖 <strong>${pkg.dependencyCount}</strong></span>
-      <span>👥 被依赖 <strong>${pkg.dependents.toLocaleString()}</strong></span>
-      <span>🔢 版本 <strong>${pkg.versionCount}</strong></span>
+      ${ranking.metrics.map((m) => renderMetric(m, pkg)).join("")}
     </div>
   `
   container.appendChild(hero)
+}
+
+/**
+ * @param {MetricDescriptor} metric
+ * @param {import('./index.type.js').FreshPackageDetail} pkg
+ */
+function renderMetric(metric, pkg) {
+  const { value, color, title } = metric.get(pkg)
+  const colorStyle = color ? ` style="color:${color}"` : ""
+  const titleAttr = title ? ` title="${escapeHtml(title)}"` : ""
+  return `<span${titleAttr}>${metric.label} <strong${colorStyle}>${escapeHtml(String(value))}</strong></span>`
 }
 
 // ============================================================
