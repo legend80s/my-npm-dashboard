@@ -46,6 +46,18 @@
 
 :root {
   font-size: clamp(16px, 100vw / 2560 * 28.6, 36px);
+  --system-font: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+}
+
+html[lang="zh-CN"] {
+  --serif:
+    "TsangerJinKai02", "Source Han Serif SC", "Source Han Serif CN", "Noto Serif CJK SC", "Noto Serif SC", "Songti SC",
+    Georgia, serif;
+  --sans: var(--serif);
+
+  body {
+    font-family: var(--sans);
+  }
 }
 
 .text-primary {
@@ -60,7 +72,7 @@
 }
 
 body {
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  font-family: var(--system-font);
   background: var(--bg);
   color: var(--text);
   min-height: 100vh;
@@ -409,6 +421,8 @@ button:disabled {
   font-size: 0.75rem;
   color: var(--accent-green);
   margin-top: 6px;
+  font-family: var(--system-font);
+  justify-content: center;
 
   fancy-separator {
     padding-bottom: 2px;
@@ -417,9 +431,15 @@ button:disabled {
   }
 }
 
-@container (min-width: 620px) {
+@container (width <= 620px) {
   .card-metrics {
-    justify-content: center;
+    gap: 4px;
+    /* justify-content: space-between; */
+    align-items: center;
+
+    fancy-separator {
+      display: none;
+    }
   }
 }
 
