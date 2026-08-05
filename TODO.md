@@ -8,6 +8,7 @@
 - [ ] Add pkgs list published in latest 3 months
 - [ ] default light theme like npmjs.com
 - [ ] verbose mode and quiet mode
+- [ ] light badge to labelColor=000&color=3b82f6
 - [ ] remember provider to local storage
 - [x] pkg icon
 - [ ] watch mode bug: css changes not reflected. server restarted but page not refreshed use sse to notify client
