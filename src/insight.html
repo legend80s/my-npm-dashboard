@@ -35,49 +35,127 @@
         display: flex;
         align-items: center;
         gap: 1rem;
+        flex-wrap: wrap;
       }
       .insight-header h1 {
         font-size: 1.25rem;
         color: var(--text-heading);
+        margin-right: auto;
       }
       .back-link {
         font-size: 0.875rem;
         color: var(--accent);
       }
 
-      .tabs {
-        margin: 0 auto 1.5rem;
-        display: flex;
-        flex-wrap: wrap;
-        gap: 0.4rem;
-      }
-      .tab {
-        padding: 0.4rem 0.8rem;
+      .toggle-all {
+        font-size: 0.75rem;
+        padding: 0.3rem 0.8rem;
         border-radius: 6px;
         border: 1px solid var(--border);
         background: var(--bg-emphasis);
         color: var(--text-muted);
-        font-size: 0.75rem;
         cursor: pointer;
         transition: all 0.15s;
       }
-      .tab:hover {
+      .toggle-all:hover {
         border-color: var(--accent);
         color: var(--text);
       }
-      .tab.active {
-        border-color: var(--accent);
-        color: var(--accent);
-        background: var(--bg);
-        font-weight: 600;
+
+      .insight-layout {
+        display: grid;
+        grid-template-columns: 170px 1fr;
+        gap: 1.5rem;
+        align-items: start;
       }
 
-      .hero {
+      .side-nav {
+        position: sticky;
+        top: 20px;
+        display: flex;
+        flex-direction: column;
+        gap: 0.15rem;
+        font-size: 0.8rem;
+      }
+      .side-nav a {
+        padding: 0.3rem 0.6rem;
+        border-radius: 6px;
+        color: var(--text-muted);
+        text-decoration: none;
+        transition: all 0.15s;
+        border-left: 2px solid transparent;
+      }
+      .side-nav a:hover {
+        color: var(--text);
+        background: var(--bg-emphasis);
+      }
+      .side-nav a.active {
+        color: var(--accent);
+        border-left-color: var(--accent);
+        background: var(--bg-emphasis);
+      }
+
+      .insight-main {
+        min-width: 0;
+      }
+
+      .section {
         margin: 0 auto 1.5rem;
         background: var(--bg-subtle);
         border-radius: 12px;
+        overflow: hidden;
+        outline: 2px solid transparent;
+        transition: outline-color 0.3s;
+        scroll-margin-top: 20px;
+      }
+      .section.flash {
+        outline-color: var(--accent);
+      }
+      .section-header {
+        display: flex;
+        align-items: center;
+        gap: 0.6rem;
+        padding: 0.8rem 1rem;
+        cursor: pointer;
+        user-select: none;
+        transition: background 0.15s;
+      }
+      .section-header:hover {
+        background: var(--bg-emphasis);
+      }
+      .section-title {
+        font-size: 0.9rem;
+        font-weight: 600;
+        color: var(--text-heading);
+        white-space: nowrap;
+      }
+      .section-champ {
+        font-size: 0.75rem;
+        color: var(--text-muted);
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+      .section-champ strong {
+        color: var(--text);
+      }
+      .section-chevron {
+        margin-left: auto;
+        color: var(--text-muted);
+        transition: transform 0.2s;
+      }
+      .section.collapsed .section-chevron {
+        transform: rotate(-90deg);
+      }
+      .section-body {
+        border-top: 1px solid var(--border-muted);
+      }
+      .section.collapsed .section-body {
+        display: none;
+      }
+
+      .hero {
         padding: 1.2rem 1.5rem;
-        outline: 2px solid var(--accent);
       }
       .hero-rank {
         font-size: 0.75rem;
@@ -118,14 +196,11 @@
       }
 
       .chart-wrap {
-        margin: 0 auto 1.5rem;
-        background: var(--bg-subtle);
-        border-radius: 12px;
         padding: 1rem;
       }
       .chart-wrap canvas {
         width: 100%;
-        height: 300px;
+        height: 200px;
       }
 
       .status-msg {
@@ -138,6 +213,15 @@
         font-size: 3rem;
         display: block;
         margin-bottom: 1rem;
+      }
+
+      @media (max-width: 768px) {
+        .insight-layout {
+          grid-template-columns: 1fr;
+        }
+        .side-nav {
+          display: none;
+        }
       }
     </style>
   </head>
@@ -154,11 +238,14 @@
         >← 返回仪表板</a
       >
       <h1>📊 包排行榜 · <span id="insightUsername">-</span></h1>
+      <button class="toggle-all" id="toggleAllBtn" type="button">全部收起</button>
     </div>
 
-    <div class="tabs" id="tabs"></div>
-    <div class="hero" id="hero"></div>
-    <div class="chart-wrap" id="chartWrap"><canvas id="chart"></canvas></div>
+    <div class="insight-layout">
+      <nav class="side-nav" id="sideNav"></nav>
+      <main class="insight-main" id="sections"></main>
+    </div>
+
     <div class="status-msg" id="statusMsg" style="display: none"></div>
 
     <script type="module" src="./insight.js"></script>
