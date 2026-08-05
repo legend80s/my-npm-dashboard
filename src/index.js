@@ -667,6 +667,9 @@ function createCardElement(pkg) {
   // @ts-expect-error
   const latestWeekDownloads = pkg.weeklyData.at(-1).total
 
+  const theme = document.documentElement.dataset.theme
+  // console.log("theme:", theme)
+
   card.innerHTML = `
       <header class="card-header">
           <a class="card-name" href="https://www.npmjs.com/package/${name}" target="_blank">${name}</a>
@@ -681,7 +684,7 @@ function createCardElement(pkg) {
           data-pkgname="${name}">
       </div>
 
-      <img class="npmx-embed-downloads-chart" src="https://npmx.dev/api/embed/downloads.svg?packages=${encodeURIComponent(name)}&metric=downloads&mode=light&granularity=weekly&locale=en-US&accent=oklch%280.51+0.13+162.4%29&yLabel=Weekly+Downloads" style="height: 100%;/* aspect-ratio: 1 / 1; */width: 100%;object-fit: cover;">
+      <img class="npmx-embed-downloads-chart" src="https://npmx.dev/api/embed/downloads.svg?packages=${encodeURIComponent(name)}&metric=downloads&mode=${theme}&granularity=weekly&locale=en-US&accent=oklch%280.51+0.13+162.4%29&yLabel=Weekly+Downloads" style="height: 100%;/* aspect-ratio: 1 / 1; */width: 100%;object-fit: cover;">
       
       <div class="card-metrics">
           <a href="https://www.npmjs.com/package/${name}?activeTab=dependents"><img src="https://img.shields.io/librariesio/dependents/npm/${name}" title="dependents" alt="dependents" style="vertical-align: bottom;" /></a>
