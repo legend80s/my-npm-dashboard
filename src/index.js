@@ -992,11 +992,13 @@ settings.addEventListener(
     })
     // change all the a links from npmjs.com to npmx.dev
     const [from, to] = provider === "npmx" ? [NPMJS_DOMAIN, NPMX_DOMAIN] : [NPMX_DOMAIN, NPMJS_DOMAIN]
+    const [fromKeyword, toKeyword] = provider === "npmx" ? ["npm", "npmx"] : ["npmx", "npm"]
 
     document.querySelectorAll(`a[href^='${from}']`).forEach((a) => {
       const link = /** @type {HTMLAnchorElement} */ (a)
 
       link.href = link.href.replace(from, to)
+      link.title = link.title.replace(fromKeyword, toKeyword)
     })
 
     document.querySelectorAll("badge-dependencies").forEach((element) => {
