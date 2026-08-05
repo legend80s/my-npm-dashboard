@@ -3,7 +3,7 @@ class BadgeDependencies extends HTMLElement {
 
   // 监听的属性变化
   static get observedAttributes() {
-    return ["dependency-count"]
+    return ["dependency-count", "provider"]
   }
 
   constructor() {
@@ -44,19 +44,41 @@ class BadgeDependencies extends HTMLElement {
   }
 
   // 属性变化时重新渲染
+  // @ts-expect-error
   attributeChangedCallback(name, oldValue, newValue) {
+    if (!this._rendered) {
+      return
+    }
+
     if (name === "dependency-count") {
       // this.count = Number(newValue) || 0
 
       this.update()
     }
+
+    if (name === "provider") {
+      const map = {
+        npm: "https://www.npmjs.com",
+        npmx: "https://npmx.dev",
+        // maven: 'https://search.maven.org/artifact/',
+        // pypi: 'https://pypi.org/project/',
+        // rubygems: 'https://rubygems.org/gems/',
+        // nuget: 'https://www.nuget.org/packages/',
+        // docker: 'https://hub.docker.com/r/',
+      }
+
+      // @ts-expect-error
+      const oldHost = map[oldValue]
+      // @ts-expect-error
+      const newHost = map[newValue]
+      // @ts-expect-error
+      const a = this.shadowRoot.querySelector("a")
+
+      a.href = a.href.replace(oldHost, newHost)
+    }
   }
 
   update() {
-    if (!this._rendered) {
-      return
-    }
-
     const { color, level } = this.countLevel()
     const src = this.makeSrcByCountLevel(color)
 

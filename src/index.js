@@ -688,7 +688,7 @@ function createCardElement(pkg) {
 
           <fancy-separator></fancy-separator>
 
-          <badge-dependencies name="${name}" dependency-count="${pkg.dependencyCount}"></badge-dependencies>
+          <badge-dependencies provider="npm" name="${name}" dependency-count="${pkg.dependencyCount}"></badge-dependencies>
           <fancy-separator></fancy-separator>
           
           <img src="${trendBadge}" title="latest week trend" alt="weekly trend: ${trendArrow} ${Math.abs(pkg.trend)}%" />
@@ -975,14 +975,27 @@ const settings = /** @type {HTMLElement} */ (document.getElementById("settings")
 
 // 监听自定义 change 事件
 // @ts-expect-error
-settings.addEventListener("chart-provider-change", (/** @type {CustomEvent<{ provider: string }>} */ e) => {
-  const provider = e.detail.provider
-  console.log("当前计数:", provider)
-  // 更新页面其他元素
-  document.querySelectorAll(".chart-container")?.forEach((container) => {
-    container.parentElement?.setAttribute("data-provider", provider)
-  })
-})
+settings.addEventListener(
+  "chart-provider-change",
+  (/** @type {CustomEvent<{ provider: 'npmx' | 'chart.js' }>} */ e) => {
+    const provider = e.detail.provider
+    console.log("当前 provider:", provider)
+    // 更新页面其他元素
+    document.querySelectorAll(".chart-container")?.forEach((container) => {
+      container.parentElement?.setAttribute("data-provider", provider)
+    })
+    // change all the a links from npmjs.com to npmx.dev
+    document.querySelectorAll("a[href^='https://www.npmjs.com/']").forEach((a) => {
+      const link = /** @type {HTMLAnchorElement} */ (a)
+
+      link.href = link.href.replace("https://www.npmjs.com/", "https://npmx.dev/")
+    })
+
+    document.querySelectorAll("badge-dependencies").forEach((element) => {
+      element.setAttribute("provider", provider === "npmx" ? "npmx" : "npm")
+    })
+  },
+)
 
 // theme-change
 function updateAllChartColors() {
@@ -992,11 +1005,17 @@ function updateAllChartColors() {
   const accentColor = s.getPropertyValue("--accent-green").trim()
 
   for (const chart of charts) {
+    // @ts-expect-error
     chart.options.scales.x.grid.color = gridColor
+    // @ts-expect-error
     chart.options.scales.x.ticks.color = tickColor
+    // @ts-expect-error
     chart.options.scales.y.grid.color = gridColor
+    // @ts-expect-error
     chart.options.scales.y.ticks.color = tickColor
+    // @ts-expect-error
     chart.data.datasets[0].borderColor = accentColor
+    // @ts-expect-error
     chart.data.datasets[0].pointBackgroundColor = accentColor
     chart.update("none")
   }
