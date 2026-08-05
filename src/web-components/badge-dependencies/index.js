@@ -1,4 +1,6 @@
 class BadgeDependencies extends HTMLElement {
+  _rendered = false
+
   // 监听的属性变化
   static get observedAttributes() {
     return ["dependency-count"]
@@ -6,12 +8,13 @@ class BadgeDependencies extends HTMLElement {
 
   constructor() {
     super()
-    this.count = 0
     this.attachShadow({ mode: "open" })
   }
 
   async connectedCallback() {
     await this.render()
+    this._rendered = true
+    this.update()
   }
 
   async render() {
@@ -38,8 +41,6 @@ class BadgeDependencies extends HTMLElement {
     // @ts-expect-error
     shadowRoot.querySelector("a").href =
       `https://www.npmjs.com/package/${encodeURIComponent(name)}?activeTab=dependencies`
-
-    this.update()
   }
 
   // 属性变化时重新渲染
@@ -52,6 +53,10 @@ class BadgeDependencies extends HTMLElement {
   }
 
   update() {
+    if (!this._rendered) {
+      return
+    }
+
     const { color, level } = this.countLevel()
     const src = this.makeSrcByCountLevel(color)
 
@@ -59,7 +64,7 @@ class BadgeDependencies extends HTMLElement {
     const img = /** @type {HTMLImageElement} */ (this.shadowRoot.querySelector("img"))
 
     img.src = src
-    img.title = `${level}: Number of dependencies in package.json: 0 is excellent, 1 green, [2, 5] yellow and [6, +∞] red`
+    img.title = `${level}: number of dependencies in package.json: 0 is "Excellent", 1 green for "Good", [2, 5] yellow for "Average" and [6, +∞] red for "Needs Improvement"`
   }
 
   /**

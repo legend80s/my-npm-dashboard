@@ -651,6 +651,8 @@ function createCardElement(pkg) {
     return card
   }
 
+  const { name } = pkg
+
   // 正常卡片
   const trendArrow = pkg.trend > 0 ? "↑" : pkg.trend < 0 ? "↓" : "→"
   const trendColor = pkg.trend > 0 ? "brightgreen" : pkg.trend < 0 ? "yellow" : "lightgrey"
@@ -666,24 +668,24 @@ function createCardElement(pkg) {
 
   card.innerHTML = `
       <header class="card-header">
-          <a class="card-name" href="https://www.npmjs.com/package/${pkg.name}" target="_blank">${pkg.name}</a>
+          <a class="card-name" href="https://www.npmjs.com/package/${name}" target="_blank">${name}</a>
 
           <div style="white-space: nowrap;">
-            <img title="v${pkg.version}" src="https://img.shields.io/npm/v/${pkg.name}.svg?style=flat" alt="NPM Version" />
-            <img src="https://img.shields.io/npm/${latestWeekDownloads > 1000 ? "dw" : "dm"}/${pkg.name}.svg?style=flat" alt="npm downloads" />
+            <img title="v${pkg.version}" src="https://img.shields.io/npm/v/${name}.svg?style=flat" alt="NPM Version" />
+            <img src="https://img.shields.io/npm/${latestWeekDownloads > 1000 ? "dw" : "dm"}/${name}.svg?style=flat" alt="npm downloads" />
             <img src="https://img.shields.io/badge/yearly-${numberToLocaleString(pkg.totalDownloads)}-blue?logo=npm&logoColor=cyan&style=flat" alt="Yearly downloads: ${pkg.totalDownloads}" title="Yearly downloads: ${pkg.totalDownloads}" />
           </div>
       </header>
-      <div class="chart-container" id="chart-${pkg.name.replace(/[^a-zA-Z0-9]/g, "-")}"
-          data-pkgname="${pkg.name}">
+      <div class="chart-container" id="chart-${name.replace(/[^a-zA-Z0-9]/g, "-")}"
+          data-pkgname="${name}">
       </div>
 
-      <img class="npmx-embed-downloads-chart" src="https://npmx.dev/api/embed/downloads.svg?packages=${encodeURIComponent(pkg.name)}&metric=downloads&mode=light&granularity=weekly&locale=en-US&accent=oklch%280.51+0.13+162.4%29&yLabel=Weekly+Downloads" style="height: 100%;/* aspect-ratio: 1 / 1; */width: 100%;object-fit: cover;">
+      <img class="npmx-embed-downloads-chart" src="https://npmx.dev/api/embed/downloads.svg?packages=${encodeURIComponent(name)}&metric=downloads&mode=light&granularity=weekly&locale=en-US&accent=oklch%280.51+0.13+162.4%29&yLabel=Weekly+Downloads" style="height: 100%;/* aspect-ratio: 1 / 1; */width: 100%;object-fit: cover;">
       
       <div class="card-metrics">
-          <img src="https://img.shields.io/librariesio/dependents/npm/${pkg.name}" title="dependents" alt="dependents" />
+          <a href="https://www.npmjs.com/package/${name}?activeTab=dependents"><img src="https://img.shields.io/librariesio/dependents/npm/${name}" title="dependents" alt="dependents" style="vertical-align: bottom;" /></a>
           //
-          <badge-dependencies name="${pkg.name}" dependency-count="${pkg.dependencyCount}"></badge-dependencies>
+          <badge-dependencies name="${name}" dependency-count="${pkg.dependencyCount}"></badge-dependencies>
           //
           <img src="${trendBadge}" title="latest week trend" alt="weekly trend: ${trendArrow} ${Math.abs(pkg.trend)}%" />
           //
