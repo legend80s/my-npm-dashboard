@@ -985,10 +985,9 @@ settings.addEventListener(
   (/** @type {CustomEvent<{ provider: 'npmx' | 'chart.js' }>} */ e) => {
     const provider = e.detail.provider
     console.log("当前 provider:", provider)
+    document.documentElement.setAttribute("data-provider", provider)
     // 更新页面其他元素
-    document.querySelectorAll(".chart-container")?.forEach((container) => {
-      container.parentElement?.setAttribute("data-provider", provider)
-    })
+
     // change all the a links from npmjs.com to npmx.dev
     const [from, to] = provider === "npmx" ? [NPMJS_DOMAIN, NPMX_DOMAIN] : [NPMX_DOMAIN, NPMJS_DOMAIN]
     const [fromKeyword, toKeyword] = provider === "npmx" ? ["npm", "npmx"] : ["npmx", "npm"]

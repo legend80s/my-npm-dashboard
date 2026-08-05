@@ -311,31 +311,23 @@ button:disabled {
   }
 }
 
-.card--package {
-  .npmx-embed-downloads-chart {
-    display: none;
-  }
-
-  &[data-provider="npmx"] {
-    .npmx-embed-downloads-chart {
-      display: block;
-    }
-    .chart-container {
-      display: none;
-    }
-  }
-
-  /* .chart-container {
-    display: none;
-  } */
-
-  /* &[data-provider='chart.js'] {
-    .chart-container {
-      display: block;
-    }
-  } */
+.npmx-embed-downloads-chart,
+#npmx-index-h1-logo-normal {
+  display: none;
 }
 
+:root[data-provider="npmx"] {
+  .npmx-embed-downloads-chart {
+    display: block;
+  }
+  #npmx-index-h1-logo-normal {
+    display: inline-block;
+  }
+  .chart-container,
+  #npm-logo {
+    display: none;
+  }
+}
 .card-header {
   display: flex;
   justify-content: space-between;
