@@ -10,6 +10,9 @@ import "./web-components/simple-counter/index.js"
 import "./web-components/badge-dependencies/index.js"
 import "./web-components/fancy-separator.js"
 
+const NPMJS_DOMAIN = `https://www.npmjs.com`
+const NPMX_DOMAIN = `https://npmx.dev`
+
 /** @type {Set<Chart>} */
 const charts = new Set()
 
@@ -672,7 +675,7 @@ function createCardElement(pkg) {
 
   card.innerHTML = `
       <header class="card-header">
-          <a class="card-name" href="https://www.npmjs.com/package/${name}" target="_blank">${name}</a>
+          <a class="card-name" href="${NPMJS_DOMAIN}/package/${name}" target="_blank">${name}</a>
 
           <div style="white-space: nowrap;">
             <img title="v${pkg.version}" src="https://img.shields.io/npm/v/${name}.svg?style=flat" alt="NPM Version" />
@@ -687,7 +690,7 @@ function createCardElement(pkg) {
       <img class="npmx-embed-downloads-chart" src="https://npmx.dev/api/embed/downloads.svg?packages=${encodeURIComponent(name)}&metric=downloads&mode=${theme}&granularity=weekly&locale=en-US&accent=oklch%280.51+0.13+162.4%29&yLabel=Weekly+Downloads" style="height: 100%;/* aspect-ratio: 1 / 1; */width: 100%;object-fit: cover;">
       
       <div class="card-metrics">
-          <a href="https://www.npmjs.com/package/${name}?activeTab=dependents"><img src="https://img.shields.io/librariesio/dependents/npm/${name}" title="dependents" alt="dependents" style="vertical-align: bottom;" /></a>
+          <a href="${NPMJS_DOMAIN}/package/${name}?activeTab=dependents"><img src="https://img.shields.io/librariesio/dependents/npm/${name}" title="dependents" alt="dependents" style="vertical-align: bottom;" /></a>
 
           <fancy-separator></fancy-separator>
 
@@ -872,7 +875,7 @@ function renderHottest({ name, latestWeekDownloads }, username) {
   hottestPkg.innerHTML = name
     ? `<div style="display: flex; align-items: center;">
     ${startLeaf}
-      <a href="https://www.npmjs.com/${encodeURIComponent(name)}" title="当前最热包 🔥 | 前往 npm" style="color:inherit; font-weight: bold;" target="_blank">
+      <a href="${NPMJS_DOMAIN}/${encodeURIComponent(name)}" title="当前最热包 🔥 | 前往 npm" style="color:inherit; font-weight: bold;" target="_blank">
         ${name}
       </a>
     ${endLeaf}
@@ -892,7 +895,7 @@ function renderHottestTrend({ name, trend }, username) {
 
   hottestTrendPkg.innerHTML = name
     ? `${startLeaf}
-      <a href="https://www.npmjs.com/package/${encodeURIComponent(name)}" target="_blank" title="当前增速最快包 🚀 | 前往 npm" style="color:inherit;">
+      <a href="${NPMJS_DOMAIN}/package/${encodeURIComponent(name)}" target="_blank" title="当前增速最快包 🚀 | 前往 npm" style="color:inherit;">
         ${name}
       </a>
     ${endLeaf} <span style="margin-inline-start: 0.2em;">(</span><a href="insight.html?username=${encodeURIComponent(username)}&rank=trend" target="_blank" title="📊 前往洞察页面" class='text-primary' style="font-size: 110%;">🚀+${trend}%</a>)`
@@ -988,10 +991,12 @@ settings.addEventListener(
       container.parentElement?.setAttribute("data-provider", provider)
     })
     // change all the a links from npmjs.com to npmx.dev
-    document.querySelectorAll("a[href^='https://www.npmjs.com/']").forEach((a) => {
+    const [from, to] = provider === "npmx" ? [NPMJS_DOMAIN, NPMX_DOMAIN] : [NPMX_DOMAIN, NPMJS_DOMAIN]
+
+    document.querySelectorAll(`a[href^='${from}']`).forEach((a) => {
       const link = /** @type {HTMLAnchorElement} */ (a)
 
-      link.href = link.href.replace("https://www.npmjs.com/", "https://npmx.dev/")
+      link.href = link.href.replace(from, to)
     })
 
     document.querySelectorAll("badge-dependencies").forEach((element) => {
