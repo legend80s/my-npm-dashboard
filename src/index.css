@@ -343,10 +343,6 @@ button:disabled {
   margin-bottom: 10px;
   /* cursor: pointer; */
   text-decoration: none;
-
-  &:hover {
-    text-decoration: underline;
-  }
 }
 
 .card-name {
