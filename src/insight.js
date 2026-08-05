@@ -114,6 +114,7 @@ const RANKINGS = [
     sortKey: (p) => p.unpackedSize ?? 0,
     format: formatBytes,
     unit: "",
+    ascending: true,
     metrics: [METRIC.size, METRIC.deps],
   },
   {
@@ -122,6 +123,7 @@ const RANKINGS = [
     sortKey: (p) => p.dependencyCount,
     format: (v) => String(v),
     unit: "个",
+    ascending: true,
     metrics: [METRIC.deps, METRIC.size],
   },
   {
@@ -231,7 +233,7 @@ function render() {
 function renderSections() {
   sectionsEl.innerHTML = ""
   for (const r of RANKINGS) {
-    const sorted = [...allPackages].sort((a, b) => r.sortKey(b) - r.sortKey(a))
+    const sorted = [...allPackages].sort((a, b) => (r.ascending ? r.sortKey(a) - r.sortKey(b) : r.sortKey(b) - r.sortKey(a)))
     const top = sorted.slice(0, RANKING_TOP_N)
     const first = sorted[0]
 
