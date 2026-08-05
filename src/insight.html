@@ -1,92 +1,166 @@
 <!doctype html>
 <html lang="zh-CN">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>包排行榜 - my-npm-dashboard</title>
-  <link rel="stylesheet" href="index.css" />
-  <script>
-    (function () {
-      var saved = localStorage.getItem("theme");
-      var theme =
-        saved === "light" || saved === "dark"
-          ? saved
-          : window.matchMedia("(prefers-color-scheme: light)").matches
-            ? "light"
-            : "dark";
-      document.documentElement.setAttribute("data-theme", theme);
-    })();
-  </script>
-  <script type="importmap">
-    {
-      "imports": {
-        "chart.js": "https://esm.sh/chart.js@4.5.1"
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>包排行榜 - my-npm-dashboard</title>
+    <link rel="stylesheet" href="index.css" />
+    <script>
+      (function () {
+        var saved = localStorage.getItem('theme');
+        var theme =
+          saved === 'light' || saved === 'dark'
+            ? saved
+            : window.matchMedia('(prefers-color-scheme: light)').matches
+              ? 'light'
+              : 'dark';
+        document.documentElement.setAttribute('data-theme', theme);
+      })();
+    </script>
+    <script type="importmap">
+      {
+        "imports": {
+          "chart.js": "https://esm.sh/chart.js@4.5.1"
+        }
       }
-    }
-  </script>
-  <style>
-    body { padding: 20px; }
-    .insight-header {
-      max-width: 1000px; margin: 0 auto 1.5rem;
-      display: flex; align-items: center; gap: 1rem;
-    }
-    .insight-header h1 { font-size: 1.25rem; color: var(--text-heading); }
-    .back-link { font-size: 0.875rem; color: var(--accent); }
+    </script>
+    <style>
+      body {
+        padding: 20px;
+        max-width: 1200px;
+        margin: 0 auto;
+      }
+      .insight-header {
+        margin: 0 auto 1.5rem;
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+      }
+      .insight-header h1 {
+        font-size: 1.25rem;
+        color: var(--text-heading);
+      }
+      .back-link {
+        font-size: 0.875rem;
+        color: var(--accent);
+      }
 
-    .tabs {
-      max-width: 1000px; margin: 0 auto 1.5rem;
-      display: flex; flex-wrap: wrap; gap: 0.4rem;
-    }
-    .tab {
-      padding: 0.4rem 0.8rem; border-radius: 6px;
-      border: 1px solid var(--border); background: var(--bg-emphasis);
-      color: var(--text-muted); font-size: 0.75rem; cursor: pointer;
-      transition: all 0.15s;
-    }
-    .tab:hover { border-color: var(--accent); color: var(--text); }
-    .tab.active { border-color: var(--accent); color: var(--accent); background: var(--bg); font-weight: 600; }
+      .tabs {
+        margin: 0 auto 1.5rem;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.4rem;
+      }
+      .tab {
+        padding: 0.4rem 0.8rem;
+        border-radius: 6px;
+        border: 1px solid var(--border);
+        background: var(--bg-emphasis);
+        color: var(--text-muted);
+        font-size: 0.75rem;
+        cursor: pointer;
+        transition: all 0.15s;
+      }
+      .tab:hover {
+        border-color: var(--accent);
+        color: var(--text);
+      }
+      .tab.active {
+        border-color: var(--accent);
+        color: var(--accent);
+        background: var(--bg);
+        font-weight: 600;
+      }
 
-    .hero {
-      max-width: 1000px; margin: 0 auto 1.5rem;
-      background: var(--bg-subtle); border-radius: 12px;
-      padding: 1.2rem 1.5rem; outline: 2px solid var(--accent);
-    }
-    .hero-rank { font-size: 0.75rem; color: var(--accent); font-weight: 700; margin-bottom: 0.3rem; }
-    .hero-name { font-size: 1.5rem; font-weight: 700; color: var(--text-heading); margin-bottom: 0.5rem; }
-    .hero-name a { color: inherit; text-decoration: none; }
-    .hero-name a:hover { text-decoration: underline; }
-    .hero-primary { font-size: 1.1rem; color: var(--accent-green); margin-bottom: 0.6rem; }
-    .hero-metrics {
-      display: flex; flex-wrap: wrap; gap: 0.6rem 1.2rem;
-      font-size: 0.8rem; color: var(--text-muted);
-    }
-    .hero-metrics span { white-space: nowrap; }
-    .hero-metrics strong { color: var(--text); }
+      .hero {
+        margin: 0 auto 1.5rem;
+        background: var(--bg-subtle);
+        border-radius: 12px;
+        padding: 1.2rem 1.5rem;
+        outline: 2px solid var(--accent);
+      }
+      .hero-rank {
+        font-size: 0.75rem;
+        color: var(--accent);
+        font-weight: 700;
+        margin-bottom: 0.3rem;
+      }
+      .hero-name {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: var(--text-heading);
+        margin-bottom: 0.5rem;
+      }
+      .hero-name a {
+        color: inherit;
+        text-decoration: none;
+      }
+      .hero-name a:hover {
+        text-decoration: underline;
+      }
+      .hero-primary {
+        font-size: 1.1rem;
+        color: var(--accent-green);
+        margin-bottom: 0.6rem;
+      }
+      .hero-metrics {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.6rem 1.2rem;
+        font-size: 0.8rem;
+        color: var(--text-muted);
+      }
+      .hero-metrics span {
+        white-space: nowrap;
+      }
+      .hero-metrics strong {
+        color: var(--text);
+      }
 
-    .chart-wrap {
-      max-width: 1000px; margin: 0 auto 1.5rem;
-      background: var(--bg-subtle); border-radius: 12px; padding: 1rem;
-    }
-    .chart-wrap canvas { width: 100%; height: 300px; }
+      .chart-wrap {
+        margin: 0 auto 1.5rem;
+        background: var(--bg-subtle);
+        border-radius: 12px;
+        padding: 1rem;
+      }
+      .chart-wrap canvas {
+        width: 100%;
+        height: 300px;
+      }
 
-    .status-msg {
-      max-width: 1000px; margin: 2rem auto; text-align: center;
-      color: var(--text-muted); font-size: 1rem;
-    }
-    .status-msg .big { font-size: 3rem; display: block; margin-bottom: 1rem; }
-  </style>
-</head>
-<body>
-  <div class="insight-header">
-    <a class="back-link" href="/" onclick="history.back(); return false" title="回到仪表板">← 返回仪表板</a>
-    <h1>📊 包排行榜 · <span id="insightUsername">-</span></h1>
-  </div>
+      .status-msg {
+        margin: 2rem auto;
+        text-align: center;
+        color: var(--text-muted);
+        font-size: 1rem;
+      }
+      .status-msg .big {
+        font-size: 3rem;
+        display: block;
+        margin-bottom: 1rem;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="insight-header">
+      <a
+        class="back-link"
+        href="/"
+        onclick="
+          history.back();
+          return false;
+        "
+        title="回到仪表板"
+        >← 返回仪表板</a
+      >
+      <h1>📊 包排行榜 · <span id="insightUsername">-</span></h1>
+    </div>
 
-  <div class="tabs" id="tabs"></div>
-  <div class="hero" id="hero"></div>
-  <div class="chart-wrap" id="chartWrap"><canvas id="chart"></canvas></div>
-  <div class="status-msg" id="statusMsg" style="display:none;"></div>
+    <div class="tabs" id="tabs"></div>
+    <div class="hero" id="hero"></div>
+    <div class="chart-wrap" id="chartWrap"><canvas id="chart"></canvas></div>
+    <div class="status-msg" id="statusMsg" style="display: none"></div>
 
-  <script type="module" src="./insight.js"></script>
-</body>
+    <script type="module" src="./insight.js"></script>
+  </body>
 </html>

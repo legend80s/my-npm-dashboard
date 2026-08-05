@@ -298,6 +298,7 @@ button:disabled {
   flex-direction: column;
   outline: calc(3 / 16 * 1rem) ridge transparent;
   container-type: inline-size;
+  box-shadow: 0 2px 12px rgb(0 0 0 / 30%);
 
   &:hover {
     /* border-color: var(--accent); */

@@ -3,6 +3,9 @@
 - [ ] antfu fast-npm-meta  Published 8 days ago 2026-7-29
 - [x] 0 dependencies badge green yellow and red for 0 1-2 3-+∞
 - [ ] Add dependents rankings
+- [ ] Pin
+- [ ] Add pkg not in list
+- [ ] Add pkgs list published in latest 3 months
 - [ ] default light theme like npmjs.com
 - [ ] verbose mode and quiet mode
 - [ ] remember provider to local storage
