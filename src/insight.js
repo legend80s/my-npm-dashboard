@@ -432,7 +432,7 @@ function renderChart(packages, ranking, container) {
           borderColor: colors,
           borderWidth: 1,
           borderRadius: 4,
-          barPercentage: 0.3,
+          barPercentage: 1.0,
         },
       ],
     },
@@ -488,13 +488,17 @@ function renderChart(packages, ranking, container) {
 //  Utils
 // ============================================================
 function escapeHtml(str) {
-  return String(str).replace(/[&<>"']/g, (c) => ({
-    "&": "&amp;",
-    "<": "&lt;",
-    ">": "&gt;",
-    '"': "&quot;",
-    "'": "&#39;",
-  })[c])
+  return String(str).replace(
+    /[&<>"']/g,
+    (c) =>
+      ({
+        "&": "&amp;",
+        "<": "&lt;",
+        ">": "&gt;",
+        '"': "&quot;",
+        "'": "&#39;",
+      })[c],
+  )
 }
 
 function showStatus(emoji, msg) {
