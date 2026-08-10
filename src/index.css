@@ -434,7 +434,7 @@ button:disabled {
 @container (width <= 620px) {
   .card-metrics {
     gap: 4px;
-    /* justify-content: space-between; */
+    justify-content: start;
     align-items: center;
 
     fancy-separator {
