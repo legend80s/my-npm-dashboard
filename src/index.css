@@ -249,7 +249,6 @@ button:disabled {
 
 /* ===== Stats Bar ===== */
 .stats-bar {
-  max-width: 1400px;
   margin: 0 auto 20px auto;
   display: flex;
   justify-content: center;
