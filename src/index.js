@@ -624,7 +624,7 @@ function createCardElement(pkg) {
           <a href="${repoUrl}" target="_blank" title="github stars ${starDisplay}">
             <img alt="GitHub Repo stars" style="vertical-align: middle;" src="https://img.shields.io/github/stars/${pkg.github.owner}/${pkg.github.repo}">
           </a>
-          //
+          <fancy-separator></fancy-separator>
           <a href="${commitUrl}" target="_blank" style="align-items: center;max-width: 77%; white-space:nowrap;" title="GitHub Latest Commit: “${commitDisplay}” · ${new Date(pkg.github.lastCommitDate).toLocaleString()}">
             🖥️ Commit
             <span class="metric"><strong class="ellipsis" style="display: inline-block;max-width: 67%;vertical-align: text-bottom;">${commitDisplay.repeat(1)}</strong>${commitTime ? " · " + commitTime : ""}</span>
@@ -987,6 +987,7 @@ settings.addEventListener(
     const provider = e.detail.provider
     console.log("当前 provider:", provider)
     document.documentElement.setAttribute("data-provider", provider)
+    localStorage.setItem("provider", provider)
     // 更新页面其他元素
 
     // change all the a links from npmjs.com to npmx.dev

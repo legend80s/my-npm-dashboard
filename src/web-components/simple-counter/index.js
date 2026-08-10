@@ -68,6 +68,14 @@ class SimpleCounter extends HTMLElement {
       shadowRoot.querySelector(`#themeSwitcher input[value="${current}"]`)
     )
     if (radio) radio.checked = true
+
+    // sync radio state with current chart provider
+    const currentProvider = document.documentElement.getAttribute("data-provider") || "npm"
+    const isNpmx = currentProvider === "npmx"
+    const providerRadio = /** @type {HTMLInputElement | null} */ (
+      shadowRoot.querySelector(`#chartProviderWrapper input[value="${isNpmx ? "npmx" : "chart.js"}"]`)
+    )
+    if (providerRadio) providerRadio.checked = true
   }
 
   /**
