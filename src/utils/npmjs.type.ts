@@ -72,7 +72,7 @@ interface Publisher {
   username: string
 }
 
-interface Downloads {
+type Downloads = {
   monthly: number
   weekly: number
 }

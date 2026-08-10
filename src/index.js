@@ -17,7 +17,6 @@ const NPMX_DOMAIN = `https://npmx.dev`
 const charts = new Set()
 
 /** @import { CacheData, FreshPackageDetail, Hottest, PackageDetail } from './index.type.js' */
-/** @import { NpmPkgDownloadsResp, NpmPkgResp, NpmPkgSearchResp } from './utils/npmjs.type.js' */
 
 // ============================================================
 //  1. DOM refs

@@ -56,7 +56,10 @@
         document.documentElement.setAttribute('data-theme', theme);
 
         var savedProvider = localStorage.getItem('provider');
-        var provider = savedProvider === 'npmx' || savedProvider === 'npm' ? savedProvider : 'npm';
+        var provider =
+          savedProvider === 'npmx' || savedProvider === 'npm'
+            ? savedProvider
+            : 'npm';
         document.documentElement.setAttribute('data-provider', provider);
       })();
     </script>
@@ -179,11 +182,10 @@
     <h2 class="stats-bar" id="statsBar">
       <!-- ===== SORT INFO ===== -->
       <div
-        class="sort-info"
+        class="sort-info text-muted"
         id="sortInfo"
         style="
           font-size: 0.85em;
-          color: #8b949e;
           /* margin: -4px 16px 8px; */
           padding: 0;
           display: flex;

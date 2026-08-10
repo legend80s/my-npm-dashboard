@@ -17,13 +17,29 @@ const urlParams = new URLParams(window.location.href)
 /** @satisfies {Record<string, MetricDescriptor>} */
 const METRIC = {
   weekly: {
-    label: "📥 周下载",
+    label: "周下载",
     get: (p) => ({ value: numberToLocaleString(p.weeklyData?.at(-1)?.total) }),
   },
+  lastWeek: {
+    label: "上周下载",
+    get: (p) => ({ value: numberToLocaleString(p.weeklyData?.at(-2)?.total) }),
+  },
   yearly: {
-    label: "📥 年下载",
+    label: "年下载",
     get: (p) => ({ value: numberToLocaleString(p.totalDownloads) }),
   },
+  monthly: {
+    label: "月下载",
+    get: (p) => {
+      if ("weeklyData" in p) {
+        const last30Days = p.weeklyData.slice(-30)
+        return { value: numberToLocaleString(last30Days.reduce((a, b) => a + b.total, 0)) }
+      }
+
+      return { value: "0" }
+    },
+  },
+
   trend: {
     label: "🚀 趋势",
     get: (p) => ({
@@ -91,16 +107,16 @@ const RANKINGS = [
     sortKey: (p) => p.trend,
     format: (v) => `${v}%`,
     unit: "%",
-    metrics: [METRIC.trend, METRIC.weekly],
+    metrics: [METRIC.weekly, METRIC.lastWeek],
   },
   {
     key: "total-downloads",
-    label: "📥 年下载总量",
+    label: "🏗️ 年下载总量",
     labelDescription: "过去一年下载量最高的包",
     sortKey: (p) => p.totalDownloads,
-    format: (v) => v.toLocaleString(),
+    format: numberToLocaleString,
     unit: "",
-    metrics: [METRIC.yearly, METRIC.weekly, METRIC.trend],
+    metrics: [METRIC.monthly, METRIC.weekly, METRIC.trend],
   },
   {
     key: "stars",
@@ -129,7 +145,7 @@ const RANKINGS = [
     format: (v) => String(v),
     unit: "个",
     ascending: true,
-    metrics: [METRIC.deps, METRIC.size],
+    metrics: [METRIC.size],
   },
   {
     key: "dependents",
@@ -138,7 +154,7 @@ const RANKINGS = [
     sortKey: (p) => p.dependents,
     format: (v) => v.toLocaleString(),
     unit: "",
-    metrics: [METRIC.dependents, METRIC.yearly],
+    metrics: [METRIC.monthly, METRIC.weekly],
   },
   {
     key: "versions",
@@ -302,6 +318,7 @@ function toggleSection(key) {
   updateToggleAllLabel()
 }
 
+/** @param {boolean} expanded */
 function setAll(expanded) {
   for (const r of RANKINGS) {
     sectionEls[r.key]?.classList.toggle("collapsed", !expanded)
@@ -437,6 +454,13 @@ function renderMetric(metric, pkg) {
 // ============================================================
 //  Chart.js bar chart (Top N)
 // ============================================================
+/**
+ *
+ * @param {FreshPackageDetail[]} packages
+ * @param {IRanking} ranking
+ * @param {*} container
+ * @returns
+ */
 function renderChart(packages, ranking, container) {
   const wrap = document.createElement("div")
   wrap.className = "chart-wrap"
@@ -451,7 +475,68 @@ function renderChart(packages, ranking, container) {
 
   const labels = packages.map((p) => p.name)
   const values = packages.map((p) => ranking.sortKey(p))
-  const colors = packages.map((_, i) => (i === 0 ? "rgba(88, 166, 255, 1)" : "rgba(88, 166, 255, 0.35)"))
+  // const colors = packages.map((_, i) => (i === 0 ? "rgba(88, 166, 255, 1)" : "rgba(88, 166, 255, 0.35)"))
+  const macaronColors = [
+    "rgba(255, 179, 186, 0.85)", // 粉
+    "rgba(255, 223, 186, 0.85)", // 杏
+    "rgba(255, 241, 186, 0.85)", // 奶油
+    "rgba(186, 225, 186, 0.85)", // 薄荷
+    "rgba(186, 212, 255, 0.85)", // 天蓝
+    "rgba(212, 186, 255, 0.85)", // 薰衣草
+    "rgba(255, 186, 223, 0.85)", // 粉紫
+  ]
+  const morandiColors = [
+    "rgba(192, 173, 165, 0.85)", // 灰粉
+    "rgba(185, 178, 160, 0.85)", // 灰杏
+    "rgba(178, 190, 181, 0.85)", // 灰绿
+    "rgba(173, 185, 196, 0.85)", // 灰蓝
+    "rgba(196, 185, 200, 0.85)", // 灰紫
+    "rgba(200, 174, 174, 0.85)", // 豆沙
+    "rgba(174, 190, 174, 0.85)", // 鼠尾草
+  ]
+  const tdesignLightColors = [
+    "rgba(0, 110, 255, 0.70)", // 品牌蓝
+    "rgba(45, 185, 120, 0.70)", // 翠绿
+    "rgba(255, 153, 0, 0.70)", // 琥珀
+    "rgba(213, 73, 100, 0.70)", // 珊瑚
+    "rgba(122, 97, 255, 0.70)", // 紫罗兰
+    "rgba(0, 180, 210, 0.70)", // 湖蓝
+    "rgba(255, 120, 80, 0.70)", // 橙红
+  ]
+  const gradientColors = [
+    "rgba(255, 179, 171, 0.85)",
+    "rgba(255, 205, 171, 0.85)",
+    "rgba(255, 232, 171, 0.85)",
+    "rgba(214, 255, 171, 0.85)",
+    "rgba(171, 255, 214, 0.85)",
+    "rgba(171, 232, 255, 0.85)",
+    "rgba(171, 205, 255, 0.85)",
+  ]
+
+  let colors = [
+    "rgba(255, 99, 132, 0.8)",
+    "rgba(54, 162, 235, 0.8)",
+    "rgba(255, 206, 86, 0.8)",
+    "rgba(75, 192, 192, 0.8)",
+    "rgba(153, 102, 255, 0.8)",
+  ]
+  // colors = gradientColors
+
+  // const max = Math.max(...values)
+  // const min = Math.min(...values)
+  // colors = values.map((value) => {
+  //   const intensity = (value - min) / (max - min)
+  //   const lightness = 80 - intensity * 30 // 80% ~ 50%
+  //   return `hsl(210, 70%, ${lightness}%)`
+  // })
+
+  const borderColors = [
+    "rgb(255, 99, 132)",
+    "rgb(54, 162, 235)",
+    "rgb(255, 206, 86)",
+    "rgb(75, 192, 192)",
+    "rgb(153, 102, 255)",
+  ]
 
   const rootStyle = getComputedStyle(document.documentElement)
   const gridColor = rootStyle.getPropertyValue("--border-muted").trim() || "#21262d"
@@ -467,7 +552,8 @@ function renderChart(packages, ranking, container) {
           label: ranking.label,
           data: values,
           backgroundColor: colors,
-          borderColor: colors,
+          // borderColor: borderColors,
+          borderColor: ["black"],
           borderWidth: 1,
           borderRadius: 4,
           barPercentage: 1.0,
