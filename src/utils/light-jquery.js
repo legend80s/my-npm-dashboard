@@ -74,7 +74,7 @@ export class URLParams {
 
   /**
    * 设置参数（不添加到历史记录）
-   * @type {InstanceType<typeof URLParams>['set']}
+   * @type {typeof URLParams.prototype.set}
    */
   replace(key, value) {
     this.url.searchParams.set(key, value)
@@ -145,7 +145,7 @@ export class URLParams {
 
   /**
    * 切换参数（存在则删除，不存在则添加）
-   * @type {import('../index.type.js').SetParamFn}
+   * @type {typeof URLParams.prototype.set}
    */
   toggle(key, value) {
     const url = this.url
