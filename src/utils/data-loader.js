@@ -134,7 +134,8 @@ export async function fetchPackageDetails({ name, version, date }, dependents, f
   const github = {
     owner: "",
     repo: "",
-    stars: "",
+    /** @type {null | int} */
+    stars: 0,
     lastCommit: "",
     lastCommitDate: "",
   }

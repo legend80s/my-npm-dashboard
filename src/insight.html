@@ -27,10 +27,16 @@
     <style>
       body {
         padding: 20px;
-        max-width: 1200px;
+        max-width: 1600px;
         margin: 0 auto;
       }
       .insight-header {
+        position: sticky;
+        top: 0;
+        backdrop-filter: blur(8px);
+        border-radius: 0.25rem;
+        padding: 0.625rem 0.625rem 0.625rem 0;
+
         margin: 0 auto 1.5rem;
         display: flex;
         align-items: center;
@@ -40,10 +46,12 @@
       .insight-header h1 {
         font-size: 1.25rem;
         color: var(--text-heading);
-        margin-right: auto;
+        margin-inline: auto;
       }
+
       .back-link {
         font-size: 0.875rem;
+        font-family: var(--system-font);
         color: var(--accent);
       }
 
@@ -64,18 +72,19 @@
 
       .insight-layout {
         display: grid;
-        grid-template-columns: 170px 1fr;
+        grid-template-columns: 8rem 1fr;
         gap: 1.5rem;
         align-items: start;
       }
 
       .side-nav {
         position: sticky;
-        top: 20px;
+        top: 3rem;
         display: flex;
         flex-direction: column;
         gap: 0.15rem;
         font-size: 0.8rem;
+        font-family: var(--system-font);
       }
       .side-nav a {
         padding: 0.3rem 0.6rem;
@@ -83,7 +92,7 @@
         color: var(--text-muted);
         text-decoration: none;
         transition: all 0.15s;
-        border-left: 2px solid transparent;
+        /* border-left: 2px solid transparent; */
       }
       .side-nav a:hover {
         color: var(--text);
@@ -97,6 +106,7 @@
 
       .insight-main {
         min-width: 0;
+        margin-bottom: 14rem;
       }
 
       .section {
@@ -109,7 +119,7 @@
         scroll-margin-top: 20px;
       }
       .section.flash {
-        outline-color: var(--accent);
+        outline-color: var(--accent-green);
       }
       .section-header {
         display: flex;
@@ -155,10 +165,10 @@
       }
 
       .hero {
-        padding: 1.2rem 1.5rem;
+        padding: 1rem 1.5rem 1.2rem;
       }
       .hero-rank {
-        font-size: 0.75rem;
+        /* font-size: 0.75rem; */
         color: var(--accent);
         font-weight: 700;
         margin-bottom: 0.3rem;
@@ -178,8 +188,13 @@
       }
       .hero-primary {
         font-size: 1.1rem;
+        font-family: Georgia, serif;
         color: var(--accent-green);
-        margin-bottom: 0.6rem;
+        margin-bottom: 0.618rem;
+
+        .hero-description {
+          font-size: 80%;
+        }
       }
       .hero-metrics {
         display: flex;
@@ -239,7 +254,9 @@
         title="回到仪表板"
         >← 返回仪表板</a
       >
-      <h1>📊 包排行榜 · <span id="insightUsername">-</span></h1>
+      <h1>
+        📊 包排行榜 · <span id="insightUsername" class="text-primary">-</span>
+      </h1>
       <button class="toggle-all" id="toggleAllBtn" type="button">
         全部收起
       </button>

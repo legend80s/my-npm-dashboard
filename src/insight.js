@@ -1,30 +1,28 @@
 import { Chart, registerables } from "chart.js"
 import { fetchRaw, RANKING_TOP_N, readCache, writeCache } from "./utils/data-loader.js"
-import { timeAgo } from "./utils/light-lodash.js"
+import { $, scrollToElement, URLParams } from "./utils/light-jquery.js"
+import { numberToLocaleString, timeAgo } from "./utils/light-lodash.js"
 
 Chart.register(...registerables)
 
 /** @import { FreshPackageDetail } from './index.type.js' */
+/** @import { MetricDescriptor, IRanking } from './insight.type.js' */
 
 // ============================================================
 //  Config & Rankings
 // ============================================================
 
-/**
- * @typedef {object} MetricDescriptor
- * @property {string} label
- * @property {(p: import('./index.type.js').FreshPackageDetail) => { value: string, color?: string, title?: string }} get
- */
+const urlParams = new URLParams(window.location.href)
 
-/** @type {Record<string, MetricDescriptor>} */
+/** @satisfies {Record<string, MetricDescriptor>} */
 const METRIC = {
   weekly: {
     label: "📥 周下载",
-    get: (p) => ({ value: (p.weeklyData?.at(-1)?.total ?? 0).toLocaleString() }),
+    get: (p) => ({ value: numberToLocaleString(p.weeklyData?.at(-1)?.total) }),
   },
   yearly: {
     label: "📥 年下载",
-    get: (p) => ({ value: (p.totalDownloads ?? 0).toLocaleString() }),
+    get: (p) => ({ value: numberToLocaleString(p.totalDownloads) }),
   },
   trend: {
     label: "🚀 趋势",
@@ -35,7 +33,7 @@ const METRIC = {
   },
   stars: {
     label: "⭐ Stars",
-    get: (p) => ({ value: (p.github?.stars ?? 0).toLocaleString() }),
+    get: (p) => ({ value: numberToLocaleString(p.github?.stars) }),
   },
   lastCommit: {
     label: "🕐 最近提交",
@@ -55,7 +53,7 @@ const METRIC = {
   },
   dependents: {
     label: "👥 被依赖",
-    get: (p) => ({ value: (p.dependents ?? 0).toLocaleString() }),
+    get: (p) => ({ value: numberToLocaleString(p.dependents) }),
   },
   versions: {
     label: "🔢 版本",
@@ -75,18 +73,21 @@ const METRIC = {
   },
 }
 
+/** @type {IRanking[]} */
 const RANKINGS = [
   {
     key: "weekly-downloads",
     label: "🔥 最热包",
+    labelDescription: "最近 7 天下载量最高的包",
     sortKey: (p) => p.weeklyData?.at(-1)?.total || 0,
-    format: (v) => v.toLocaleString(),
+    format: (v) => numberToLocaleString(v),
     unit: "",
-    metrics: [METRIC.weekly, METRIC.yearly, METRIC.trend],
+    metrics: [METRIC.yearly, METRIC.trend],
   },
   {
     key: "trend",
     label: "🚀 势头最猛",
+    labelDescription: "最近 7 天下载量增长最快的包",
     sortKey: (p) => p.trend,
     format: (v) => `${v}%`,
     unit: "%",
@@ -94,7 +95,8 @@ const RANKINGS = [
   },
   {
     key: "total-downloads",
-    label: "📥 下载总量",
+    label: "📥 年下载总量",
+    labelDescription: "过去一年下载量最高的包",
     sortKey: (p) => p.totalDownloads,
     format: (v) => v.toLocaleString(),
     unit: "",
@@ -103,14 +105,16 @@ const RANKINGS = [
   {
     key: "stars",
     label: "⭐ GitHub Stars",
+    labelDescription: new Date().toDateString(),
     sortKey: (p) => p.github?.stars || 0,
-    format: (v) => v.toLocaleString(),
+    format: (v) => numberToLocaleString(v),
     unit: "",
-    metrics: [METRIC.stars, METRIC.lastCommit],
+    metrics: [METRIC.lastCommit],
   },
   {
     key: "unpacked-size",
     label: "📦 包体积",
+    labelDescription: "",
     sortKey: (p) => p.unpackedSize ?? 0,
     format: formatBytes,
     unit: "",
@@ -120,6 +124,7 @@ const RANKINGS = [
   {
     key: "dependencies",
     label: "🔗 依赖数",
+    labelDescription: "package.json 中声明的 dependencies",
     sortKey: (p) => p.dependencyCount,
     format: (v) => String(v),
     unit: "个",
@@ -129,6 +134,7 @@ const RANKINGS = [
   {
     key: "dependents",
     label: "👥 被依赖数",
+    labelDescription: "",
     sortKey: (p) => p.dependents,
     format: (v) => v.toLocaleString(),
     unit: "",
@@ -136,11 +142,12 @@ const RANKINGS = [
   },
   {
     key: "versions",
-    label: "🔢 版本数",
+    label: "版本数",
+    labelDescription: "",
     sortKey: (p) => p.versionCount,
     format: (v) => String(v),
     unit: "个",
-    metrics: [METRIC.versions, METRIC.version, METRIC.publishedAt],
+    metrics: [METRIC.version, METRIC.publishedAt],
   },
 ]
 
@@ -171,11 +178,11 @@ const sectionEls = {}
 // ============================================================
 //  DOM refs
 // ============================================================
-const sectionsEl = document.getElementById("sections")
-const sideNavEl = document.getElementById("sideNav")
-const toggleAllBtn = document.getElementById("toggleAllBtn")
-const statusMsg = document.getElementById("statusMsg")
-const usernameSpan = document.getElementById("insightUsername")
+const sectionsEl = /** @type {HTMLElement} */ ($("#sections"))
+const sideNavEl = /** @type {HTMLElement} */ ($("#sideNav"))
+const toggleAllBtn = /** @type {HTMLElement} */ ($("#toggleAllBtn"))
+const statusMsg = /** @type {HTMLElement} */ ($("#statusMsg"))
+const usernameSpan = /** @type {HTMLElement} */ ($("#insightUsername"))
 
 // ============================================================
 //  Init
@@ -208,6 +215,7 @@ async function init() {
     render()
   } catch (err) {
     console.error(err)
+    // @ts-expect-error
     showStatus("❌", err.message || "加载失败")
   }
 }
@@ -233,7 +241,9 @@ function render() {
 function renderSections() {
   sectionsEl.innerHTML = ""
   for (const r of RANKINGS) {
-    const sorted = [...allPackages].sort((a, b) => (r.ascending ? r.sortKey(a) - r.sortKey(b) : r.sortKey(b) - r.sortKey(a)))
+    const sorted = [...allPackages].sort((a, b) =>
+      r.ascending ? r.sortKey(a) - r.sortKey(b) : r.sortKey(b) - r.sortKey(a),
+    )
     const top = sorted.slice(0, RANKING_TOP_N)
     const first = sorted[0]
 
@@ -253,7 +263,7 @@ function renderSections() {
     if (first) {
       const champ = document.createElement("span")
       champ.className = "section-champ"
-      champ.innerHTML = `🏆 <strong>${escapeHtml(first.name)}</strong> · ${r.format(r.sortKey(first))}`
+      champ.innerHTML = `<strong>${escapeHtml(first.name)}</strong>`
       header.appendChild(champ)
     }
 
@@ -278,9 +288,16 @@ function renderSections() {
   updateToggleAllLabel()
 }
 
+/**
+ *
+ * @param {string} key
+ * @returns
+ */
 function toggleSection(key) {
   const el = sectionEls[key]
-  if (!el) return
+  if (!el) {
+    return
+  }
   el.classList.toggle("collapsed")
   updateToggleAllLabel()
 }
@@ -313,7 +330,14 @@ function renderSideNav() {
     a.textContent = r.label
     a.addEventListener("click", (e) => {
       e.preventDefault()
-      sectionEls[r.key]?.scrollIntoView({ behavior: "smooth", block: "start" })
+      scrollToElement(
+        // @ts-expect-error
+        sectionEls[r.key],
+        { offsetTop: -70 },
+      )
+      urlParams.set("rank", r.key)
+      // sectionEls[r.key]?.scrollIntoView()
+      // scrollToElementWithOffset(sectionEls[r.key], -0)
     })
     sideNavEl.appendChild(a)
   }
@@ -327,7 +351,9 @@ function enableScrollSpy() {
   const observer = new IntersectionObserver(
     (entries) => {
       for (const entry of entries) {
-        if (!entry.isIntersecting) continue
+        if (!entry.isIntersecting) {
+          continue
+        }
         for (const [id, a] of links) {
           a.classList.toggle("active", id === entry.target.id)
         }
@@ -347,13 +373,17 @@ function enableScrollSpy() {
 function scrollToRank() {
   const params = new URLSearchParams(window.location.search)
   const rankParam = params.get("rank")
-  if (!rankParam || !RANKINGS.some((r) => r.key === rankParam)) return
-  const el = sectionEls[rankParam]
-  if (!el) return
+  if (!rankParam || !RANKINGS.some((r) => r.key === rankParam)) {
+    return
+  }
+
+  const el = /** @type {HTMLElement} */ (sectionEls[rankParam])
+
   setTimeout(() => {
-    el.scrollIntoView({ behavior: "smooth", block: "start" })
+    // el.scrollIntoView({ behavior: "smooth", block: "start" })
+    scrollToElement(el, { offsetTop: -70 })
     el.classList.add("flash")
-    setTimeout(() => el.classList.remove("flash"), 2000)
+    setTimeout(() => el.classList.remove("flash"), 1500)
   }, 100)
 }
 
@@ -362,7 +392,7 @@ function scrollToRank() {
 // ============================================================
 /**
  * @param {import('./index.type.js').FreshPackageDetail} pkg
- * @param {{ label: string, sortKey: (p: import('./index.type.js').FreshPackageDetail) => number, format: (v: number) => string, metrics: MetricDescriptor[] }} ranking
+ * @param {IRanking} ranking
  * @param {HTMLElement} container
  */
 function renderHero(pkg, ranking, container) {
@@ -373,13 +403,19 @@ function renderHero(pkg, ranking, container) {
 
   const primaryValue = ranking.sortKey(pkg)
   const primaryStr = ranking.format(primaryValue)
+  const labelDescription = !ranking.labelDescription
+    ? ""
+    : `<span class="hero-description">（${ranking.labelDescription}）</span>`
 
   const hero = document.createElement("div")
   hero.className = "hero"
+  // <span class="hero-rank">🏆 第1名</span>
   hero.innerHTML = `
-    <div class="hero-rank">🏆 第1名</div>
-    <div class="hero-name"><a href="https://www.npmjs.com/package/${encodeURIComponent(pkg.name)}" target="_blank">${escapeHtml(pkg.name)}</a></div>
-    <div class="hero-primary">${ranking.label}: ${primaryStr}</div>
+    <h2 class="hero-name">
+      <span class="hero-rank">🏆</span>
+      <a href="https://www.npmjs.com/package/${encodeURIComponent(pkg.name)}" target="_blank">${escapeHtml(pkg.name)}</a>
+    </h2>
+    <div class="hero-primary">${ranking.label}: ${primaryStr} ${labelDescription}</div>
     <div class="hero-metrics">
       ${ranking.metrics.map((m) => renderMetric(m, pkg)).join("")}
     </div>
@@ -489,6 +525,11 @@ function renderChart(packages, ranking, container) {
 // ============================================================
 //  Utils
 // ============================================================
+/**
+ *
+ * @param {string} str
+ * @returns
+ */
 function escapeHtml(str) {
   return String(str).replace(
     /[&<>"']/g,

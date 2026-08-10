@@ -189,6 +189,7 @@ export async function fetchGitHubStars(owner, repo, forceRefresh = false) {
     }
     return { stars: null, error: `HTTP ${res.status}` }
   }
+  /** @type {import('./api-github.type.js').RepoResp} */
   const data = await res.json()
   return { stars: data.stargazers_count || 0, error: null }
 }

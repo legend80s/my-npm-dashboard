@@ -48,7 +48,7 @@ export type CaseSuccess = {
   github: {
     owner: string
     repo: string
-    stars: string
+    stars: number
     lastCommit: string
     lastCommitDate: string
   }
@@ -62,7 +62,7 @@ type CaseError = Omit<CaseSuccess, "publishedAt" | "createdAt" | "weeklyData"> &
   github: {
     owner: ""
     repo: ""
-    stars: ""
+    stars: null
     lastCommit: ""
     lastCommitDate: ""
   }
