@@ -46,17 +46,18 @@
 
 :root {
   font-size: clamp(16px, 100vw / 2560 * 28.6, 36px);
-  --system-font: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --system-font-without-serif: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto;
+  --system-font: var(--system-font-without-serif), sans-serif;
 }
 
 html[lang="zh-CN"] {
   --serif:
-    "TsangerJinKai02", "Source Han Serif SC", "Source Han Serif CN", "Noto Serif CJK SC", "Noto Serif SC", "Songti SC",
-    Georgia, serif;
-  --sans: var(--serif);
+    fangsong, "TsangerJinKai02", "Source Han Serif SC", "Source Han Serif CN", "Noto Serif CJK SC", "Noto Serif SC",
+    "Songti SC", Georgia, serif;
+  --chn-and-eng: var(--system-font-without-serif), var(--serif);
 
   body {
-    font-family: var(--sans);
+    font-family: var(--chn-and-eng);
   }
 }
 

@@ -880,7 +880,7 @@ function renderHottest({ name, latestWeekDownloads }, username) {
       </a>
     ${endLeaf}
     <span style="margin-inline-start: 0.2em;">(🔥</span><a href="insight.html?username=${encodeURIComponent(username)}&rank=weekly-downloads" target="_self" title="📊 前往洞察页面" style="font-size: 60%;">
-      Last 7 Days Downloads <span class='text-primary' style='font-size: calc(20 / 16 * 1rem)'>${numberToLocaleString(latestWeekDownloads)}</span>
+      Last 7 Days Downloads <span class='text-primary' style='font-family: Georgia; font-size: calc(20 / 16 * 1rem)'>${numberToLocaleString(latestWeekDownloads)}</span>
     </a>)
     </div>`
     : "-"
