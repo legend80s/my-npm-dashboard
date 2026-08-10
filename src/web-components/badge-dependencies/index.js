@@ -79,23 +79,24 @@ class BadgeDependencies extends HTMLElement {
   }
 
   update() {
-    const { color, level } = this.countLevel()
-    const src = this.makeSrcByCountLevel(color)
+    const { color, level, icon } = this.countLevel()
+    const src = this.makeSrcByCountLevel(color, icon)
 
     // @ts-expect-error
     const img = /** @type {HTMLImageElement} */ (this.shadowRoot.querySelector("img"))
 
     img.src = src
-    img.title = `${level}: number of dependencies in package.json: 0 is "Excellent", 1 green for "Good", [2, 5] yellow for "Average" and [6, +∞] red for "Needs Improvement"`
+    img.title = `${icon} ${level}: number of dependencies in package.json: 0 is "Excellent", 1 green for "Good", [2, 5] yellow for "Average" and [6, +∞] red for "Needs Improvement"`
   }
 
   /**
    * @param {string} color
+   * @param {string} icon
    * @returns
    */
-  makeSrcByCountLevel(color) {
+  makeSrcByCountLevel(color, icon) {
     const countStr = this.getAttribute("dependency-count")
-    return `https://img.shields.io/badge/dependencies-${countStr}-${color}`
+    return `https://img.shields.io/badge/${icon}%20dependencies-${countStr}-${color}`
   }
   /** 根据依赖数量计算颜色和等级 */
   countLevel() {
@@ -105,20 +106,24 @@ class BadgeDependencies extends HTMLElement {
     const count = Number(countStr)
 
     let color = "red"
-    let level = "🔴 Needs Improvement"
+    let icon = "🔴"
+    let level = `Needs Improvement`
 
     if (count <= 0) {
       color = "cyan"
-      level = "👏 Excellent"
+      level = "Excellent"
+      icon = "👏"
     } else if (count <= 1) {
-      color = "green"
-      level = "🟢 Good"
+      color = "brightGreen"
+      level = "Good"
+      icon = "🟢"
     } else if (count <= 5) {
-      level = "🟡 Average"
+      level = "Average"
+      icon = "🟡"
       color = "yellow"
     }
 
-    return { color, level }
+    return { color, level, icon }
   }
 }
 
