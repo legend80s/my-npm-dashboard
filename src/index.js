@@ -516,11 +516,11 @@ function updateStats(pkgDetails, username, fromCache, cacheTimestamp) {
   sortAvatar.src = `https://avatars.githubusercontent.com/${username}?s=64`
   sortAvatar.hidden = false
 
-  const sortInfo = /** @type {HTMLElement} */ (document.getElementById("sortInfo"))
-  const usernameElement = sortInfo.querySelector(".text-primary")
-  if (usernameElement && usernameElement.textContent.trim() !== username) {
-    usernameElement.textContent = username
-  }
+  // const sortInfo = /** @type {HTMLElement} */ (document.getElementById("sortInfo"))
+  // const usernameElement = sortInfo.querySelector(".text-primary")
+  // if (usernameElement && usernameElement.textContent.trim() !== username) {
+  //   usernameElement.textContent = username
+  // }
 }
 
 /**

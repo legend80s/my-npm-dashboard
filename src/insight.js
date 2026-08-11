@@ -18,10 +18,12 @@ const urlParams = new URLParams(window.location.href)
 const METRIC = {
   weekly: {
     label: "周下载",
+    // @ts-expect-error
     get: (p) => ({ value: numberToLocaleString(p.weeklyData?.at(-1)?.total) }),
   },
   lastWeek: {
     label: "上周下载",
+    // @ts-expect-error
     get: (p) => ({ value: numberToLocaleString(p.weeklyData?.at(-2)?.total) }),
   },
   yearly: {
@@ -82,7 +84,9 @@ const METRIC = {
   publishedAt: {
     label: "🕒 发布时间",
     get: (p) => {
-      if (!p.publishedAt) return { value: "—" }
+      if (!p.publishedAt) {
+        return { value: "—" }
+      }
       const date = new Date(p.publishedAt)
       return { value: timeAgo(date), title: date.toLocaleString() }
     },
@@ -95,6 +99,7 @@ const RANKINGS = [
     key: "weekly-downloads",
     label: "🔥 最热包",
     labelDescription: "最近 7 天下载量最高的包",
+    // @ts-expect-error
     sortKey: (p) => p.weeklyData?.at(-1)?.total || 0,
     format: (v) => numberToLocaleString(v),
     unit: "",
@@ -135,7 +140,7 @@ const RANKINGS = [
     format: formatBytes,
     unit: "",
     ascending: true,
-    metrics: [METRIC.size, METRIC.deps],
+    metrics: [METRIC.deps],
   },
   {
     key: "dependencies",
@@ -261,7 +266,12 @@ function renderSections() {
       r.ascending ? r.sortKey(a) - r.sortKey(b) : r.sortKey(b) - r.sortKey(a),
     )
     const top = sorted.slice(0, RANKING_TOP_N)
-    const first = sorted[0]
+
+    const first = /** @type {FreshPackageDetail} */ (sorted[0])
+    if (!first) {
+      console.error("allPackages", allPackages)
+      throw new Error("No first package, must be a bug")
+    }
 
     const section = document.createElement("section")
     section.className = "section"
@@ -276,12 +286,10 @@ function renderSections() {
     title.textContent = r.label
     header.appendChild(title)
 
-    if (first) {
-      const champ = document.createElement("span")
-      champ.className = "section-champ"
-      champ.innerHTML = `<strong>${escapeHtml(first.name)}</strong>`
-      header.appendChild(champ)
-    }
+    const champ = document.createElement("span")
+    champ.className = "section-champ"
+    champ.innerHTML = `<strong>${escapeHtml(first.name)}</strong>`
+    header.appendChild(champ)
 
     const chevron = document.createElement("span")
     chevron.className = "section-chevron"
@@ -352,7 +360,7 @@ function renderSideNav() {
         sectionEls[r.key],
         { offsetTop: -70 },
       )
-      urlParams.set("rank", r.key)
+      urlParams.replace("rank", r.key)
       // sectionEls[r.key]?.scrollIntoView()
       // scrollToElementWithOffset(sectionEls[r.key], -0)
     })
@@ -430,9 +438,9 @@ function renderHero(pkg, ranking, container) {
   hero.innerHTML = `
     <h2 class="hero-name">
       <span class="hero-rank">🏆</span>
-      <a href="https://www.npmjs.com/package/${encodeURIComponent(pkg.name)}" target="_blank">${escapeHtml(pkg.name)}</a>
+      <a class="text-primary" href="https://www.npmjs.com/package/${encodeURIComponent(pkg.name)}" target="_blank">${escapeHtml(pkg.name)}</a>
     </h2>
-    <div class="hero-primary">${ranking.label}: ${primaryStr} ${labelDescription}</div>
+    <div class="hero-primary">${ranking.label}: <span class="text-primary">${primaryStr}</span> ${labelDescription}</div>
     <div class="hero-metrics">
       ${ranking.metrics.map((m) => renderMetric(m, pkg)).join("")}
     </div>
@@ -542,7 +550,7 @@ function renderChart(packages, ranking, container) {
   const gridColor = rootStyle.getPropertyValue("--border-muted").trim() || "#21262d"
   const tickColor = rootStyle.getPropertyValue("--text-muted").trim() || "#8b949e"
 
-  const ctx = canvas.getContext("2d")
+  const ctx = /** @type {CanvasRenderingContext2D} */ (canvas.getContext("2d"))
   const instance = new Chart(ctx, {
     type: "bar",
     data: {
@@ -566,9 +574,11 @@ function renderChart(packages, ranking, container) {
       maintainAspectRatio: false,
       onClick: (_, elements) => {
         if (elements.length) {
+          // @ts-expect-error
           const idx = elements[0].index
           const pkg = packages[idx]
-          if (pkg) window.open(`https://www.npmjs.com/package/${encodeURIComponent(pkg.name)}`, "_blank")
+          // @ts-expect-error
+          window.open(`https://www.npmjs.com/package/${encodeURIComponent(pkg.name)}`, "_blank")
         }
       },
       plugins: {
@@ -578,7 +588,11 @@ function renderChart(packages, ranking, container) {
             label: (ctx) => {
               const val = ctx.parsed.x
               const pkg = packages[ctx.dataIndex]
-              if (!pkg) return `${ranking.label}: ${ranking.format(val)}`
+
+              if (!pkg) {
+                return `${ranking.label}: ${ranking.format(val)}`
+              }
+
               const lines = [`${ranking.label}: ${ranking.format(val)}`]
               if (ranking.key === "weekly-downloads" && pkg.trend) {
                 lines.push(`趋势: ${pkg.trend > 0 ? "+" : ""}${pkg.trend}%`)
@@ -590,6 +604,7 @@ function renderChart(packages, ranking, container) {
       },
       scales: {
         x: {
+          // @ts-expect-error
           grid: { color: gridColor, drawBorder: false },
           ticks: {
             color: tickColor,

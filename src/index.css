@@ -184,8 +184,9 @@ button:disabled {
   border-radius: 8px;
   border: 1px solid var(--border);
   background: var(--bg);
-  color: var(--text);
+  color: var(--accent-green);
   font-size: 0.875rem;
+  font-weight: bold;
   outline: none;
   transition: border-color 0.2s;
   width: 150px;
