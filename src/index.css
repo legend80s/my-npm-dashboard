@@ -247,7 +247,7 @@ button:disabled {
     opacity 0.25s ease;
 }
 
-.header-actions:hover .stat-item {
+.header-actions:has(button:hover) .stat-item {
   max-width: 32rem;
   opacity: 1;
 }
