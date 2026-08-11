@@ -1,5 +1,5 @@
 import { Chart, registerables } from "chart.js"
-import { MAX_SEARCH_SIZE } from "./utils/api.js"
+import { getMaxSearchSize } from "./utils/api.js"
 import { byActiveAtDesc, CACHE_TTL_IN_HOURS, getCache, getCacheTTL } from "./utils/cache.js"
 import { clearCache, fetchPackageDetails, fetchRaw, writeCache } from "./utils/data-loader.js"
 import { numberToLocaleString, timeAgo as resolveRelativeTime } from "./utils/light-lodash.js"
@@ -45,7 +45,7 @@ const updateTime = /** @type {HTMLDivElement} */ (document.getElementById("updat
 
 const config = {
   pkgLimit: 4,
-  MAX_SEARCH_SIZE,
+  MAX_SEARCH_SIZE: getMaxSearchSize(),
 }
 
 // console.log("1 limitInput.value:", limitInput.value)
@@ -1049,4 +1049,13 @@ settings.addEventListener("theme-change", (/** @type {CustomEvent<{ theme: strin
     src.searchParams.set("mode", theme === "dark" ? "dark" : "light")
     img.src = src.toString()
   })
+})
+
+// max-search-size-change
+// @ts-expect-error
+settings.addEventListener("max-search-size-change", (/** @type {CustomEvent<{ size: number }>} */ e) => {
+  const size = Math.min(250, Math.max(1, Math.floor(Number(e.detail.size))))
+  localStorage.setItem("maxSearchSize", String(size))
+  limitInput.max = String(size)
+  refreshBtn.click()
 })

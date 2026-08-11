@@ -1,3 +1,5 @@
+import { getMaxSearchSize } from "../../utils/api.js"
+
 class SimpleCounter extends HTMLElement {
   constructor() {
     super()
@@ -76,6 +78,24 @@ class SimpleCounter extends HTMLElement {
       shadowRoot.querySelector(`#chartProviderWrapper input[value="${isNpmx ? "npmx" : "chart.js"}"]`)
     )
     if (providerRadio) providerRadio.checked = true
+
+    // sync max search size input
+    const searchSizeInput = /** @type {HTMLInputElement | null} */ (
+      shadowRoot.getElementById("maxSearchSizeInput")
+    )
+    if (searchSizeInput) searchSizeInput.value = String(getMaxSearchSize())
+
+    // max search size
+    searchSizeInput?.addEventListener("change", () => {
+      const createDrawer = shadowRoot.getElementById("createDrawer")
+      // @ts-expect-error
+      createDrawer?.close()
+      this.dispatchEvent(
+        new CustomEvent("max-search-size-change", {
+          detail: { size: Number(searchSizeInput.value) },
+        }),
+      )
+    })
   }
 
   /**

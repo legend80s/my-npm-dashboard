@@ -81,7 +81,7 @@
   }
 
   .drawer label {
-    font-size: 0.75rem;
+    font-size: 0.875rem;
     font-weight: 600;
     color: var(--text-muted, #666);
     margin-bottom: 0.25rem;
@@ -89,6 +89,20 @@
 
   .drawer input[type='radio'] {
     accent-color: var(--accent-green, #58a6ff);
+  }
+
+  .drawer input[type='number'] {
+    padding: 8px 12px;
+    border-radius: 6px;
+    border: 1px solid var(--border, #30363d);
+    background: var(--bg-subtle, #161b22);
+    color: var(--text, #e6edf3);
+    font-size: 0.875rem;
+    outline: none;
+  }
+
+  .drawer input[type='number']:focus {
+    border-color: var(--accent-green, #58a6ff);
   }
 
   .drawer textarea {
@@ -181,6 +195,21 @@
         <input type="radio" id="light" name="theme" value="light" />
         <label for="light">Light</label>
       </div>
+    </fieldset>
+
+    <fieldset id="searchSizeWrapper">
+      <legend>Max search size</legend>
+      <label for="maxSearchSizeInput" style="margin-inline-end: 1em"
+        >npm 搜索/显示包数量上限</label
+      >
+      <input
+        type="number"
+        id="maxSearchSizeInput"
+        style="width: 5em; text-align: center"
+        min="1"
+        max="250"
+        step="1"
+      />
     </fieldset>
   </section>
   <!-- <div class="drawer-actions">

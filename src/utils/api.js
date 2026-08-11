@@ -6,10 +6,23 @@ import { fetchJSON, sleep } from "./light-lodash.js"
 //  4. npm API 调用（浏览器端直接请求，支持 CORS）
 // ============================================================
 
-/** npm search API 单次拉取最大数量 */
+/** npm search API 单次拉取最大数量（兜底默认值，可在设置中覆盖） */
 // 190 https://registry.npmjs.org/-/v1/search?text=maintainer:antfu&sort=date&size=190 才可以拉取到 2026-7-31 16:14:49 一小时之前发布的 magic-string-stack
 export const MAX_SEARCH_SIZE = 5
 // export const MAX_SEARCH_SIZE = 100
+
+const MAX_SEARCH_SIZE_KEY = "maxSearchSize"
+const SEARCH_SIZE_MAX = 250
+
+/**
+ * 读取用户设置的搜索数量（来自 localStorage），非法值回退默认
+ * @returns {number}
+ */
+export function getMaxSearchSize() {
+  const size = Number(localStorage.getItem(MAX_SEARCH_SIZE_KEY))
+  if (!Number.isFinite(size) || size <= 0) return MAX_SEARCH_SIZE
+  return Math.min(SEARCH_SIZE_MAX, Math.floor(size))
+}
 
 const DEV = true
 
@@ -29,7 +42,7 @@ export async function fetchUserPackages(username, forceRefresh = false) {
     prefix +
     `https://registry.npmjs.org/-/v1/search?` +
     `text=maintainer:${encodeURIComponent(username)}` +
-    `&size=${MAX_SEARCH_SIZE}${cacheBust}`
+    `&size=${getMaxSearchSize()}${cacheBust}`
   // ""
   // NPM Bug: not return all by publish time.
 
