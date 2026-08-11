@@ -229,29 +229,27 @@ button:disabled {
 }
 
 .header-actions {
-  display: flex;
+  display: inline-flex;
   justify-content: end;
   align-items: center;
   font-size: 0.75rem;
   gap: 0.5rem;
   margin-bottom: 1rem;
-}
 
-.header-actions .stat-item {
-  max-width: 0;
-  overflow: hidden;
-  white-space: nowrap;
-  opacity: 0;
-  transition:
-    max-width 0.55s cubic-bezier(0.68, -0.55, 0.27, 1.55),
-    opacity 0.25s ease;
+  .stat-item {
+    width: 0;
+    overflow: hidden;
+    white-space: nowrap;
+    opacity: 0;
+    /* max-width 0.55s cubic-bezier(0.68, -0.55, 0.27, 1.55), */
+    transition: opacity 0.95s ease;
+  }
+  &:hover .stat-item {
+    width: auto;
+    /* max-width: 36rem; */
+    opacity: 1;
+  }
 }
-
-.header-actions:has(button:hover) .stat-item {
-  max-width: 32rem;
-  opacity: 1;
-}
-
 .status-badge {
   padding: 6px 14px;
   border-radius: 20px;
