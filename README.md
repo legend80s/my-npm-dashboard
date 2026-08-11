@@ -1,5 +1,11 @@
 # Tauri + Vanilla
 
+<div align="center">
+  <img src="./src/closed-npm.svg" width="256" />
+</div>
+
+> My <img src="./src/closed-npm.svg" width="16" align="end" style="vertical-align: middle;" alt="N" title="npm dashboard logo" />PM Dashboard built with Tauri and Vanilla JS
+
 This template should help get you started developing with Tauri in vanilla HTML, CSS and Javascript.
 
 ## Recommended IDE Setup
