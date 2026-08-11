@@ -254,7 +254,7 @@ button:disabled {
   justify-content: center;
   flex-wrap: wrap;
   gap: 1rem 1rem;
-  padding-inline: 24px;
+  padding-inline: 0.8rem;
   padding-block: 12px 12px;
   /* background: var(--bg-subtle); */
   border-radius: 10px;
@@ -513,6 +513,26 @@ button:disabled {
 .loading-spin {
   display: inline-block;
   animation: spin-pause 2.4s ease-in-out infinite;
+}
+
+#refreshBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+#refreshBtn .refresh-icon {
+  display: inline-block;
+}
+
+#refreshBtn.loading .refresh-icon {
+  animation: refresh-spin 1s linear infinite;
+}
+
+@keyframes refresh-spin {
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 /* ===== Responsive ===== */

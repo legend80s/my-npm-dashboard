@@ -31,6 +31,7 @@ const limitInput = /** @type {HTMLInputElement} */ (document.getElementById("lim
 const searchBtn = /** @type {HTMLButtonElement} */ (document.getElementById("searchBtn"))
 // const statusBadge = document.getElementById("statusBadge")
 const refreshBtn = /** @type {HTMLButtonElement} */ (document.getElementById("refreshBtn"))
+const refreshText = /** @type {HTMLSpanElement} */ (document.getElementById("refreshText"))
 
 const grid = /** @type {HTMLDivElement} */ (document.getElementById("grid"))
 // const pkgCount = document.getElementById("pkgCount")
@@ -100,6 +101,7 @@ const old = searchBtn.textContent
 function setLoading(loading) {
   isLoading = loading
   searchBtn.disabled = loading
+  refreshBtn.classList.toggle("loading", loading)
   if (loading) {
     searchBtn.style.display = "none"
     // searchBtn.innerHTML = '<span class="loading-spin">⏳</span>'
@@ -418,7 +420,7 @@ async function loadPackages(username, displayLimit, forceRefresh = false) {
       forceRefresh,
       /** @param {FreshPackageDetail} pkgDetail @param {number} done @param {number} total */
       onPackage(pkgDetail, done, total) {
-        refreshBtn.textContent = `🔄 刷新 ${done}/${total}`
+        refreshText.textContent = `刷新 ${done}/${total}`
 
         if (done <= displayLimit) {
           collected.push(pkgDetail)
