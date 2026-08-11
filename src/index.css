@@ -237,6 +237,21 @@ button:disabled {
   margin-bottom: 1rem;
 }
 
+.header-actions .stat-item {
+  max-width: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  opacity: 0;
+  transition:
+    max-width 0.55s cubic-bezier(0.68, -0.55, 0.27, 1.55),
+    opacity 0.25s ease;
+}
+
+.header-actions:hover .stat-item {
+  max-width: 32rem;
+  opacity: 1;
+}
+
 .status-badge {
   padding: 6px 14px;
   border-radius: 20px;
