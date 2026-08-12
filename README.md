@@ -1,8 +1,8 @@
-# Tauri + Vanilla
+# My NPM Dashboard
 
-<div align="center">
+<h2 align="center">
   <img src="./src/closed-npm.svg" width="256" />
-</div>
+</h2>
 
 > My NPM <img src="./src/closed-npm.svg" width="16" align="end" style="vertical-align: middle;" alt="D" title="npm dashboard logo" />ashboard built with Tauri and Vanilla JS
 

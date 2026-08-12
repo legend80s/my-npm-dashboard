@@ -1,5 +1,6 @@
 import { Hono } from "hono"
 import { fetchJSON, RED, RESET, YELLOW } from "../../../utils/light-lodash.js"
+import { MyURL } from "./_utils.js"
 
 const host = "https://api.github.com"
 const debugging = false
@@ -52,6 +53,21 @@ github.get("/repos/:owner/:repo/commits", async (c) => {
 
   const json = await fetchUsingProxy(url, {
     label: "github commits",
+    verbose: true,
+  })
+
+  return c.json(json)
+})
+
+// https://api.github.com/repositories/430023490/commits?page=4
+github.get("/repositories/:id/commits", async (c) => {
+  const id = c.req.param("id")
+  const allQuery = c.req.query()
+
+  const url = new MyURL(`${host}/repositories/${id}/commits`, allQuery)
+
+  const json = await fetchUsingProxy(url.toString(), {
+    label: "github id commits",
     verbose: true,
   })
 

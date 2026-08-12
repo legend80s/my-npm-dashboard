@@ -55,7 +55,7 @@ export type CaseSuccess = {
   activeAt: string | null
 }
 
-type CaseError = Omit<CaseSuccess, "publishedAt" | "createdAt" | "weeklyData"> & {
+export type CaseError = Omit<CaseSuccess, "publishedAt" | "createdAt" | "weeklyData" | "github"> & {
   publishedAt: null
   createdAt: null
   error: string

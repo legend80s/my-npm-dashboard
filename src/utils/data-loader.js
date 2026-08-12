@@ -1,5 +1,5 @@
 /** @import { NpmPkgResp, Package } from './npmjs.type.js' */
-/** @import { CacheData, CaseSuccess, FreshPackageDetail } from '../index.type.js' */
+/** @import { CacheData, CaseSuccess, CaseError, FreshPackageDetail } from '../index.type.js' */
 /** @import { int } from './base.type.js' */
 
 import {
@@ -204,7 +204,8 @@ export async function fetchRaw(username, options = {}) {
       pkgDetails.push(detail)
       onPackage?.(detail, index + 1, pkgList.length)
     } catch (err) {
-      const fallbackDetail = /** @type {const} */ ({
+      /** @type {CaseError} */
+      const fallbackDetail = {
         name: pkg.name,
         version: "--",
         publishedAt: null,
@@ -214,7 +215,7 @@ export async function fetchRaw(username, options = {}) {
         github: {
           owner: "",
           repo: "",
-          stars: "",
+          stars: null,
           lastCommit: "",
           lastCommitDate: "",
         },
@@ -224,7 +225,7 @@ export async function fetchRaw(username, options = {}) {
         versionCount: 0,
         dependents: 0,
         error: err instanceof Error ? err.message : String(err),
-      })
+      }
       pkgDetails.push(fallbackDetail)
       onPackage?.(fallbackDetail, index + 1, pkgList.length)
     }

@@ -2,13 +2,20 @@ import { Chart, registerables } from "chart.js"
 import { getMaxSearchSize } from "./utils/api.js"
 import { byActiveAtDesc, CACHE_TTL_IN_HOURS, getCache, getCacheTTL } from "./utils/cache.js"
 import { clearCache, fetchPackageDetails, fetchRaw, writeCache } from "./utils/data-loader.js"
-import { numberToLocaleString, timeAgo as resolveRelativeTime } from "./utils/light-lodash.js"
+import {
+  // fetchJSON,
+  getFirstCommit,
+  numberToLocaleString,
+  timeAgo as resolveRelativeTime,
+} from "./utils/light-lodash.js"
 
 Chart.register(...registerables)
 
 import "./web-components/simple-counter/index.js"
 import "./web-components/badge-dependencies/index.js"
 import "./web-components/fancy-separator.js"
+import { $id } from "./utils/light-jquery.js"
+import { Spinner } from "./web-components/spinner.js"
 
 const NPMJS_DOMAIN = `https://www.npmjs.com`
 const NPMX_DOMAIN = `https://npmx.dev`
@@ -27,6 +34,7 @@ const form = /** @type {HTMLFormElement} */ (document.getElementById("searchForm
 const usernameInput = /** @type {HTMLInputElement} */ (document.getElementById("usernameInput"))
 
 const limitInput = /** @type {HTMLInputElement} */ (document.getElementById("limitInput"))
+const maxCount = /** @type {HTMLInputElement} */ (document.getElementById("maxCount"))
 
 const searchBtn = /** @type {HTMLButtonElement} */ (document.getElementById("searchBtn"))
 // const statusBadge = document.getElementById("statusBadge")
@@ -48,10 +56,13 @@ const config = {
   MAX_SEARCH_SIZE: getMaxSearchSize(),
 }
 
+const provider = document.documentElement.dataset.provider
+// console.log("provider:", provider)
 // console.log("1 limitInput.value:", limitInput.value)
 
 limitInput.value = String(config.pkgLimit)
 limitInput.max = String(config.MAX_SEARCH_SIZE)
+maxCount.textContent = ` / ${config.MAX_SEARCH_SIZE}`
 // console.log("2 limitInput.value:", limitInput.value)
 
 // ============================================================
@@ -163,11 +174,11 @@ function timeAgo(dateStr) {
  */
 async function renderChart(container, pkgName, weeklyData) {
   // await nextIdle()
-  console.log("container, pkgName, weeklyData", {
-    container,
-    pkgName,
-    weeklyData,
-  })
+  // console.log("container, pkgName, weeklyData", {
+  //   container,
+  //   pkgName,
+  //   weeklyData,
+  // })
   // 检查数据是否有效
   if (!weeklyData || weeklyData.length === 0 || weeklyData.every((w) => w.total === 0)) {
     container.innerHTML = `<div class="chart-placeholder">📊 暂无下载数据</div>`
@@ -199,7 +210,7 @@ async function renderChart(container, pkgName, weeklyData) {
     const rootStyle = getComputedStyle(document.documentElement)
     // const chartGridColor = "#d8dee4"
     const chartGridColor = rootStyle.getPropertyValue("--border-muted").trim()
-    console.log({ chartGridColor })
+    // console.log({ chartGridColor })
     // const chartGridColor = rootStyle.getPropertyValue("--border-muted").trim() || "#21262d"
     const chartTickColor = rootStyle.getPropertyValue("--text-muted").trim() || "#8b949e"
     const chartAccentColor = rootStyle.getPropertyValue("--accent-green").trim() || "#58a6ff"
@@ -393,7 +404,7 @@ async function loadPackages(username, displayLimit, forceRefresh = false) {
   }
 
   const { limit } = getUrlParams()
-  console.log("limit:", limit)
+  // console.log("limit:", limit)
 
   // 尝试从缓存加载
   if (!forceRefresh) {
@@ -409,7 +420,8 @@ async function loadPackages(username, displayLimit, forceRefresh = false) {
 
   // 缓存未命中或强制刷新
   setLoading(true)
-  grid.innerHTML = `<div class="no-results" style="color:var(--orange);"><span class="big loading-spin">⏳</span>正在搜索 ${username} 的包...</div>`
+  const spinner = new Spinner(grid)
+  spinner.start(`正在搜索 ${username} 的包...`)
 
   try {
     /** @type {FreshPackageDetail[]} */
@@ -418,7 +430,6 @@ async function loadPackages(username, displayLimit, forceRefresh = false) {
 
     const dataPromise = fetchRaw(username, {
       forceRefresh,
-      /** @param {FreshPackageDetail} pkgDetail @param {number} done @param {number} total */
       onPackage(pkgDetail, done, total) {
         refreshText.textContent = `刷新 ${done}/${total}`
 
@@ -428,6 +439,7 @@ async function loadPackages(username, displayLimit, forceRefresh = false) {
         }
 
         if (done >= 1) {
+          spinner.stop()
           const progressEl = grid.querySelector(".no-results")
           progressEl?.remove()
         }
@@ -446,6 +458,8 @@ async function loadPackages(username, displayLimit, forceRefresh = false) {
     writeCache(username, data.packages)
 
     if (data.packages.length === 0) {
+      spinner.stop()
+
       grid.innerHTML = `
           <div class="no-results">
               <span class="big">😕</span>
@@ -460,6 +474,8 @@ async function loadPackages(username, displayLimit, forceRefresh = false) {
     }
   } catch (err) {
     console.error(err)
+    spinner.stop()
+
     grid.innerHTML = `
         <div class="no-results">
             <span class="big">❌</span>
@@ -501,14 +517,15 @@ function updateStats(pkgDetails, username, fromCache, cacheTimestamp) {
   renderHottest(hottest, username)
   renderHottestTrend(hottestTrend, username)
 
-  updateTime.textContent = getFreshnessLabel(fromCache, cacheTimestamp)
-  updateCacheInfo()
+  const { timeDisplay, freshness } = getFreshnessLabel(fromCache, cacheTimestamp)
+  updateTime.textContent = timeDisplay
+  updateCacheInfo(freshness)
 
   /** @type {HTMLElement} */
-  // @ts-expect-error
-  const cacheStatus = document.getElementById("cacheStatus")
-  cacheStatus.textContent = fromCache ? "" : "🔄 实时"
-  cacheStatus.style.color = fromCache ? "var(--text-muted)" : "var(--accent-green)"
+  // x@ts-expect-error
+  // const cacheStatus = document.getElementById("cacheStatus")
+  // cacheStatus.textContent = fromCache ? "" : "🔄 实时"
+  // cacheStatus.style.color = fromCache ? "var(--text-muted)" : "var(--accent-green)"
 
   /** @type {HTMLImageElement} */
   // @ts-expect-error
@@ -589,12 +606,15 @@ async function renderFromData(pkgDetails, username, limit, fromCache, cacheTimes
 
 /**
  * 更新缓存信息显示
+ * @param {Freshness} [freshness]
  */
-function updateCacheInfo() {
+function updateCacheInfo(freshness) {
+  // console.trace("updateCacheInfo")
+  // console.log("freshness:", freshness)
+
   const ttlDisplay = document.getElementById("cacheTTL")
-  ttlDisplay?.setHTMLUnsafe(
-    `TTL <strong>${CACHE_TTL_IN_HOURS}</strong> 小时 | Remaining <strong>${getCacheTTL()}</strong>`,
-  )
+  const remainTime = freshness === "cache" ? ` · 剩余 <strong>${getCacheTTL()}</strong>` : ""
+  ttlDisplay?.setHTMLUnsafe(`TTL <strong>${CACHE_TTL_IN_HOURS}</strong> 小时${remainTime}`)
 }
 
 // ============================================================
@@ -656,23 +676,25 @@ function createCardElement(pkg) {
     return card
   }
 
-  const { name } = pkg
+  const { name, trend } = pkg
 
   // 正常卡片
-  const trendArrow = pkg.trend > 0 ? "↑" : pkg.trend < 0 ? "↓" : "→"
-  const trendColor = pkg.trend > 0 ? "brightgreen" : pkg.trend < 0 ? "yellow" : "lightgrey"
-  const trendBadge = `https://img.shields.io/badge/weekly%20trend-${encodeURIComponent(`${trendArrow} ${Math.abs(pkg.trend)}%`)}-${trendColor}?logo=npm&logoColor=cyan&style=flat`
+  const trendArrow = trend > 0 ? "↑" : trend < 0 ? "↓" : "→"
+  const trendColor = trend > 0 ? "brightgreen" : trend < 0 ? "yellow" : "lightgrey"
+  const trendBadge = `https://img.shields.io/badge/weekly%20trend-${encodeURIComponent(`${trendArrow} ${Math.abs(trend)}%`)}-${trendColor}?logo=npm&logoColor=cyan&style=flat`
 
   const publishedDisplay = pkg.publishedAt ? timeAgo(pkg.publishedAt) : "--"
   const createdDisplay = pkg.createdAt ? timeAgo(pkg.createdAt) : "--"
 
-  console.log("pkg.createdAt:", pkg.createdAt)
+  // console.log("pkg.createdAt:", pkg.createdAt)
 
   // @ts-expect-error
   const latestWeekDownloads = pkg.weeklyData.at(-1).total
 
   const theme = document.documentElement.dataset.theme
   // console.log("theme:", theme)
+
+  const sanitizedId = name.replace(/[^a-zA-Z0-9]/g, "-")
 
   card.innerHTML = `
       <header class="card-header">
@@ -684,18 +706,20 @@ function createCardElement(pkg) {
             <img src="https://img.shields.io/badge/yearly-${numberToLocaleString(pkg.totalDownloads)}-blue?logo=npm&logoColor=cyan&style=flat" alt="Yearly downloads: ${pkg.totalDownloads}" title="Yearly downloads: ${pkg.totalDownloads}" />
           </div>
       </header>
-      <div class="chart-container" id="chart-${name.replace(/[^a-zA-Z0-9]/g, "-")}"
+      <div class="chart-container" id="chart-${sanitizedId}"
           data-pkgname="${name}">
       </div>
 
       <img class="npmx-embed-downloads-chart" src="https://npmx.dev/api/embed/downloads.svg?packages=${encodeURIComponent(name)}&metric=downloads&mode=${theme}&granularity=weekly&locale=en-US&accent=oklch%280.51+0.13+162.4%29&yLabel=Weekly+Downloads" style="height: 100%;/* aspect-ratio: 1 / 1; */width: 100%;object-fit: cover;">
       
       <div class="card-metrics">
-          <a href="${NPMJS_DOMAIN}/package/${name}?activeTab=dependents"><img src="https://img.shields.io/librariesio/dependents/npm/${name}" title="dependents" alt="dependents" style="vertical-align: bottom;" /></a>
+          <a href="${NPMJS_DOMAIN}/package/${name}?activeTab=dependents" target="_blank">
+            <img src="https://img.shields.io/librariesio/dependents/npm/${name}" title="dependents" alt="dependents" style="vertical-align: bottom;" />
+          </a>
 
           <fancy-separator></fancy-separator>
 
-          <badge-dependencies provider="npm" name="${name}" dependency-count="${pkg.dependencyCount}"></badge-dependencies>
+          <badge-dependencies provider="${provider}" name="${name}" dependency-count="${pkg.dependencyCount}"></badge-dependencies>
           <fancy-separator></fancy-separator>
           
           <img src="${trendBadge}" title="latest week trend" alt="weekly trend: ${trendArrow} ${Math.abs(pkg.trend)}%" />
@@ -706,7 +730,18 @@ function createCardElement(pkg) {
           
           <fancy-separator></fancy-separator>
           
-          <img src="https://img.shields.io/badge/🤰%20诞生于-${createdDisplay}-brightgreen?logoColor=cyan" title="${new Date(pkg.createdAt).toLocaleString()}" alt="weekly trend: ↑ 1%">
+          <a 
+            id="firstCommitUrl-${sanitizedId}"
+            href="https://github.com/legend80s/sse-stuntman/commits/main/"
+            target="_blank"
+            title="${new Date(pkg.createdAt).toLocaleString()}"
+          >
+            <img 
+              src="https://img.shields.io/badge/🤰%20诞生于-${createdDisplay}-brightgreen?logoColor=cyan" 
+              alt="诞生于 ${createdDisplay}"
+              style="vertical-align: bottom;"
+            />
+          </a>
       </div>
       ${ghInfo}
   `
@@ -728,6 +763,19 @@ function createCardElement(pkg) {
   //   border-radius: 50%;
   //   background: var(--color-primary);
   // "></span>
+
+  const id = `firstCommitUrl-${sanitizedId}`
+  setTimeout(() => {
+    // console.log("id:", id)
+    const $firstCommitUrl = /** @type {HTMLAnchorElement} */ ($id(id))
+    // console.time(`getFirstCommit-${sanitizedId}`)
+    getFirstCommit(pkg.github.owner, pkg.github.repo).then(async (commit) => {
+      $firstCommitUrl.href = commit.html_url
+      $firstCommitUrl.title = `${commit.commit.message} · ${$firstCommitUrl.title}`
+      // console.timeEnd(`getFirstCommit-${sanitizedId}`) // 1393.4150390625 ms
+    })
+  })
+
   return card
 }
 
@@ -739,7 +787,7 @@ function appendCard(pkg) {
   const card = createCardElement(pkg)
   grid.appendChild(card)
 
-  if (card.classList.contains("card-error")) {
+  if ("error" in pkg) {
     return
   }
 
@@ -770,7 +818,7 @@ async function renderCards(pkgDetails) {
 
   for (let { element, pkg } of cardElements) {
     const container = element.querySelector(".chart-container")
-    console.log("renderChart 1", pkg)
+    // console.log("renderChart 1", pkg)
 
     if ("error" in pkg) {
       // fetch
@@ -840,7 +888,8 @@ function init() {
   })
 
   // 更新缓存信息
-  updateCacheInfo()
+  // updateCacheInfo()
+  updateAllNpmLinks(provider)
 }
 
 // 启动
@@ -876,7 +925,7 @@ function renderHottest({ name, latestWeekDownloads }, username) {
   hottestPkg.innerHTML = name
     ? `<div style="display: flex; align-items: center;">
     ${startLeaf}
-      <a href="${NPMJS_DOMAIN}/${encodeURIComponent(name)}" title="当前最热包 🔥 | 前往 npm" style="color:inherit; font-weight: bold;" target="_blank">
+      <a href="${NPMJS_DOMAIN}/${name}" title="当前最热包 🔥 | 前往 npm" style="color:inherit; font-weight: bold;" target="_blank">
         ${name}
       </a>
     ${endLeaf}
@@ -896,7 +945,7 @@ function renderHottestTrend({ name, trend }, username) {
 
   hottestTrendPkg.innerHTML = name
     ? `${startLeaf}
-      <a href="${NPMJS_DOMAIN}/package/${encodeURIComponent(name)}" target="_blank" title="当前增速最快包 🚀 | 前往 npm" style="color:inherit;">
+      <a href="${NPMJS_DOMAIN}/package/${name}" target="_blank" title="当前增速最快包 🚀 | 前往 npm" style="color:inherit;">
         ${name}
       </a>
     ${endLeaf} <span style="margin-inline-start: 0.2em;">(</span><a href="insight.html?username=${encodeURIComponent(username)}&rank=trend" target="_self" title="📊 前往洞察页面" class='text-primary' style="font-size: 110%;">🚀+${trend}%</a>)`
@@ -904,10 +953,14 @@ function renderHottestTrend({ name, trend }, username) {
 }
 
 /**
+ * @typedef { 'cache' | 'realtime'  } Freshness
+ */
+
+/**
  * 生成数据新鲜度标签
  * @param {boolean} fromCache - 数据是否来自缓存
  * @param {number|null} cacheTimestamp - 缓存时间戳（毫秒）
- * @returns {string} 展示用的时间标签
+ * @returns {{ timeDisplay: string; freshness: Freshness }} 展示用的时间标签
  * @example
  * ### 效果预览
  *
@@ -925,6 +978,8 @@ function getFreshnessLabel(fromCache, cacheTimestamp) {
   // ---- 优化：显示有意义的时间信息 ----
   const now = Date.now()
   let timeDisplay = ""
+  /** @type {Freshness} */
+  let freshness
 
   if (fromCache && cacheTimestamp) {
     const elapsed = now - cacheTimestamp
@@ -945,13 +1000,15 @@ function getFreshnessLabel(fromCache, cacheTimestamp) {
 
     const cacheTimeStr = new Date(cacheTimestamp).toLocaleString()
     timeDisplay = `📦 缓存数据 · ${cacheTimeStr} (${relativeTime})`
+    freshness = "cache"
   } else {
     // 实时数据
     const realTimeStr = new Date(now).toLocaleString()
-    timeDisplay = `🔄 实时数据 · ${realTimeStr}`
+    timeDisplay = `📡 实时数据 · ${realTimeStr}`
+    freshness = "realtime"
   }
 
-  return timeDisplay
+  return { timeDisplay, freshness }
 }
 
 /**
@@ -990,23 +1047,29 @@ settings.addEventListener(
     document.documentElement.setAttribute("data-provider", provider)
     localStorage.setItem("provider", provider)
     // 更新页面其他元素
-
-    // change all the a links from npmjs.com to npmx.dev
-    const [from, to] = provider === "npmx" ? [NPMJS_DOMAIN, NPMX_DOMAIN] : [NPMX_DOMAIN, NPMJS_DOMAIN]
-    const [fromKeyword, toKeyword] = provider === "npmx" ? ["npm", "npmx"] : ["npmx", "npm"]
-
-    document.querySelectorAll(`a[href^='${from}']`).forEach((a) => {
-      const link = /** @type {HTMLAnchorElement} */ (a)
-
-      link.href = link.href.replace(from, to)
-      link.title = link.title.replace(fromKeyword, toKeyword)
-    })
-
-    document.querySelectorAll("badge-dependencies").forEach((element) => {
-      element.setAttribute("provider", provider === "npmx" ? "npmx" : "npm")
-    })
+    updateAllNpmLinks(provider)
   },
 )
+
+/**
+ * Change all the a links from npmjs.com to npmx.dev or vice versa.
+ * @param {'npmx' | 'chart.js' | (string & {})} [provider]
+ */
+function updateAllNpmLinks(provider) {
+  const [from, to] = provider === "npmx" ? [NPMJS_DOMAIN, NPMX_DOMAIN] : [NPMX_DOMAIN, NPMJS_DOMAIN]
+  const [fromKeyword, toKeyword] = provider === "npmx" ? ["npm", "npmx"] : ["npmx", "npm"]
+
+  document.querySelectorAll(`a[href^='${from}']`).forEach((a) => {
+    const link = /** @type {HTMLAnchorElement} */ (a)
+
+    link.href = link.href.replace(from, to)
+    link.title = link.title.replace(fromKeyword, toKeyword)
+  })
+
+  document.querySelectorAll("badge-dependencies").forEach((element) => {
+    element.setAttribute("provider", provider === "npmx" ? "npmx" : "npm")
+  })
+}
 
 // theme-change
 function updateAllChartColors() {
@@ -1057,5 +1120,7 @@ settings.addEventListener("max-search-size-change", (/** @type {CustomEvent<{ si
   const size = Math.min(250, Math.max(1, Math.floor(Number(e.detail.size))))
   localStorage.setItem("maxSearchSize", String(size))
   limitInput.max = String(size)
+  maxCount.textContent = ` / ${size}`
+
   refreshBtn.click()
 })

@@ -86,10 +86,12 @@
         gap: 0.15rem;
         font-size: 0.8rem;
         font-family: var(--system-font);
+        /* box-shadow: 0 0 10px 3px rgba(0, 0, 0, 0.15); */
+        border-radius: calc(6 / 16 * 1rem);
       }
       .side-nav a {
         padding: 0.3rem 0.6rem;
-        border-radius: 6px;
+        border-radius: calc(6 / 16 * 1rem);
         color: var(--text-muted);
         text-decoration: none;
         transition: all 0.15s;
@@ -113,11 +115,12 @@
       .section {
         margin: 0 auto 1.5rem;
         background: var(--bg-subtle);
-        border-radius: 12px;
+        border-radius: calc(12 / 16 * 1rem);
         overflow: hidden;
         outline: 2px solid transparent;
         transition: outline-color 0.3s;
         scroll-margin-top: 20px;
+        box-shadow: 0 0 10px 3px rgba(0, 0, 0, 0.15);
       }
       .section.flash {
         outline-color: var(--accent-green);
