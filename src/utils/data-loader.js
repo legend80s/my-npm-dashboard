@@ -70,15 +70,15 @@ export function readCache(username) {
       }
     }
 
-    console.log(
-      "pkgs before sorting:",
-      pkgs.map((x) => x.name),
-    )
+    // console.log(
+    //   "pkgs before sorting:",
+    //   pkgs.map((x) => x.name),
+    // )
     pkgs.sort(byActiveAtDesc)
-    console.log(
-      "pkgs after sorting:",
-      pkgs.map((x) => x.name),
-    )
+    // console.log(
+    //   "pkgs after sorting:",
+    //   pkgs.map((x) => x.name),
+    // )
 
     return { packages: pkgs, timestamp: data.timestamp }
   } catch {

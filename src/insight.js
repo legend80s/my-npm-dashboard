@@ -262,7 +262,7 @@ function render() {
 function renderSections() {
   sectionsEl.innerHTML = ""
   for (const r of RANKINGS) {
-    const sorted = [...allPackages].sort((a, b) =>
+    const sorted = allPackages.toSorted((a, b) =>
       r.ascending ? r.sortKey(a) - r.sortKey(b) : r.sortKey(b) - r.sortKey(a),
     )
     const top = sorted.slice(0, RANKING_TOP_N)

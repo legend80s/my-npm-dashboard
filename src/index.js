@@ -552,7 +552,7 @@ function updateStats(pkgDetails, username, fromCache, cacheTimestamp) {
  * @param {number} displayLimit 展示数量上限
  */
 function syncGridToTop(pkgDetails, displayLimit) {
-  const top = [...pkgDetails].sort(byActiveAtDesc).slice(0, displayLimit)
+  const top = pkgDetails.toSorted(byActiveAtDesc).slice(0, displayLimit)
   const topNames = new Set(top.map((p) => p.name))
   const currentEls = [...grid.children].filter((el) => el.dataset.pkgName)
 
@@ -562,11 +562,15 @@ function syncGridToTop(pkgDetails, displayLimit) {
   }
 
   for (const el of currentEls) {
-    if (!topNames.has(el.dataset.pkgName)) el.remove()
+    if (!topNames.has(el.dataset.pkgName)) {
+      el.remove()
+    }
   }
 
   for (const pkg of top) {
-    if (!currentNames.has(pkg.name)) appendCard(pkg)
+    if (!currentNames.has(pkg.name)) {
+      appendCard(pkg)
+    }
   }
 
   reorderCardsByActiveAt(top)
@@ -582,7 +586,7 @@ function reorderCardsByActiveAt(pkgDetails) {
 
   const firstRects = cardEls.map((el) => el.getBoundingClientRect())
 
-  const sorted = [...pkgDetails].sort(byActiveAtDesc)
+  const sorted = pkgDetails.toSorted(byActiveAtDesc)
   const nameToEl = {}
   for (const el of cardEls) {
     nameToEl[el.dataset.pkgName] = el
