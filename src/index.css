@@ -65,6 +65,9 @@ html[lang="zh-CN"] {
   color: var(--accent-green);
 }
 
+.text-muted {
+  color: var(--text-muted);
+}
 .text-gray {
   color: var(--text-muted);
 }

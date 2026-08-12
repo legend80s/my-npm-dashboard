@@ -501,14 +501,15 @@ function updateStats(pkgDetails, username, fromCache, cacheTimestamp) {
   renderHottest(hottest, username)
   renderHottestTrend(hottestTrend, username)
 
-  updateTime.textContent = getFreshnessLabel(fromCache, cacheTimestamp)
-  updateCacheInfo()
+  const { timeDisplay, freshness } = getFreshnessLabel(fromCache, cacheTimestamp)
+  updateTime.textContent = timeDisplay
+  updateCacheInfo(freshness)
 
   /** @type {HTMLElement} */
-  // @ts-expect-error
-  const cacheStatus = document.getElementById("cacheStatus")
-  cacheStatus.textContent = fromCache ? "" : "🔄 实时"
-  cacheStatus.style.color = fromCache ? "var(--text-muted)" : "var(--accent-green)"
+  // x@ts-expect-error
+  // const cacheStatus = document.getElementById("cacheStatus")
+  // cacheStatus.textContent = fromCache ? "" : "🔄 实时"
+  // cacheStatus.style.color = fromCache ? "var(--text-muted)" : "var(--accent-green)"
 
   /** @type {HTMLImageElement} */
   // @ts-expect-error
@@ -589,12 +590,15 @@ async function renderFromData(pkgDetails, username, limit, fromCache, cacheTimes
 
 /**
  * 更新缓存信息显示
+ * @param {Freshness} [freshness]
  */
-function updateCacheInfo() {
+function updateCacheInfo(freshness) {
+  // console.trace("updateCacheInfo")
+  // console.log("freshness:", freshness)
+
   const ttlDisplay = document.getElementById("cacheTTL")
-  ttlDisplay?.setHTMLUnsafe(
-    `TTL <strong>${CACHE_TTL_IN_HOURS}</strong> 小时 | Remaining <strong>${getCacheTTL()}</strong>`,
-  )
+  const remainTime = freshness === "cache" ? ` · 剩余 <strong>${getCacheTTL()}</strong>` : ""
+  ttlDisplay?.setHTMLUnsafe(`TTL <strong>${CACHE_TTL_IN_HOURS}</strong> 小时${remainTime}`)
 }
 
 // ============================================================
@@ -840,7 +844,7 @@ function init() {
   })
 
   // 更新缓存信息
-  updateCacheInfo()
+  // updateCacheInfo()
 }
 
 // 启动
@@ -904,10 +908,14 @@ function renderHottestTrend({ name, trend }, username) {
 }
 
 /**
+ * @typedef { 'cache' | 'realtime'  } Freshness
+ */
+
+/**
  * 生成数据新鲜度标签
  * @param {boolean} fromCache - 数据是否来自缓存
  * @param {number|null} cacheTimestamp - 缓存时间戳（毫秒）
- * @returns {string} 展示用的时间标签
+ * @returns {{ timeDisplay: string; freshness: Freshness }} 展示用的时间标签
  * @example
  * ### 效果预览
  *
@@ -925,6 +933,8 @@ function getFreshnessLabel(fromCache, cacheTimestamp) {
   // ---- 优化：显示有意义的时间信息 ----
   const now = Date.now()
   let timeDisplay = ""
+  /** @type {Freshness} */
+  let freshness
 
   if (fromCache && cacheTimestamp) {
     const elapsed = now - cacheTimestamp
@@ -945,13 +955,15 @@ function getFreshnessLabel(fromCache, cacheTimestamp) {
 
     const cacheTimeStr = new Date(cacheTimestamp).toLocaleString()
     timeDisplay = `📦 缓存数据 · ${cacheTimeStr} (${relativeTime})`
+    freshness = "cache"
   } else {
     // 实时数据
     const realTimeStr = new Date(now).toLocaleString()
-    timeDisplay = `🔄 实时数据 · ${realTimeStr}`
+    timeDisplay = `📡 实时数据 · ${realTimeStr}`
+    freshness = "realtime"
   }
 
-  return timeDisplay
+  return { timeDisplay, freshness }
 }
 
 /**
