@@ -1,9 +1,9 @@
 import { getMaxSearchSize } from "../../utils/api.js"
-import { LocalStorage } from "../../utils/cache.js"
+import { KEY_OPEN_SETTINGS, LocalStorage } from "../../utils/cache.js"
 // import { URLParams } from "../../utils/light-jquery.js"
 import { BaseWebElement } from "../base-web-element.js"
 
-const KEY = "open-settings"
+const KEY = KEY_OPEN_SETTINGS
 
 class SimpleCounter extends BaseWebElement {
   constructor() {
