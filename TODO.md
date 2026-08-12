@@ -11,6 +11,7 @@
 - [ ] default light theme like npmjs.com
 - [ ] add link to initial commit of birth date badge
 - [ ] Feature: add what are fetching in the top left corner using sonner
+- [ ] replace spinner svg in sonner in real sonner promise loading icon
 - [ ] 修改最大搜索包数量，不应该 bust cache。只有当用户主动点击刷新时，才 bust cache
 - [ ] verbose mode and quiet mode
 - [ ] light badge to labelColor=000&color=3b82f6

@@ -1,30 +1,43 @@
-// type ToastOptions = {}
-type ToastMessageOptions = {
-  title: string
+type ToastId = string
+type Text = string | HTMLElement
+
+type PerToastOptions = {
+  duration: number
+}
+
+type ToastMessageOptions = PerToastOptions & {
+  title?: string
   /** Smaller text below the title */
-  description?: string
+  description?: Text
 }
 
 // 主要 toast 函数类型
 export interface ToastFunction {
   /** 显示普通 toast */
-  (message: string): void
+  (message: Text, opts?: PerToastOptions): ToastId
   /** 显示带标题和描述的 toast */
-  // (options: ToastMessageOptions): void
+  // (options: ToastMessageOptions): ToastId
 
   /** 成功提示 */
-  success: (message: string) => void
+  success: (message: Text, opts?: PerToastOptions) => ToastId
   /** 信息提示 */
-  info: (message: string) => void
+  info: (message: Text, opts?: PerToastOptions) => ToastId
   /** 警告提示 */
-  warning: (message: string) => void
+  warning: (message: Text, opts?: PerToastOptions) => ToastId
   /** 错误提示 */
-  error: (message: string) => void
+  error: (message: Text, opts?: PerToastOptions) => ToastId
   /** 带标题和描述的消息提示 */
-  message: (options: ToastMessageOptions) => void
+  message: (options: ToastMessageOptions) => ToastId
 
-  // /** 手动关闭所有 toast */
-  // dismissAll?: () => void
-  // /** 手动关闭特定 toast */
-  // dismiss?: (id: string | number) => void
+  /** 手动关闭特定 toast */
+  dismiss: (id: string) => ToastId
 }
+
+export interface IPatchFetch {
+  (): void
+  done: boolean
+}
+
+// const foo: IPatchFetch = () => { return 1 }
+// foo.done = false
+// const xx = foo()

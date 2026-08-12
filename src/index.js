@@ -14,6 +14,7 @@ Chart.register(...registerables)
 import "./web-components/settings-dialog/index.js"
 import "./web-components/badge-dependencies/index.js"
 import "./web-components/fancy-separator.js"
+import { init as initSonner } from "./web-components/sonner.js"
 import { $id } from "./utils/light-jquery.js"
 import { Spinner } from "./web-components/spinner.js"
 
@@ -58,6 +59,7 @@ const config = {
 
 const provider = document.documentElement.dataset.provider
 const theme = document.documentElement.dataset.theme
+initSonner(theme)
 // console.log("provider:", provider)
 // console.log("1 limitInput.value:", limitInput.value)
 

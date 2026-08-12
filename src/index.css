@@ -551,7 +551,7 @@ button:disabled {
   display: inline-block;
 }
 
-#refreshBtn.loading .refresh-icon {
+.loading .refresh-icon {
   animation: refresh-spin 1s linear infinite;
 }
 
