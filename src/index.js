@@ -11,7 +11,7 @@ import {
 
 Chart.register(...registerables)
 
-import "./web-components/simple-counter/index.js"
+import "./web-components/settings-dialog/index.js"
 import "./web-components/badge-dependencies/index.js"
 import "./web-components/fancy-separator.js"
 import { $id } from "./utils/light-jquery.js"
@@ -745,17 +745,6 @@ function createCardElement(pkg) {
       </div>
       ${ghInfo}
   `
-  // <span class="metric" title="${new Date(pkg.publishedAt).toLocaleString()}">🚀 发布 <strong>${publishedDisplay}</strong></span>
-  // <span class="metric" title="${new Date(pkg.createdAt).toLocaleString()}">🤰 诞生于 <strong>${createdDisplay}</strong></span>
-  {
-    /* <span class="slash" style="
-  height: 1.2em;
-  transform: rotate(22deg);
-  width: 0.16em;
-  background: var(--color-primary);
-  border-radius: 1em;
-"></span> */
-  }
   //   <span class="dot" style="
   //   border: 1px solid;
   //   width: 0.5em;

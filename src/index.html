@@ -34,7 +34,7 @@
       }
     </script>
 
-    <!-- <script type="module" src="web-components/simple-counter/index.js"></script> -->
+    <!-- <script type="module" src="web-components/settings-dialog/index.js"></script> -->
     <!-- hottest-trend-pkg -->
     <!-- <script
       type="module"
@@ -45,7 +45,7 @@
 
     <link rel="stylesheet" href="index.css" />
     <script>
-      (function () {
+      (() => {
         var saved = localStorage.getItem('theme');
         var theme =
           saved === 'light' || saved === 'dark'
@@ -183,7 +183,7 @@
           />
         </form>
 
-        <simple-counter id="settings"></simple-counter>
+        <settings-dialog id="settings"></settings-dialog>
 
         <!-- <span class="" id="statusBadge"></span> -->
       </div>

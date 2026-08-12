@@ -5,7 +5,7 @@ import { BaseWebElement } from "../base-web-element.js"
 
 const KEY = KEY_OPEN_SETTINGS
 
-class SimpleCounter extends BaseWebElement {
+class SettingsDialog extends BaseWebElement {
   constructor() {
     super()
     this.count = 0
@@ -18,7 +18,7 @@ class SimpleCounter extends BaseWebElement {
 
   async connectedCallback() {
     // 动态加载模板
-    const response = await fetch("./web-components/simple-counter/index.html")
+    const response = await fetch("./web-components/settings-dialog/index.html")
     const template = await response.text()
 
     // console.log("template:", template)
@@ -127,4 +127,4 @@ class SimpleCounter extends BaseWebElement {
   }
 }
 
-customElements.define("simple-counter", SimpleCounter)
+customElements.define("settings-dialog", SettingsDialog)
