@@ -6,17 +6,20 @@
 - [ ] Pin
 - [ ] Add pkg not in list
 - [ ] fix bug: 点击右上角刷新按钮，一个最近发布的包（createdAt）因为最后被搜索到，没有展示出来。但是刷新页面后就没有问题，能按照 createdAt 排序，展示在第一位
+- [ ] Feature: add hero hall for all gold medal packages in different categories.
 - [ ] Add pkgs list published in latest 3 months
 - [ ] default light theme like npmjs.com
 - [ ] add link to initial commit of birth date badge
+- [ ] Feature: add what are fetching in the top left corner using sonner
 - [ ] 修改最大搜索包数量，不应该 bust cache。只有当用户主动点击刷新时，才 bust cache
 - [ ] verbose mode and quiet mode
 - [ ] light badge to labelColor=000&color=3b82f6
 - [ ] remember provider to local storage
-- [ ] Fix bug: npmx provider but a links not change to npmx initially
+- [ ] Fix bug: npmx provider initially but links not change to npmx
 - [x] pkg icon
 - [ ] watch mode bug: css changes not reflected. server restarted but page not refreshed use sse to notify client
 - [ ] 缓存如何设计
+- [ ] Naming: react-toast, react-snackbar, react-notifications, they all feel boring and generic to me. I wanted something more unique and elegant.
 - [ ] pnpm workspace
 - [ ] 最多5个包
 - [ ] 创建 2026-7-30 改成相对时间
