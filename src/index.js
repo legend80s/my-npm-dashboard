@@ -207,7 +207,7 @@ async function renderChart(container, pkgName, weeklyData) {
     const rootStyle = getComputedStyle(document.documentElement)
     // const chartGridColor = "#d8dee4"
     const chartGridColor = rootStyle.getPropertyValue("--border-muted").trim()
-    console.log({ chartGridColor })
+    // console.log({ chartGridColor })
     // const chartGridColor = rootStyle.getPropertyValue("--border-muted").trim() || "#21262d"
     const chartTickColor = rootStyle.getPropertyValue("--text-muted").trim() || "#8b949e"
     const chartAccentColor = rootStyle.getPropertyValue("--accent-green").trim() || "#58a6ff"
@@ -401,7 +401,7 @@ async function loadPackages(username, displayLimit, forceRefresh = false) {
   }
 
   const { limit } = getUrlParams()
-  console.log("limit:", limit)
+  // console.log("limit:", limit)
 
   // 尝试从缓存加载
   if (!forceRefresh) {
@@ -677,7 +677,7 @@ function createCardElement(pkg) {
   const publishedDisplay = pkg.publishedAt ? timeAgo(pkg.publishedAt) : "--"
   const createdDisplay = pkg.createdAt ? timeAgo(pkg.createdAt) : "--"
 
-  console.log("pkg.createdAt:", pkg.createdAt)
+  // console.log("pkg.createdAt:", pkg.createdAt)
 
   // @ts-expect-error
   const latestWeekDownloads = pkg.weeklyData.at(-1).total
@@ -809,7 +809,7 @@ async function renderCards(pkgDetails) {
 
   for (let { element, pkg } of cardElements) {
     const container = element.querySelector(".chart-container")
-    console.log("renderChart 1", pkg)
+    // console.log("renderChart 1", pkg)
 
     if ("error" in pkg) {
       // fetch
