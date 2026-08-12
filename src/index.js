@@ -2,13 +2,19 @@ import { Chart, registerables } from "chart.js"
 import { getMaxSearchSize } from "./utils/api.js"
 import { byActiveAtDesc, CACHE_TTL_IN_HOURS, getCache, getCacheTTL } from "./utils/cache.js"
 import { clearCache, fetchPackageDetails, fetchRaw, writeCache } from "./utils/data-loader.js"
-import { numberToLocaleString, timeAgo as resolveRelativeTime } from "./utils/light-lodash.js"
+import {
+  fetchJSON,
+  getFirstCommit,
+  numberToLocaleString,
+  timeAgo as resolveRelativeTime,
+} from "./utils/light-lodash.js"
 
 Chart.register(...registerables)
 
 import "./web-components/simple-counter/index.js"
 import "./web-components/badge-dependencies/index.js"
 import "./web-components/fancy-separator.js"
+import { $id } from "./utils/light-jquery.js"
 
 const NPMJS_DOMAIN = `https://www.npmjs.com`
 const NPMX_DOMAIN = `https://npmx.dev`
@@ -662,12 +668,12 @@ function createCardElement(pkg) {
     return card
   }
 
-  const { name } = pkg
+  const { name, trend } = pkg
 
   // 正常卡片
-  const trendArrow = pkg.trend > 0 ? "↑" : pkg.trend < 0 ? "↓" : "→"
-  const trendColor = pkg.trend > 0 ? "brightgreen" : pkg.trend < 0 ? "yellow" : "lightgrey"
-  const trendBadge = `https://img.shields.io/badge/weekly%20trend-${encodeURIComponent(`${trendArrow} ${Math.abs(pkg.trend)}%`)}-${trendColor}?logo=npm&logoColor=cyan&style=flat`
+  const trendArrow = trend > 0 ? "↑" : trend < 0 ? "↓" : "→"
+  const trendColor = trend > 0 ? "brightgreen" : trend < 0 ? "yellow" : "lightgrey"
+  const trendBadge = `https://img.shields.io/badge/weekly%20trend-${encodeURIComponent(`${trendArrow} ${Math.abs(trend)}%`)}-${trendColor}?logo=npm&logoColor=cyan&style=flat`
 
   const publishedDisplay = pkg.publishedAt ? timeAgo(pkg.publishedAt) : "--"
   const createdDisplay = pkg.createdAt ? timeAgo(pkg.createdAt) : "--"
@@ -680,6 +686,8 @@ function createCardElement(pkg) {
   const theme = document.documentElement.dataset.theme
   // console.log("theme:", theme)
 
+  const sanitizedId = name.replace(/[^a-zA-Z0-9]/g, "-")
+
   card.innerHTML = `
       <header class="card-header">
           <a class="card-name" href="${NPMJS_DOMAIN}/package/${name}" target="_blank">${name}</a>
@@ -690,14 +698,16 @@ function createCardElement(pkg) {
             <img src="https://img.shields.io/badge/yearly-${numberToLocaleString(pkg.totalDownloads)}-blue?logo=npm&logoColor=cyan&style=flat" alt="Yearly downloads: ${pkg.totalDownloads}" title="Yearly downloads: ${pkg.totalDownloads}" />
           </div>
       </header>
-      <div class="chart-container" id="chart-${name.replace(/[^a-zA-Z0-9]/g, "-")}"
+      <div class="chart-container" id="chart-${sanitizedId}"
           data-pkgname="${name}">
       </div>
 
       <img class="npmx-embed-downloads-chart" src="https://npmx.dev/api/embed/downloads.svg?packages=${encodeURIComponent(name)}&metric=downloads&mode=${theme}&granularity=weekly&locale=en-US&accent=oklch%280.51+0.13+162.4%29&yLabel=Weekly+Downloads" style="height: 100%;/* aspect-ratio: 1 / 1; */width: 100%;object-fit: cover;">
       
       <div class="card-metrics">
-          <a href="${NPMJS_DOMAIN}/package/${name}?activeTab=dependents"><img src="https://img.shields.io/librariesio/dependents/npm/${name}" title="dependents" alt="dependents" style="vertical-align: bottom;" /></a>
+          <a href="${NPMJS_DOMAIN}/package/${name}?activeTab=dependents" target="_blank">
+            <img src="https://img.shields.io/librariesio/dependents/npm/${name}" title="dependents" alt="dependents" style="vertical-align: bottom;" />
+          </a>
 
           <fancy-separator></fancy-separator>
 
@@ -712,7 +722,18 @@ function createCardElement(pkg) {
           
           <fancy-separator></fancy-separator>
           
-          <img src="https://img.shields.io/badge/🤰%20诞生于-${createdDisplay}-brightgreen?logoColor=cyan" title="${new Date(pkg.createdAt).toLocaleString()}" alt="weekly trend: ↑ 1%">
+          <a 
+            id="firstCommitUrl-${sanitizedId}"
+            href="https://github.com/legend80s/sse-stuntman/commits/main/"
+            target="_blank"
+            title="${new Date(pkg.createdAt).toLocaleString()}"
+          >
+            <img 
+              src="https://img.shields.io/badge/🤰%20诞生于-${createdDisplay}-brightgreen?logoColor=cyan" 
+              alt="诞生于 ${createdDisplay}"
+              style="vertical-align: -webkit-baseline-middle;"
+            />
+          </a>
       </div>
       ${ghInfo}
   `
@@ -734,6 +755,19 @@ function createCardElement(pkg) {
   //   border-radius: 50%;
   //   background: var(--color-primary);
   // "></span>
+
+  const id = `firstCommitUrl-${sanitizedId}`
+  setTimeout(() => {
+    // console.log("id:", id)
+    const $firstCommitUrl = /** @type {HTMLAnchorElement} */ ($id(id))
+    // console.time(`getFirstCommit-${sanitizedId}`)
+    getFirstCommit(pkg.github.owner, pkg.github.repo).then(async (commit) => {
+      $firstCommitUrl.href = commit.html_url
+      $firstCommitUrl.title = `${commit.commit.message} · ${$firstCommitUrl.title}`
+      // console.timeEnd(`getFirstCommit-${sanitizedId}`) // 1393.4150390625 ms
+    })
+  })
+
   return card
 }
 

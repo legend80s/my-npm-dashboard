@@ -18,6 +18,22 @@ export function $$(selector) {
 
 /**
  *
+ * @param {string} selector
+ * @returns {HTMLElement}
+ */
+export function $id(selector) {
+  const el = document.getElementById(selector)
+
+  if (!el) {
+    console.error("ERR [$id]", { selector, el })
+    throw new Error(`element with id ${selector} not found`)
+  }
+
+  return el
+}
+
+/**
+ *
  * @param {HTMLElement} element
  * @param {Partial<{ offsetTop: number, behavior: ScrollBehavior, align: "top" | 'center' | 'bottom' }>} options
  */
