@@ -15,6 +15,7 @@ import "./web-components/simple-counter/index.js"
 import "./web-components/badge-dependencies/index.js"
 import "./web-components/fancy-separator.js"
 import { $id } from "./utils/light-jquery.js"
+import { Spinner } from "./web-components/spinner.js"
 
 const NPMJS_DOMAIN = `https://www.npmjs.com`
 const NPMX_DOMAIN = `https://npmx.dev`
@@ -419,7 +420,8 @@ async function loadPackages(username, displayLimit, forceRefresh = false) {
 
   // 缓存未命中或强制刷新
   setLoading(true)
-  grid.innerHTML = `<div class="no-results" style="color:var(--orange);"><span class="big loading-spin">⏳</span>正在搜索 ${username} 的包...</div>`
+  const spinner = new Spinner(grid)
+  spinner.start(`正在搜索 ${username} 的包...`)
 
   try {
     /** @type {FreshPackageDetail[]} */
@@ -437,6 +439,7 @@ async function loadPackages(username, displayLimit, forceRefresh = false) {
         }
 
         if (done >= 1) {
+          spinner.stop()
           const progressEl = grid.querySelector(".no-results")
           progressEl?.remove()
         }
@@ -455,6 +458,8 @@ async function loadPackages(username, displayLimit, forceRefresh = false) {
     writeCache(username, data.packages)
 
     if (data.packages.length === 0) {
+      spinner.stop()
+
       grid.innerHTML = `
           <div class="no-results">
               <span class="big">😕</span>
@@ -469,6 +474,8 @@ async function loadPackages(username, displayLimit, forceRefresh = false) {
     }
   } catch (err) {
     console.error(err)
+    spinner.stop()
+
     grid.innerHTML = `
         <div class="no-results">
             <span class="big">❌</span>
