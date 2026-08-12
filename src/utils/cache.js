@@ -127,12 +127,12 @@ export function getCacheTTL() {
 
 /**
  *
- * @param {Pick<FreshPackageDetail, 'publishedAt'>} a
- * @param {Pick<FreshPackageDetail, 'publishedAt'>} b
+ * @param {Pick<FreshPackageDetail, 'createdAt'>} a
+ * @param {Pick<FreshPackageDetail, 'createdAt'>} b
  * @returns
  */
 export function byActiveAtDesc(a, b) {
-  const dateA = a.publishedAt ? new Date(a.publishedAt).getTime() : 0
-  const dateB = b.publishedAt ? new Date(b.publishedAt).getTime() : 0
+  const dateA = a.createdAt ? new Date(a.createdAt).getTime() : 0
+  const dateB = b.createdAt ? new Date(b.createdAt).getTime() : 0
   return dateB - dateA
 }

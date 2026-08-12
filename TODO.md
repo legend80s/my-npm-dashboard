@@ -5,8 +5,11 @@
 - [ ] Add dependents rankings
 - [ ] Pin
 - [ ] Add pkg not in list
+- [ ] fix bug: 点击右上角刷新按钮，一个最近发布的包（createdAt）因为最后被搜索到，没有展示出来。但是刷新页面后就没有问题，能按照 createdAt 排序，展示在第一位
 - [ ] Add pkgs list published in latest 3 months
 - [ ] default light theme like npmjs.com
+- [ ] add link to initial commit of birth date badge
+- [ ] 修改最大搜索包数量，不应该 bust cache。只有当用户主动点击刷新时，才 bust cache
 - [ ] verbose mode and quiet mode
 - [ ] light badge to labelColor=000&color=3b82f6
 - [ ] remember provider to local storage

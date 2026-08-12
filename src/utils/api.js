@@ -60,12 +60,12 @@ export async function fetchUserPackages(username, forceRefresh = false) {
   }
 
   // 客户端按发布时间排序（最新在前）
-  packages.sort((a, b) => {
-    // return Math.random() - 0.5
-    const dateA = a.date ? new Date(a.date).getTime() : 0
-    const dateB = b.date ? new Date(b.date).getTime() : 0
-    return dateB - dateA
-  })
+  // packages.sort((a, b) => {
+  //   // return Math.random() - 0.5
+  //   const dateA = a.date ? new Date(a.date).getTime() : 0
+  //   const dateB = b.date ? new Date(b.date).getTime() : 0
+  //   return dateB - dateA
+  // })
 
   // console.log("packages:", packages)
   // console.log(

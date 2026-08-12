@@ -27,6 +27,7 @@ const form = /** @type {HTMLFormElement} */ (document.getElementById("searchForm
 const usernameInput = /** @type {HTMLInputElement} */ (document.getElementById("usernameInput"))
 
 const limitInput = /** @type {HTMLInputElement} */ (document.getElementById("limitInput"))
+const maxCount = /** @type {HTMLInputElement} */ (document.getElementById("maxCount"))
 
 const searchBtn = /** @type {HTMLButtonElement} */ (document.getElementById("searchBtn"))
 // const statusBadge = document.getElementById("statusBadge")
@@ -52,6 +53,7 @@ const config = {
 
 limitInput.value = String(config.pkgLimit)
 limitInput.max = String(config.MAX_SEARCH_SIZE)
+maxCount.textContent = ` / ${config.MAX_SEARCH_SIZE}`
 // console.log("2 limitInput.value:", limitInput.value)
 
 // ============================================================
@@ -1069,5 +1071,7 @@ settings.addEventListener("max-search-size-change", (/** @type {CustomEvent<{ si
   const size = Math.min(250, Math.max(1, Math.floor(Number(e.detail.size))))
   localStorage.setItem("maxSearchSize", String(size))
   limitInput.max = String(size)
+  maxCount.textContent = ` / ${size}`
+
   refreshBtn.click()
 })

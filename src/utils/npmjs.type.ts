@@ -56,7 +56,10 @@ export type Package = {
   publisher: Publisher
   maintainers: Publisher[]
   license: string
+  /** the release date for latest version */
   date: string
+  /** the release date for first version */
+  createdAt: string
   links: Links
 }
 
