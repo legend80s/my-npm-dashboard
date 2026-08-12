@@ -3,7 +3,7 @@ import { getMaxSearchSize } from "./utils/api.js"
 import { byActiveAtDesc, CACHE_TTL_IN_HOURS, getCache, getCacheTTL } from "./utils/cache.js"
 import { clearCache, fetchPackageDetails, fetchRaw, writeCache } from "./utils/data-loader.js"
 import {
-  fetchJSON,
+  // fetchJSON,
   getFirstCommit,
   numberToLocaleString,
   timeAgo as resolveRelativeTime,
@@ -55,6 +55,8 @@ const config = {
   MAX_SEARCH_SIZE: getMaxSearchSize(),
 }
 
+const provider = document.documentElement.dataset.provider
+// console.log("provider:", provider)
 // console.log("1 limitInput.value:", limitInput.value)
 
 limitInput.value = String(config.pkgLimit)
@@ -710,7 +712,7 @@ function createCardElement(pkg) {
 
           <fancy-separator></fancy-separator>
 
-          <badge-dependencies provider="npm" name="${name}" dependency-count="${pkg.dependencyCount}"></badge-dependencies>
+          <badge-dependencies provider="${provider}" name="${name}" dependency-count="${pkg.dependencyCount}"></badge-dependencies>
           <fancy-separator></fancy-separator>
           
           <img src="${trendBadge}" title="latest week trend" alt="weekly trend: ${trendArrow} ${Math.abs(pkg.trend)}%" />
@@ -880,6 +882,7 @@ function init() {
 
   // 更新缓存信息
   // updateCacheInfo()
+  updateAllNpmLinks(provider)
 }
 
 // 启动
@@ -1037,23 +1040,29 @@ settings.addEventListener(
     document.documentElement.setAttribute("data-provider", provider)
     localStorage.setItem("provider", provider)
     // 更新页面其他元素
-
-    // change all the a links from npmjs.com to npmx.dev
-    const [from, to] = provider === "npmx" ? [NPMJS_DOMAIN, NPMX_DOMAIN] : [NPMX_DOMAIN, NPMJS_DOMAIN]
-    const [fromKeyword, toKeyword] = provider === "npmx" ? ["npm", "npmx"] : ["npmx", "npm"]
-
-    document.querySelectorAll(`a[href^='${from}']`).forEach((a) => {
-      const link = /** @type {HTMLAnchorElement} */ (a)
-
-      link.href = link.href.replace(from, to)
-      link.title = link.title.replace(fromKeyword, toKeyword)
-    })
-
-    document.querySelectorAll("badge-dependencies").forEach((element) => {
-      element.setAttribute("provider", provider === "npmx" ? "npmx" : "npm")
-    })
+    updateAllNpmLinks(provider)
   },
 )
+
+/**
+ * Change all the a links from npmjs.com to npmx.dev or vice versa.
+ * @param {'npmx' | 'chart.js' | (string & {})} [provider]
+ */
+function updateAllNpmLinks(provider) {
+  const [from, to] = provider === "npmx" ? [NPMJS_DOMAIN, NPMX_DOMAIN] : [NPMX_DOMAIN, NPMJS_DOMAIN]
+  const [fromKeyword, toKeyword] = provider === "npmx" ? ["npm", "npmx"] : ["npmx", "npm"]
+
+  document.querySelectorAll(`a[href^='${from}']`).forEach((a) => {
+    const link = /** @type {HTMLAnchorElement} */ (a)
+
+    link.href = link.href.replace(from, to)
+    link.title = link.title.replace(fromKeyword, toKeyword)
+  })
+
+  document.querySelectorAll("badge-dependencies").forEach((element) => {
+    element.setAttribute("provider", provider === "npmx" ? "npmx" : "npm")
+  })
+}
 
 // theme-change
 function updateAllChartColors() {

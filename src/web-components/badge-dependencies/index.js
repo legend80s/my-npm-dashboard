@@ -1,3 +1,13 @@
+const HOST_MAPPING = /** @type {const} */ ({
+  npm: "https://www.npmjs.com",
+  npmx: "https://npmx.dev",
+  // maven: 'https://search.maven.org/artifact/',
+  // pypi: 'https://pypi.org/project/',
+  // rubygems: 'https://rubygems.org/gems/',
+  // nuget: 'https://www.nuget.org/packages/',
+  // docker: 'https://hub.docker.com/r/',
+})
+
 class BadgeDependencies extends HTMLElement {
   _rendered = false
 
@@ -43,6 +53,8 @@ class BadgeDependencies extends HTMLElement {
     shadowRoot.innerHTML = template
 
     const name = this.getAttribute("name")
+    const provider = this.getAttribute("provider")
+    // console.log("[badge-dependencies] provider:", provider)
 
     if (!name) {
       const msg = "name is required"
@@ -51,7 +63,12 @@ class BadgeDependencies extends HTMLElement {
       throw new Error("name is required")
     }
 
-    this.#query("a").href = `https://www.npmjs.com/package/${name}?activeTab=dependencies`
+    // @ts-expect-error
+    const host = HOST_MAPPING[provider] || HOST_MAPPING.npm
+
+    // Switch to npmx even if `?activeTab=dependencies` not take effect
+    // Let user to click the dependencies link in npmx page.
+    this.#query("a").href = `${host}/package/${name}?activeTab=dependencies`
   }
 
   // 属性变化时重新渲染
@@ -60,6 +77,7 @@ class BadgeDependencies extends HTMLElement {
     if (!this._rendered) {
       return
     }
+    // console.log("name, oldValue, newValue:", { name, oldValue, newValue })
 
     if (name === "dependency-count") {
       // this.count = Number(newValue) || 0
@@ -68,23 +86,14 @@ class BadgeDependencies extends HTMLElement {
     }
 
     if (name === "provider") {
-      const map = {
-        npm: "https://www.npmjs.com",
-        npmx: "https://npmx.dev",
-        // maven: 'https://search.maven.org/artifact/',
-        // pypi: 'https://pypi.org/project/',
-        // rubygems: 'https://rubygems.org/gems/',
-        // nuget: 'https://www.nuget.org/packages/',
-        // docker: 'https://hub.docker.com/r/',
-      }
-
       // @ts-expect-error
-      const oldHost = map[oldValue]
+      const oldHost = HOST_MAPPING[oldValue]
       // @ts-expect-error
-      const newHost = map[newValue]
+      const newHost = HOST_MAPPING[newValue]
 
       const a = this.#query("a")
       // console.log("[badge-dependencies] a:", a)
+      // console.log("oldHost:", { oldHost, newHost })
 
       a.href = a.href.replace(oldHost, newHost)
     }
