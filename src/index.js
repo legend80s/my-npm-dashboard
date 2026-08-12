@@ -1038,12 +1038,11 @@ function makeEndLeaf(className = "text-primary") {
 const settings = /** @type {HTMLElement} */ (document.getElementById("settings"))
 
 // 监听自定义 change 事件
-// @ts-expect-error
 settings.addEventListener(
   "chart-provider-change",
   (/** @type {CustomEvent<{ provider: 'npmx' | 'chart.js' }>} */ e) => {
     const provider = e.detail.provider
-    console.log("当前 provider:", provider)
+    // console.log("当前 provider:", provider)
     document.documentElement.setAttribute("data-provider", provider)
     localStorage.setItem("provider", provider)
     // 更新页面其他元素

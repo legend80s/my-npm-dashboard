@@ -1,5 +1,9 @@
 import { getMaxSearchSize } from "../../utils/api.js"
+import { LocalStorage } from "../../utils/cache.js"
+// import { URLParams } from "../../utils/light-jquery.js"
 import { BaseWebElement } from "../base-web-element.js"
+
+const KEY = "open-settings"
 
 class SimpleCounter extends BaseWebElement {
   constructor() {
@@ -7,7 +11,9 @@ class SimpleCounter extends BaseWebElement {
     this.count = 0
     this.attachShadow({ mode: "open" })
 
-    // this.url = new
+    // this.urlParams = new URLParams(window.location.href)
+
+    this.storage = new LocalStorage()
   }
 
   async connectedCallback() {
@@ -21,16 +27,27 @@ class SimpleCounter extends BaseWebElement {
     const shadowRoot = /** @type {ShadowRoot} */ (this.shadowRoot)
     shadowRoot.innerHTML = template
 
+    const open = this.storage.get(KEY)
+    // console.log("open:", open)
+    if (open) {
+      this.openModal(false)
+    }
+
     // 绑定事件
-    this.query("button").addEventListener("click", this.openModal)
+    this.query("button").addEventListener("click", () => this.openModal())
 
     const dialog = this.query("dialog")
+
+    dialog.addEventListener("close", (event) => {
+      // console.log("event:", event)
+      this.storage.save(KEY, false)
+    })
 
     // click outside to close
     shadowRoot.addEventListener("click", (event) => {
       // console.log('event.target:', event.target, event.currentTarget);
       if (dialog === event.target) {
-        dialog.close()
+        this.closeModal()
       }
     })
 
@@ -88,9 +105,7 @@ class SimpleCounter extends BaseWebElement {
 
     // max search size
     searchSizeInput.addEventListener("change", () => {
-      const dialog = this.query("dialog")
-
-      dialog.close()
+      this.closeModal()
       this.dispatchEvent(
         new CustomEvent("max-search-size-change", {
           detail: { size: Number(searchSizeInput.value) },
@@ -99,10 +114,16 @@ class SimpleCounter extends BaseWebElement {
     })
   }
 
-  openModal = () => {
+  openModal = (addOpen = true) => {
     const dialog = this.query("dialog")
+    addOpen && this.storage.save(KEY, true)
+    // addOpen && this.urlParams.replace(KEY, "true")
 
     dialog.showModal()
+  }
+
+  closeModal = () => {
+    this.query("dialog").close()
   }
 }
 

@@ -4,9 +4,44 @@
 //  11. 缓存管理（localStorage）
 // ============================================================
 
+export const CACHE_KEY_PREFIX = "my-npm-dashboard"
 export const CACHE_KEY = "pkg-marmot-cache"
 export const CACHE_TTL_IN_HOURS = 12 // 12小时
 export const CACHE_TTL_IN_MS = CACHE_TTL_IN_HOURS * 60 * 60 * 1000 // 12小时（毫秒）
+
+export class LocalStorage {
+  constructor(namespace = CACHE_KEY_PREFIX) {
+    this.namespace = namespace
+  }
+
+  /** @param {string} key  */
+  #genKey(key) {
+    return `${this.namespace}:${key}`
+  }
+
+  /**
+   *
+   * @param {string} key
+   * @param {unknown} value
+   */
+  save(key, value) {
+    localStorage.setItem(this.#genKey(key), JSON.stringify(value))
+  }
+
+  /**
+   *
+   * @param {string} key
+   * @returns {unknown}
+   */
+  get(key) {
+    const cached = localStorage.getItem(this.#genKey(key))
+    if (!cached) {
+      return null
+    }
+
+    return JSON.parse(cached)
+  }
+}
 
 /**
  * 获取缓存数据
