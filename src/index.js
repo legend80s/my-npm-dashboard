@@ -14,6 +14,7 @@ Chart.register(...registerables)
 import "./web-components/settings-dialog/index.js"
 import "./web-components/badge-dependencies/index.js"
 import "./web-components/fancy-separator.js"
+import "./web-components/sonner-loader/index.js"
 import { init as initSonner } from "./web-components/sonner.js"
 import { $id } from "./utils/light-jquery.js"
 import { Spinner } from "./web-components/spinner.js"
