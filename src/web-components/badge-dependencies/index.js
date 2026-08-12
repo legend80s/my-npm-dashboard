@@ -17,6 +17,20 @@ class BadgeDependencies extends HTMLElement {
     this.update()
   }
 
+  /**
+   * @template {keyof HTMLElementTagNameMap} K
+   * @param {K} selector
+   * @returns {HTMLElementTagNameMap[K]}
+   */
+  #query(selector) {
+    const element = this.shadowRoot?.querySelector(selector)
+    if (!element) {
+      throw new Error(`this.shadowRoot.querySelector("${selector}") not found`)
+    }
+
+    return element
+  }
+
   async render() {
     // 动态加载模板
     const response = await fetch("./web-components/badge-dependencies/index.html")
@@ -32,15 +46,12 @@ class BadgeDependencies extends HTMLElement {
 
     if (!name) {
       const msg = "name is required"
-      // @ts-expect-error
-      shadowRoot.querySelector("img").alt = msg
+      this.#query("img").alt = msg
 
       throw new Error("name is required")
     }
 
-    // @ts-expect-error
-    shadowRoot.querySelector("a").href =
-      `https://www.npmjs.com/package/${encodeURIComponent(name)}?activeTab=dependencies`
+    this.#query("a").href = `https://www.npmjs.com/package/${name}?activeTab=dependencies`
   }
 
   // 属性变化时重新渲染
@@ -71,8 +82,9 @@ class BadgeDependencies extends HTMLElement {
       const oldHost = map[oldValue]
       // @ts-expect-error
       const newHost = map[newValue]
-      // @ts-expect-error
-      const a = this.shadowRoot.querySelector("a")
+
+      const a = this.#query("a")
+      // console.log("[badge-dependencies] a:", a)
 
       a.href = a.href.replace(oldHost, newHost)
     }
@@ -82,8 +94,7 @@ class BadgeDependencies extends HTMLElement {
     const { color, level, icon } = this.countLevel()
     const src = this.makeSrcByCountLevel(color, icon)
 
-    // @ts-expect-error
-    const img = /** @type {HTMLImageElement} */ (this.shadowRoot.querySelector("img"))
+    const img = this.#query("img")
 
     img.src = src
     img.title = `${icon} ${level}: number of dependencies in package.json: 0 is "Excellent", 1 green for "Good", [2, 5] yellow for "Average" and [6, +∞] red for "Needs Improvement"`
