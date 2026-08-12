@@ -36,8 +36,8 @@ const prefix = DEV ? "http://localhost:8787/" : ""
  * @param {string} username - npm 用户名
  * @returns {Promise<{ packages: Package[], dependents: Record<string, number> }>}
  */
-export async function fetchUserPackages(username, forceRefresh = false) {
-  const cacheBust = forceRefresh && DEV ? `&_t=${Date.now()}` : ""
+export async function fetchUserPackages(username, shouldBustCache = false) {
+  const cacheBust = shouldBustCache && DEV ? `&_t=${Date.now()}` : ""
   const url =
     prefix +
     `https://registry.npmjs.org/-/v1/search?` +
@@ -82,8 +82,8 @@ export async function fetchUserPackages(username, forceRefresh = false) {
  * @returns {Promise<NpmPkgResp>}
  *
  */
-export async function fetchPackageMetadata(pkgName, forceRefresh = false) {
-  const cacheBust = forceRefresh && DEV ? `?_t=${Date.now()}` : ""
+export async function fetchPackageMetadata(pkgName, shouldBustCache = false) {
+  const cacheBust = shouldBustCache && DEV ? `?_t=${Date.now()}` : ""
   const url = `${prefix}https://registry.npmjs.org/${encodeURIComponent(pkgName)}${cacheBust}`
   const res = await fetchJSON(url, { label: `获取 ${pkgName} 元数据` })
 
@@ -95,7 +95,7 @@ export async function fetchPackageMetadata(pkgName, forceRefresh = false) {
  * 获取最近一年（52周）的周聚合下载量
  * @param {string} pkgName - 包名
  */
-export async function fetchYearlyWeeklyDownloads(pkgName, forceRefresh = false) {
+export async function fetchYearlyWeeklyDownloads(pkgName, shouldBustCache = false) {
   // await sleep(3000)
 
   // 计算日期范围：从今天往前推 364 天
@@ -108,7 +108,7 @@ export async function fetchYearlyWeeklyDownloads(pkgName, forceRefresh = false) 
   const formatDate = (d) => d.toISOString().slice(0, 10)
   const period = `${formatDate(startDate)}:${formatDate(endDate)}`
 
-  const cacheBust = forceRefresh && DEV ? `?_t=${Date.now()}` : ""
+  const cacheBust = shouldBustCache && DEV ? `?_t=${Date.now()}` : ""
   const url = `${prefix}https://api.npmjs.org/downloads/range/${period}/${encodeURIComponent(pkgName)}${cacheBust}`
   const res = await fetch(url)
 
@@ -185,9 +185,9 @@ export async function fetchYearlyWeeklyDownloads(pkgName, forceRefresh = false) 
  * @param {string} owner
  * @param {string} repo
  */
-export async function fetchGitHubStars(owner, repo, forceRefresh = false) {
+export async function fetchGitHubStars(owner, repo, shouldBustCache = false) {
   // 使用公共 CORS 代理（免费，有请求限制）
-  const cacheBust = forceRefresh && DEV ? `?_t=${Date.now()}` : ""
+  const cacheBust = shouldBustCache && DEV ? `?_t=${Date.now()}` : ""
   const url = `${prefix}https://api.github.com/repos/${encodeURIComponent(owner)}/${encodeURIComponent(repo)}${cacheBust}`
   const res = await fetch(url, {
     headers: {
@@ -211,10 +211,9 @@ export async function fetchGitHubStars(owner, repo, forceRefresh = false) {
  * 获取 GitHub 最近一次提交信息
  * @param {string} owner
  * @param {string} repo
- *
  */
-export async function fetchGitHubLastCommit(owner, repo, forceRefresh = false) {
-  const cacheBust = forceRefresh && DEV ? `&_t=${Date.now()}` : ""
+export async function fetchGitHubLastCommit(owner, repo, shouldBustCache = false) {
+  const cacheBust = shouldBustCache && DEV ? `&_t=${Date.now()}` : ""
   const url =
     prefix +
     `https://api.github.com/repos/${encodeURIComponent(owner)}/${encodeURIComponent(repo)}/commits?per_page=1${cacheBust}`

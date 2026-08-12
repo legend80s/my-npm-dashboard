@@ -375,13 +375,20 @@ async function renderChart(container, pkgName, weeklyData) {
 // ============================================================
 
 /**
+ * @typedef {Object} LoadPackagesOptions
+ * @property {boolean} [forceRefresh] 强制刷新（bust 远程缓存，仅在用户主动点击刷新时使用）
+ * @property {boolean} [shouldBustCache] API 请求时是否让服务端缓存失效
+ *
+ */
+
+/**
  *
  * @param {string} username
  * @param {number} displayLimit
- * @param {boolean} forceRefresh
+ * @param {LoadPackagesOptions} options
  * @returns
  */
-async function loadPackages(username, displayLimit, forceRefresh = false) {
+async function loadPackages(username, displayLimit, { forceRefresh = false, shouldBustCache = forceRefresh } = {}) {
   if (isLoading) {
     return
   }
@@ -429,7 +436,7 @@ async function loadPackages(username, displayLimit, forceRefresh = false) {
     let statsUpdated = false
 
     const dataPromise = fetchRaw(username, {
-      forceRefresh,
+      forceRefresh: shouldBustCache,
       onPackage(pkgDetail, done, total) {
         refreshText.textContent = `刷新 ${done}/${total}`
 
@@ -550,10 +557,7 @@ function syncGridToTop(pkgDetails, displayLimit) {
   const currentEls = [...grid.children].filter((el) => el.dataset.pkgName)
 
   const currentNames = new Set(currentEls.map((el) => el.dataset.pkgName))
-  if (
-    currentNames.size === topNames.size &&
-    [...currentNames].every((name) => topNames.has(name))
-  ) {
+  if (currentNames.size === topNames.size && [...currentNames].every((name) => topNames.has(name))) {
     return
   }
 
@@ -862,7 +866,7 @@ function init() {
     usernameInput.value = username
     limitInput.value = String(limit)
     // 尝试从缓存加载，无需强制刷新
-    loadPackages(username, limit, false)
+    loadPackages(username, limit, { forceRefresh: false })
 
     usernameInput.parentElement?.insertAdjacentHTML(
       "beforeend",
@@ -890,7 +894,7 @@ function init() {
     const limit = Number(limitInput.value) || config.pkgLimit
     if (username) {
       clearCache() // 清除缓存
-      loadPackages(username, limit, true) // 强制刷新
+      loadPackages(username, limit, { forceRefresh: true }) // 强制刷新
     } else {
       usernameInput.focus()
     }
@@ -1138,5 +1142,12 @@ settings.addEventListener("max-search-size-change", (/** @type {CustomEvent<{ si
   limitInput.max = String(size)
   maxCount.textContent = ` / ${size}`
 
-  refreshBtn.click()
+  const username = usernameInput.value.trim()
+  const limit = Number(limitInput.value) || config.pkgLimit
+  if (username) {
+    // 只重新搜索以应用新的 size，不清理本地缓存、不 bust 远程缓存
+    loadPackages(username, limit, { forceRefresh: true, shouldBustCache: false })
+  } else {
+    usernameInput.focus()
+  }
 })
