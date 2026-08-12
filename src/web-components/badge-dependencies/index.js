@@ -1,3 +1,5 @@
+import { BaseWebElement } from "../base-web-element.js"
+
 const HOST_MAPPING = /** @type {const} */ ({
   npm: "https://www.npmjs.com",
   npmx: "https://npmx.dev",
@@ -8,7 +10,7 @@ const HOST_MAPPING = /** @type {const} */ ({
   // docker: 'https://hub.docker.com/r/',
 })
 
-class BadgeDependencies extends HTMLElement {
+class BadgeDependencies extends BaseWebElement {
   _rendered = false
 
   // 监听的属性变化
@@ -25,20 +27,6 @@ class BadgeDependencies extends HTMLElement {
     await this.render()
     this._rendered = true
     this.update()
-  }
-
-  /**
-   * @template {keyof HTMLElementTagNameMap} K
-   * @param {K} selector
-   * @returns {HTMLElementTagNameMap[K]}
-   */
-  #query(selector) {
-    const element = this.shadowRoot?.querySelector(selector)
-    if (!element) {
-      throw new Error(`this.shadowRoot.querySelector("${selector}") not found`)
-    }
-
-    return element
   }
 
   async render() {
@@ -58,7 +46,7 @@ class BadgeDependencies extends HTMLElement {
 
     if (!name) {
       const msg = "name is required"
-      this.#query("img").alt = msg
+      this.query("img").alt = msg
 
       throw new Error("name is required")
     }
@@ -68,7 +56,7 @@ class BadgeDependencies extends HTMLElement {
 
     // Switch to npmx even if `?activeTab=dependencies` not take effect
     // Let user to click the dependencies link in npmx page.
-    this.#query("a").href = `${host}/package/${name}?activeTab=dependencies`
+    this.query("a").href = `${host}/package/${name}?activeTab=dependencies`
   }
 
   // 属性变化时重新渲染
@@ -91,7 +79,7 @@ class BadgeDependencies extends HTMLElement {
       // @ts-expect-error
       const newHost = HOST_MAPPING[newValue]
 
-      const a = this.#query("a")
+      const a = this.query("a")
       // console.log("[badge-dependencies] a:", a)
       // console.log("oldHost:", { oldHost, newHost })
 
@@ -103,7 +91,7 @@ class BadgeDependencies extends HTMLElement {
     const { color, level, icon } = this.countLevel()
     const src = this.makeSrcByCountLevel(color, icon)
 
-    const img = this.#query("img")
+    const img = this.query("img")
 
     img.src = src
     img.title = `${icon} ${level}: number of dependencies in package.json: 0 is "Excellent", 1 green for "Good", [2, 5] yellow for "Average" and [6, +∞] red for "Needs Improvement"`

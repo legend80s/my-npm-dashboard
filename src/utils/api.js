@@ -12,7 +12,7 @@ export const MAX_SEARCH_SIZE = 5
 // export const MAX_SEARCH_SIZE = 100
 
 const MAX_SEARCH_SIZE_KEY = "maxSearchSize"
-const SEARCH_SIZE_MAX = 250
+const SEARCH_SIZE_LIMIT = 250
 
 /**
  * 读取用户设置的搜索数量（来自 localStorage），非法值回退默认
@@ -21,7 +21,7 @@ const SEARCH_SIZE_MAX = 250
 export function getMaxSearchSize() {
   const size = Number(localStorage.getItem(MAX_SEARCH_SIZE_KEY))
   if (!Number.isFinite(size) || size <= 0) return MAX_SEARCH_SIZE
-  return Math.min(SEARCH_SIZE_MAX, Math.floor(size))
+  return Math.min(SEARCH_SIZE_LIMIT, Math.floor(size))
 }
 
 const DEV = true

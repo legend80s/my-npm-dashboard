@@ -1,10 +1,13 @@
 import { getMaxSearchSize } from "../../utils/api.js"
+import { BaseWebElement } from "../base-web-element.js"
 
-class SimpleCounter extends HTMLElement {
+class SimpleCounter extends BaseWebElement {
   constructor() {
     super()
     this.count = 0
     this.attachShadow({ mode: "open" })
+
+    // this.url = new
   }
 
   async connectedCallback() {
@@ -19,17 +22,15 @@ class SimpleCounter extends HTMLElement {
     shadowRoot.innerHTML = template
 
     // 绑定事件
-    // @ts-expect-error
-    shadowRoot.querySelector("button").addEventListener("click", () => this.openModal(shadowRoot))
+    this.query("button").addEventListener("click", this.openModal)
 
-    const createDrawer = shadowRoot.getElementById("createDrawer")
+    const dialog = this.query("dialog")
 
     // click outside to close
     shadowRoot.addEventListener("click", (event) => {
       // console.log('event.target:', event.target, event.currentTarget);
-      if (createDrawer === event.target) {
-        // @ts-expect-error
-        createDrawer.close()
+      if (dialog === event.target) {
+        dialog.close()
       }
     })
 
@@ -77,19 +78,19 @@ class SimpleCounter extends HTMLElement {
     const providerRadio = /** @type {HTMLInputElement | null} */ (
       shadowRoot.querySelector(`#chartProviderWrapper input[value="${isNpmx ? "npmx" : "chart.js"}"]`)
     )
-    if (providerRadio) providerRadio.checked = true
+    if (providerRadio) {
+      providerRadio.checked = true
+    }
 
     // sync max search size input
-    const searchSizeInput = /** @type {HTMLInputElement | null} */ (
-      shadowRoot.getElementById("maxSearchSizeInput")
-    )
-    if (searchSizeInput) searchSizeInput.value = String(getMaxSearchSize())
+    const searchSizeInput = /** @type {HTMLInputElement} */ (shadowRoot.getElementById("maxSearchSizeInput"))
+    searchSizeInput.value = String(getMaxSearchSize())
 
     // max search size
-    searchSizeInput?.addEventListener("change", () => {
-      const createDrawer = shadowRoot.getElementById("createDrawer")
-      // @ts-expect-error
-      createDrawer?.close()
+    searchSizeInput.addEventListener("change", () => {
+      const dialog = this.query("dialog")
+
+      dialog.close()
       this.dispatchEvent(
         new CustomEvent("max-search-size-change", {
           detail: { size: Number(searchSizeInput.value) },
@@ -98,15 +99,10 @@ class SimpleCounter extends HTMLElement {
     })
   }
 
-  /**
-   *
-   * @param {ShadowRoot} shadowRoot
-   */
-  openModal = (shadowRoot) => {
-    const createDrawer = shadowRoot.getElementById("createDrawer")
+  openModal = () => {
+    const dialog = this.query("dialog")
 
-    // @ts-expect-error
-    createDrawer.showModal()
+    dialog.showModal()
   }
 }
 

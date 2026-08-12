@@ -82,9 +82,13 @@
 
   .drawer label {
     font-size: 0.875rem;
-    font-weight: 600;
-    color: var(--text-muted, #666);
+    color: var(--text);
     margin-bottom: 0.25rem;
+  }
+
+  input:checked + label {
+    color: var(--accent-green);
+    /* font-weight: bold; */
   }
 
   .drawer input[type='radio'] {
@@ -163,7 +167,7 @@
   ⚙️
 </button>
 
-<dialog id="createDrawer" class="drawer">
+<dialog class="drawer">
   <h2>Settings</h2>
 
   <section class="body">
