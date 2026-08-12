@@ -33,7 +33,7 @@ npmRegistry.get("/-/v1/search", async (c) => {
   // 透传所有参数到上游
   const url = new MyURL(`${npmHost}/-/v1/search`, allQuery)
 
-  console.log("/-/v1/search url:", url)
+  // console.log("/-/v1/search url:", url)
 
   const json = await fetchJSON(url.toString(), {
     label: "npm search",

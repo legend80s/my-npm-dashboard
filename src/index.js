@@ -433,10 +433,9 @@ async function loadPackages(username, displayLimit, forceRefresh = false) {
       onPackage(pkgDetail, done, total) {
         refreshText.textContent = `刷新 ${done}/${total}`
 
-        if (done <= displayLimit) {
-          collected.push(pkgDetail)
-          appendCard(pkgDetail)
-        }
+        // 始终收集全部包，增量渲染时保持"按 createdAt 排序的前 displayLimit 个"
+        collected.push(pkgDetail)
+        syncGridToTop(collected, displayLimit)
 
         if (done >= 1) {
           spinner.stop()
@@ -447,7 +446,6 @@ async function loadPackages(username, displayLimit, forceRefresh = false) {
         if (done === Math.min(displayLimit, total) && !statsUpdated) {
           statsUpdated = true
           updateStats(collected, username, false, null)
-          reorderCardsByActiveAt(collected)
           setUrlParams(username, displayLimit)
           setLoading(false)
         }
@@ -538,6 +536,36 @@ function updateStats(pkgDetails, username, fromCache, cacheTimestamp) {
   // if (usernameElement && usernameElement.textContent.trim() !== username) {
   //   usernameElement.textContent = username
   // }
+}
+
+/**
+ * 增量刷新：让已展示的卡片始终等于"按 createdAt 排序的前 displayLimit 个"
+ * 与缓存路径 renderFromData 的展示规则保持一致
+ * @param {FreshPackageDetail[]} pkgDetails 已收集到的全部包
+ * @param {number} displayLimit 展示数量上限
+ */
+function syncGridToTop(pkgDetails, displayLimit) {
+  const top = [...pkgDetails].sort(byActiveAtDesc).slice(0, displayLimit)
+  const topNames = new Set(top.map((p) => p.name))
+  const currentEls = [...grid.children].filter((el) => el.dataset.pkgName)
+
+  const currentNames = new Set(currentEls.map((el) => el.dataset.pkgName))
+  if (
+    currentNames.size === topNames.size &&
+    [...currentNames].every((name) => topNames.has(name))
+  ) {
+    return
+  }
+
+  for (const el of currentEls) {
+    if (!topNames.has(el.dataset.pkgName)) el.remove()
+  }
+
+  for (const pkg of top) {
+    if (!currentNames.has(pkg.name)) appendCard(pkg)
+  }
+
+  reorderCardsByActiveAt(top)
 }
 
 /**

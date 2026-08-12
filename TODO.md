@@ -5,7 +5,7 @@
 - [ ] Add dependents rankings
 - [ ] Pin
 - [ ] Add pkg not in list
-- [ ] fix bug: 点击右上角刷新按钮，一个最近发布的包（createdAt）因为最后被搜索到，没有展示出来。但是刷新页面后就没有问题，能按照 createdAt 排序，展示在第一位
+- [x] fix bug: 点击右上角刷新按钮，一个最近发布的包（createdAt）因为最后被搜索到，没有展示出来。但是刷新页面后就没有问题，能按照 createdAt 排序，展示在第一位
 - [ ] Feature: add hero hall for all gold medal packages in different categories.
 - [ ] Add pkgs list published in latest 3 months
 - [ ] default light theme like npmjs.com
