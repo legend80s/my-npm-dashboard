@@ -171,11 +171,11 @@ function timeAgo(dateStr) {
  */
 async function renderChart(container, pkgName, weeklyData) {
   // await nextIdle()
-  console.log("container, pkgName, weeklyData", {
-    container,
-    pkgName,
-    weeklyData,
-  })
+  // console.log("container, pkgName, weeklyData", {
+  //   container,
+  //   pkgName,
+  //   weeklyData,
+  // })
   // 检查数据是否有效
   if (!weeklyData || weeklyData.length === 0 || weeklyData.every((w) => w.total === 0)) {
     container.innerHTML = `<div class="chart-placeholder">📊 暂无下载数据</div>`
@@ -426,7 +426,6 @@ async function loadPackages(username, displayLimit, forceRefresh = false) {
 
     const dataPromise = fetchRaw(username, {
       forceRefresh,
-      /** @param {FreshPackageDetail} pkgDetail @param {number} done @param {number} total */
       onPackage(pkgDetail, done, total) {
         refreshText.textContent = `刷新 ${done}/${total}`
 
@@ -731,7 +730,7 @@ function createCardElement(pkg) {
             <img 
               src="https://img.shields.io/badge/🤰%20诞生于-${createdDisplay}-brightgreen?logoColor=cyan" 
               alt="诞生于 ${createdDisplay}"
-              style="vertical-align: -webkit-baseline-middle;"
+              style="vertical-align: bottom;"
             />
           </a>
       </div>
@@ -779,7 +778,7 @@ function appendCard(pkg) {
   const card = createCardElement(pkg)
   grid.appendChild(card)
 
-  if (card.classList.contains("card-error")) {
+  if ("error" in pkg) {
     return
   }
 
@@ -916,7 +915,7 @@ function renderHottest({ name, latestWeekDownloads }, username) {
   hottestPkg.innerHTML = name
     ? `<div style="display: flex; align-items: center;">
     ${startLeaf}
-      <a href="${NPMJS_DOMAIN}/${encodeURIComponent(name)}" title="当前最热包 🔥 | 前往 npm" style="color:inherit; font-weight: bold;" target="_blank">
+      <a href="${NPMJS_DOMAIN}/${name}" title="当前最热包 🔥 | 前往 npm" style="color:inherit; font-weight: bold;" target="_blank">
         ${name}
       </a>
     ${endLeaf}
@@ -936,7 +935,7 @@ function renderHottestTrend({ name, trend }, username) {
 
   hottestTrendPkg.innerHTML = name
     ? `${startLeaf}
-      <a href="${NPMJS_DOMAIN}/package/${encodeURIComponent(name)}" target="_blank" title="当前增速最快包 🚀 | 前往 npm" style="color:inherit;">
+      <a href="${NPMJS_DOMAIN}/package/${name}" target="_blank" title="当前增速最快包 🚀 | 前往 npm" style="color:inherit;">
         ${name}
       </a>
     ${endLeaf} <span style="margin-inline-start: 0.2em;">(</span><a href="insight.html?username=${encodeURIComponent(username)}&rank=trend" target="_self" title="📊 前往洞察页面" class='text-primary' style="font-size: 110%;">🚀+${trend}%</a>)`

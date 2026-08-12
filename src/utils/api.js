@@ -251,3 +251,40 @@ export async function fetchDependentsCount(pkg) {
 
   return Number(json.value)
 }
+
+/**
+ * Use the github public api to navigate to the last commit of a GitHub repository
+ * @param {string} repoId
+ * @returns {Promise<import('./api-github.type.js').CommitItem[]>}
+ */
+export function getFirstCommits(repoId) {
+  // args[1] is the `orgname/repo` url fragment
+  // args[2] is the optional branch or hash
+  // will respond all the commits `https://api.github.com/repos/egoist/dum/commits?sha=`
+
+  return (
+    fetch(`${prefix}https://api.github.com/repos/${repoId}/commits`)
+      // the link header has additional urls for paging
+      // parse the original JSON for the case where no other pages exist
+      .then((res) => Promise.all([res.headers.get("link"), res.json()]))
+
+      // get last page of commits
+      .then(([link, firstPageCommits]) => {
+        // results[0] is the link
+        // results[1] is the commits of first page
+
+        if (link) {
+          // the link contains two urls in the form
+          // <https://github.com/...>; rel=blah, <https://github.com/...>; rel=thelastpage
+          // <https://api.github.com/repositories/430023490/commits?page=2>; rel="next", <https://api.github.com/repositories/430023490/commits?page=4>; rel="last"
+          // @ts-expect-error
+          const lastCommitAPIUrl = link.split(",")[1].split(";")[0].slice(2, -1)
+          // fetch the last page
+          return fetch(prefix + lastCommitAPIUrl).then((res) => res.json())
+        }
+
+        // if no link, we know we're on the only page
+        return firstPageCommits
+      })
+  )
+}

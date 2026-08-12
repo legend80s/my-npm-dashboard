@@ -1,5 +1,6 @@
 import { Hono } from "hono"
 import { fetchJSON } from "../../../utils/light-lodash.js"
+import { MyURL } from "./_utils.js"
 
 const npmHost = "https://registry.npmjs.org"
 
@@ -30,11 +31,9 @@ npmRegistry.get("/-/v1/search", async (c) => {
   const allQuery = c.req.query()
 
   // 透传所有参数到上游
-  const url = new URL(`${npmHost}/-/v1/search`)
-  Object.entries(allQuery).forEach(([key, value]) => {
-    url.searchParams.set(key, value)
-  })
-  // console.log("url:", url)
+  const url = new MyURL(`${npmHost}/-/v1/search`, allQuery)
+
+  console.log("/-/v1/search url:", url)
 
   const json = await fetchJSON(url.toString(), {
     label: "npm search",

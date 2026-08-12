@@ -13,6 +13,7 @@
 - [ ] verbose mode and quiet mode
 - [ ] light badge to labelColor=000&color=3b82f6
 - [ ] remember provider to local storage
+- [ ] Fix bug: npmx provider but a links not change to npmx initially
 - [x] pkg icon
 - [ ] watch mode bug: css changes not reflected. server restarted but page not refreshed use sse to notify client
 - [ ] 缓存如何设计
