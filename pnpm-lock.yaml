@@ -11,6 +11,9 @@ importers:
       chart.js:
         specifier: ^4.5.1
         version: 4.5.1
+      sourdough-toast:
+        specifier: ^0.3.0
+        version: 0.3.0
     devDependencies:
       '@tauri-apps/cli':
         specifier: ^2
@@ -718,6 +721,9 @@ packages:
   source-map@0.5.7:
     resolution: {integrity: sha512-LbrmJOMUSdEVxIKvdcJzQC+nQhe8FUZQTXQy6+I75skNgn3OoQ0DZA8YnFa7gp8tqtL3KPf1kmo0R5DoApeSGQ==}
     engines: {node: '>=0.10.0'}
+
+  sourdough-toast@0.3.0:
+    resolution: {integrity: sha512-Bev/Zc8BSCUOX+CiGcJjdPJ71xepaDI2iyokEN1rIoNX+rw2FjLC+ph84i+5b0sEkhk7/wTXF4weRtdlDHPPeQ==}
 
   split-string@3.1.0:
     resolution: {integrity: sha512-NzNVhJDYpwceVVii8/Hu6DKfD2G+NrQHlS/V/qgv763EYudVwEcMQNxd2lh+0VrUByXN/oJkl5grOhYWvQUYiw==}
@@ -1602,6 +1608,8 @@ snapshots:
   source-map-url@0.4.1: {}
 
   source-map@0.5.7: {}
+
+  sourdough-toast@0.3.0: {}
 
   split-string@3.1.0:
     dependencies:

@@ -57,6 +57,7 @@ const config = {
 }
 
 const provider = document.documentElement.dataset.provider
+const theme = document.documentElement.dataset.theme
 // console.log("provider:", provider)
 // console.log("1 limitInput.value:", limitInput.value)
 

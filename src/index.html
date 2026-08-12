@@ -29,7 +29,8 @@
     <script type="importmap">
       {
         "imports": {
-          "chart.js": "https://esm.sh/chart.js@4.5.1"
+          "chart.js": "https://esm.sh/chart.js@4.5.1",
+          "sourdough-toast": "https://esm.sh/sourdough-toast@0.3.0"
         }
       }
     </script>
@@ -44,6 +45,10 @@
     <!-- <script type="module" src="web-components/most-downloaded-pkg/index.js"></script> -->
 
     <link rel="stylesheet" href="index.css" />
+    <link
+      rel="stylesheet"
+      href="https://esm.sh/sourdough-toast@0.3.0/sourdough-toast.css"
+    />
     <script>
       (() => {
         var saved = localStorage.getItem('theme');
