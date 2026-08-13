@@ -53,9 +53,11 @@ const hottestTrendPkg = /** @type {HTMLDivElement} */ (document.getElementById("
 
 const updateTime = /** @type {HTMLDivElement} */ (document.getElementById("updateTime"))
 
+const maxSearchSize = getMaxSearchSize()
+
 const config = {
-  pkgLimit: 4,
-  MAX_SEARCH_SIZE: getMaxSearchSize(),
+  pkgLimit: Math.min(4, maxSearchSize),
+  MAX_SEARCH_SIZE: maxSearchSize,
 }
 
 const provider = document.documentElement.dataset.provider
@@ -74,9 +76,10 @@ maxCount.textContent = ` / ${config.MAX_SEARCH_SIZE}`
 // ============================================================
 function getUrlParams() {
   const params = new URLSearchParams(window.location.search)
+
   return {
     username: params.get("username") || "",
-    limit: Number(params.get("limit")) || config.pkgLimit,
+    limit: Math.min(Number(params.get("limit")) || config.pkgLimit, config.pkgLimit),
   }
 }
 
