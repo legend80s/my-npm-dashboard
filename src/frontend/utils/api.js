@@ -1,6 +1,8 @@
 /** @import { NpmPkgDownloadsResp, NpmPkgResp, NpmPkgSearchResp, Package, ShieldIODependents } from './npmjs.type.js' */
+/** @import { CommitItem } from '../../frontend/utils/api-github.type.js' */
 
 import { fetchJSON, sleep } from "../../shared/utils/light-lodash.js"
+import { URLParams } from "./light-jquery.js"
 
 // ============================================================
 //  4. npm API 调用（浏览器端直接请求，支持 CORS）
@@ -28,7 +30,10 @@ export function getMaxSearchSize() {
 
 const DEV = true
 
-const prefix = DEV ? "http://localhost:8787/" : ""
+const params = new URLParams()
+
+const port = params.get("port")
+const prefix = `${port ? location.origin.replace(/:\d+$/, `:${port}`) : location.origin}/`
 
 // console.log("DEV:", DEV)
 
@@ -254,11 +259,26 @@ export async function fetchDependentsCount(pkg) {
 }
 
 /**
+ *
+ * @param {string} owner
+ * @param {string} repoName
+ * @returns {Promise<CommitItem>}
+ */
+export async function getFirstCommit(owner, repoName) {
+  // get the last commit and extract the url
+  const commits = await getFirstCommits(`${owner}/${repoName}`)
+  // console.log("[getFirstCommit] commits", commits)
+
+  // @ts-expect-error
+  return commits.at(-1)
+}
+
+/**
  * Use the github public api to navigate to the last commit of a GitHub repository
  * @param {string} repoId
  * @returns {Promise<import('./api-github.type.js').CommitItem[]>}
  */
-export function getFirstCommits(repoId) {
+function getFirstCommits(repoId) {
   // args[1] is the `orgname/repo` url fragment
   // args[2] is the optional branch or hash
   // will respond all the commits `https://api.github.com/repos/egoist/dum/commits?sha=`

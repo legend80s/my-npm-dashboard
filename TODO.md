@@ -27,7 +27,8 @@
 - [ ] 国际化
 - [ ] Pagination / show more than  limit  packages
 - [ ] Export / share rankings: install cli open `?limit=3&username=xxx`
-- [ ] Dark/light theme toggle
+- [ ] Dark/light theme toggle use https://colorui.io/de/colors/d0d7de sun and moon
+- [ ] theme 外露
 - [ ] 预期 legend80s 是 pelican sse-stuntman gallery-server ...
 - [ ] 目前有体验问题：
 - [ ] icon 最近在开发什么？按活跃时间排序（npm 近期发布或 GitHub 最近提交）icon 从 broken 到 ok
@@ -35,6 +36,8 @@
 - [ ] dashboard 页面不展示所以包的 insights 只展示 limit 个包的 insights，但是背后会搜索所有 250 个包，这样用户点击 "查看更多" 时，已经加载了所有包的 insights，无需再搜索。性能会更好。
 - [ ] 目前3个，应该是全部完毕后需要更新
 - [ ] logo 将 NPM logo 的 N 改成 D
+- [ ] pkg-marmot-cache key change
+- [ ] different display count of pkgs for different preset usernames
 - [ ] 增加进度
 - [ ] date = `2026-07-17`; fetch(`https://api.github.com/search/issues?q=repo%3Aoven-sh%2Fbun%20type%3Aissue%20created%3A%3C%3D${date}%20-closed%3A%3C%3D${date}`).then(resp => resp.json()).then(resp => console.log(date, resp.total_count))
 - [ ] Insight 接入大模型 API Key 自动分析背后原因

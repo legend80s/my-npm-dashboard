@@ -197,7 +197,7 @@ button:disabled {
   font-size: 0.875rem;
   font-weight: bold;
   outline: none;
-  transition: border-color 0.2s;
+  /* transition: border-color 0.2s; */
   width: 150px;
   text-align: center;
 }
@@ -596,6 +596,6 @@ button:disabled {
   }
 }
 
-/* * {
-  transition: color 0.2s;
-} */
+* {
+  transition: border-color 0.2s;
+}

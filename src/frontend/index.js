@@ -1,13 +1,12 @@
 import { Chart, registerables } from "chart.js"
-import { getMaxSearchSize } from "./utils/api.js"
-import { byActiveAtDesc, CACHE_TTL_IN_HOURS, getCache, getCacheTTL } from "./utils/cache.js"
-import { clearCache, fetchPackageDetails, fetchRaw, writeCache } from "./utils/data-loader.js"
 import {
   // fetchJSON,
-  getFirstCommit,
   numberToLocaleString,
   timeAgo as resolveRelativeTime,
 } from "../shared/utils/light-lodash.js"
+import { getFirstCommit, getMaxSearchSize } from "./utils/api.js"
+import { byActiveAtDesc, CACHE_TTL_IN_HOURS, getCache, getCacheTTL } from "./utils/cache.js"
+import { clearCache, fetchPackageDetails, fetchRaw, writeCache } from "./utils/data-loader.js"
 
 Chart.register(...registerables)
 
@@ -15,8 +14,8 @@ import "./web-components/settings-dialog/index.js"
 import "./web-components/badge-dependencies/index.js"
 import "./web-components/fancy-separator.js"
 import "./web-components/sonner-loader/index.js"
-import { init as initSonner } from "./web-components/sonner.js"
 import { $id } from "./utils/light-jquery.js"
+import { init as initSonner } from "./web-components/sonner.js"
 import { Spinner } from "./web-components/spinner.js"
 
 const NPMJS_DOMAIN = `https://www.npmjs.com`
@@ -31,7 +30,7 @@ const charts = new Set()
 //  1. DOM refs
 // ============================================================
 
-const form = /** @type {HTMLFormElement} */ (document.getElementById("searchForm"))
+const searchForm = /** @type {HTMLFormElement} */ (document.getElementById("searchForm"))
 
 const usernameInput = /** @type {HTMLInputElement} */ (document.getElementById("usernameInput"))
 
@@ -786,13 +785,13 @@ function createCardElement(pkg) {
           
           <fancy-separator></fancy-separator>
           
-          <a 
+          <a
             id="firstCommitUrl-${sanitizedId}"
             href="https://github.com/legend80s/sse-stuntman/commits/main/"
             target="_blank"
-            title="${new Date(pkg.createdAt).toLocaleString()} | Click to github initial commit 🤰"
+            title="at ${new Date(pkg.createdAt).toLocaleString()} · Click to view initial commit 🤰"
           >
-            <img 
+            <img
               src="https://img.shields.io/badge/🤰%20诞生于-${createdDisplay}-brightgreen?logoColor=cyan" 
               alt="诞生于 ${createdDisplay}"
               style="vertical-align: bottom;"
@@ -816,7 +815,7 @@ function createCardElement(pkg) {
     // console.time(`getFirstCommit-${sanitizedId}`)
     getFirstCommit(pkg.github.owner, pkg.github.repo).then(async (commit) => {
       $firstCommitUrl.href = commit.html_url
-      $firstCommitUrl.title = `${commit.commit.message} · ${$firstCommitUrl.title}`
+      $firstCommitUrl.title = `Your first commit:【${commit.commit.message}】${$firstCommitUrl.title}`
       // console.timeEnd(`getFirstCommit-${sanitizedId}`) // 1393.4150390625 ms
     })
   })
@@ -900,10 +899,11 @@ function init() {
   }
 
   // 表单提交
-  form.addEventListener("submit", (e) => {
+  searchForm.addEventListener("submit", (e) => {
     e.preventDefault()
     const username = usernameInput.value.trim()
     const limit = Number(limitInput.value) || config.pkgLimit
+    console.log("usernameInput.value:", usernameInput.value, limit)
     if (username) {
       window.location.href = `?username=${username}&limit=${limit}`
     } else {
@@ -928,7 +928,7 @@ function init() {
   usernameInput.addEventListener("keydown", (e) => {
     if (e.key === "Enter") {
       e.preventDefault()
-      form.dispatchEvent(new Event("submit"))
+      searchForm.dispatchEvent(new Event("submit"))
     }
   })
 
@@ -1170,4 +1170,13 @@ settings.addEventListener("max-search-size-change", (/** @type {CustomEvent<{ si
   } else {
     usernameInput.focus()
   }
+})
+
+// Input the btn text into btn with id "usernameInput" and trigger form submit (id "searchForm") when button with class "preset-username" is clicked
+document.querySelectorAll(".preset-username").forEach((btn) => {
+  btn.addEventListener("click", () => {
+    const username = btn.textContent.trim()
+    usernameInput.value = username
+    searchBtn.click()
+  })
 })

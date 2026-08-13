@@ -121,12 +121,13 @@
               type="number"
               id="limitInput"
               placeholder="Count"
-              title="npm Package Count"
+              title="The count of npm package to display"
               min="1"
               max="250"
             />
             <span
               id="maxCount"
+              title="The maximum count of npm package to search"
               class="text-muted"
               style="font-size: clamp(60%, 12px, 16px)"
             ></span>
@@ -245,7 +246,17 @@
     <div class="grid" id="grid">
       <div class="no-results">
         <span class="big">🐿️</span>
-        输入 npm 用户名，让 marmot 帮你查看最近发布的包
+        输入 npm 用户名，帮你查看 Ta 最近发布的包。比如
+        <button type="button" class="preset-username username">
+          sindresorhus
+        </button>
+        <fancy-separator></fancy-separator>
+        <button type="button" class="preset-username username">antfu</button>
+        <fancy-separator></fancy-separator>
+        <button type="button" class="preset-username username">
+          vercel-release-bot
+        </button>
+        (点击自动填入)
       </div>
     </div>
 

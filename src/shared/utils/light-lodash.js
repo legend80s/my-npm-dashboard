@@ -1,7 +1,4 @@
 /** @import { int } from '../../frontend/utils/base.type.js' */
-/** @import { CommitItem } from '../../frontend/utils/api-github.type.js' */
-
-import { getFirstCommits } from "../../frontend/utils/api.js"
 
 export const YELLOW = `\x1b[33m`
 export const RED = `\x1b[31m`
@@ -127,19 +124,4 @@ if (import.meta.main) {
     // @ts-expect-error
     deepStrictEqual(numberToChineseWan(2305_3975), "2305 万 3975")
   })
-}
-
-/**
- *
- * @param {string} owner
- * @param {string} repoName
- * @returns {Promise<CommitItem>}
- */
-export async function getFirstCommit(owner, repoName) {
-  // get the last commit and extract the url
-  const commits = await getFirstCommits(`${owner}/${repoName}`)
-  // console.log("[getFirstCommit] commits", commits)
-
-  // @ts-expect-error
-  return commits.at(-1)
 }

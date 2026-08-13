@@ -11,7 +11,7 @@
     "typecheck": "tsgo --noEmit",
     "start": "node src/bin/index.js",
     "dev:api": "cd src/backend && echo Y | pnpm i && node --watch ./dev-server",
-    "dev:live": "live-server ./src --port=1123 --open=\"?limit=3&username=antfu\"",
+    "dev:live": "live-server ./src --port=1123 --open=\"?limit=3&username=antfu&port=8848\"",
     "dev": "concurrently --kill-others --names \"LIVE,API\" \"pnpm dev:live\" \"pnpm dev:api\""
   },
   "devDependencies": {
