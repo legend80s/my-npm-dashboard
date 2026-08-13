@@ -790,7 +790,7 @@ function createCardElement(pkg) {
             id="firstCommitUrl-${sanitizedId}"
             href="https://github.com/legend80s/sse-stuntman/commits/main/"
             target="_blank"
-            title="${new Date(pkg.createdAt).toLocaleString()}"
+            title="${new Date(pkg.createdAt).toLocaleString()} | Click to github initial commit 🤰"
           >
             <img 
               src="https://img.shields.io/badge/🤰%20诞生于-${createdDisplay}-brightgreen?logoColor=cyan" 
