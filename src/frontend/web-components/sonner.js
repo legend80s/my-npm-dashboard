@@ -54,7 +54,7 @@ function patchFetch() {
 
 /**
  *
- * @param {'light' | 'dark'} [theme]
+ * @param {import('../index.type.js').Theme | (string & {})} [theme]
  * @returns {ToastFunction}
  */
 export function init(theme) {
@@ -78,10 +78,11 @@ export function init(theme) {
     toastElement.style.setProperty("--padding", "1px 6px")
     toastElement.style.setProperty("--border-radius", "4px")
 
-    // @ts-expect-error
-    settings.addEventListener("theme-change", (/** @type {CustomEvent<{ theme: string }>} */ e) => {
+    const settings = /** @type {HTMLElement} */ (document.getElementById("settings"))
+
+    settings.addEventListener("theme-change", (e) => {
       const theme = e.detail.theme
-      console.log("当前主题:", theme)
+      console.log("当前主题 in sonner:", theme)
       toastElement.dataset.theme = theme
     })
   })

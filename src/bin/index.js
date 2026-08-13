@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 import { join } from "node:path"
-import { startServer } from "../server/index.js"
+import { startServer } from "../backend/index.js"
 
 const PORT = process.env.PORT
 // const rootDir = new URL("..", import.meta.url).pathname

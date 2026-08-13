@@ -1,6 +1,6 @@
 /** @import { NpmPkgDownloadsResp, NpmPkgResp, NpmPkgSearchResp, Package, ShieldIODependents } from './npmjs.type.js' */
 
-import { fetchJSON, sleep } from "./light-lodash.js"
+import { fetchJSON, sleep } from "../../shared/utils/light-lodash.js"
 
 // ============================================================
 //  4. npm API 调用（浏览器端直接请求，支持 CORS）

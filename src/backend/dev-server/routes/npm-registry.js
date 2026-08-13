@@ -1,5 +1,5 @@
 import { Hono } from "hono"
-import { fetchJSON } from "../../../utils/light-lodash.js"
+import { fetchJSON } from "../../../shared/utils/light-lodash.js"
 import { MyURL } from "./_utils.js"
 
 const npmHost = "https://registry.npmjs.org"

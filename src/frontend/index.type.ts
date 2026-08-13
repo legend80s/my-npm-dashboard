@@ -4,6 +4,8 @@
 
 import type { int } from "./utils/base.type.js"
 
+export type Theme = "light" | "dark"
+
 export type Hottest = { name: string; downloads: int; latestWeekDownloads: int }
 
 // type Case2 = {

@@ -28,8 +28,9 @@ function parseGitHubRepo(pkgMeta) {
 
   if (repo.url) {
     const match = repo.url.match(/github\.com[:/]([^/]+)\/([^/.]+)/)
+
     if (match) {
-      return { owner: match[1], repo: match[2] }
+      return { owner: /** @type {string} */ (match[1]), repo: /** @type {string} */ (match[2]) }
     }
   }
 
@@ -80,6 +81,7 @@ export function readCache(username) {
     //   pkgs.map((x) => x.name),
     // )
 
+    // @ts-expect-error
     return { packages: pkgs, timestamp: data.timestamp }
   } catch {
     localStorage.removeItem(CACHE_KEY)
@@ -109,16 +111,16 @@ export function clearCache() {
 
 /**
  *
- * @param {Pick<Package, 'name' | 'version'> & { date?: string }} pkg
+ * @param {Pick<Package, 'name' | 'version'>} pkg
  * @param {int} [dependents]
  * @param {boolean} [forceRefresh]
  * @return {Promise<CaseSuccess>}
  */
-export async function fetchPackageDetails({ name, version, date }, dependents, forceRefresh = false) {
+export async function fetchPackageDetails({ name, version }, dependents, forceRefresh = false) {
   const meta = await fetchPackageMetadata(name, forceRefresh)
   const downloads = await fetchYearlyWeeklyDownloads(name, forceRefresh)
   version = meta["dist-tags"]?.latest || version || "--"
-  const publishedAt = meta.time[version] || meta.time.modified || date
+  const publishedAt = meta.time[version] || meta.time.modified
   const createdAt = meta.time.created
 
   const latestVerData =
@@ -134,7 +136,6 @@ export async function fetchPackageDetails({ name, version, date }, dependents, f
   const github = {
     owner: "",
     repo: "",
-    /** @type {null | int} */
     stars: 0,
     lastCommit: "",
     lastCommitDate: "",
@@ -145,7 +146,11 @@ export async function fetchPackageDetails({ name, version, date }, dependents, f
     github.repo = ghRepo.repo
     try {
       const starData = await fetchGitHubStars(ghRepo.owner, ghRepo.repo, forceRefresh)
-      github.stars = starData.stars
+      if (starData.error !== null) {
+        console.error(starData)
+      } else {
+        github.stars = starData.stars
+      }
     } catch {
       /* silent */
     }

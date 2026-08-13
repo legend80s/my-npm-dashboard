@@ -3,6 +3,10 @@ import { KEY_OPEN_SETTINGS, LocalStorage } from "../../utils/cache.js"
 // import { URLParams } from "../../utils/light-jquery.js"
 import { BaseWebElement } from "../base-web-element.js"
 
+/**
+ * @import { Theme } from "../../index.type.js"
+ */
+
 const KEY = KEY_OPEN_SETTINGS
 
 class SettingsDialog extends BaseWebElement {
@@ -70,7 +74,7 @@ class SettingsDialog extends BaseWebElement {
 
     // theme themeSwitcher
     shadowRoot.querySelector("#themeSwitcher")?.addEventListener("change", (event) => {
-      const theme = /** @type {'light' | 'dark'} */ (
+      const theme = /** @type {Theme} */ (
         // @ts-expect-error
         event.target.value
       )

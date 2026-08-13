@@ -1,5 +1,6 @@
 import { Hono } from "hono"
-import { fetchJSON } from "../../../utils/light-lodash.js"
+// TODO: pnpm monorepo
+import { fetchJSON } from "../../../shared/utils/light-lodash.js"
 
 const npmApiHost = "https://api.npmjs.org"
 export const npmApi = new Hono()

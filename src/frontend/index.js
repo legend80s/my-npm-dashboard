@@ -7,7 +7,7 @@ import {
   getFirstCommit,
   numberToLocaleString,
   timeAgo as resolveRelativeTime,
-} from "./utils/light-lodash.js"
+} from "../shared/utils/light-lodash.js"
 
 Chart.register(...registerables)
 
@@ -281,6 +281,7 @@ async function renderChart(container, pkgName, weeklyData) {
             callbacks: {
               title: (items) => {
                 if (!items.length) return ""
+                // @ts-expect-error
                 const index = items[0].dataIndex
                 const week = weeklyData[index]
                 if (!week) return ""
@@ -340,6 +341,7 @@ async function renderChart(container, pkgName, weeklyData) {
 
             grid: {
               color: chartGridColor,
+              // @ts-expect-error
               drawBorder: false,
             },
             ticks: {
@@ -348,6 +350,7 @@ async function renderChart(container, pkgName, weeklyData) {
                 size: 8,
               },
               callback: (value) => {
+                // @ts-expect-error
                 if (value >= 1000) return value / 1000 + "k"
                 return value
               },
@@ -510,6 +513,7 @@ function updateStats(pkgDetails, username, fromCache, cacheTimestamp) {
   let hottestTrend = { name: "", trend: 0 }
 
   for (const pkg of pkgDetails) {
+    // @ts-expect-error
     const latest = pkg.weeklyData?.at(-1)?.total
     if (latest && latest > hottest.latestWeekDownloads) {
       hottest = {
@@ -558,14 +562,17 @@ function updateStats(pkgDetails, username, fromCache, cacheTimestamp) {
 function syncGridToTop(pkgDetails, displayLimit) {
   const top = pkgDetails.toSorted(byActiveAtDesc).slice(0, displayLimit)
   const topNames = new Set(top.map((p) => p.name))
-  const currentEls = [...grid.children].filter((el) => el.dataset.pkgName)
+  // @ts-expect-error
+  const currentEls = /** @type {HTMLElement[]} */ ([...grid.children].filter((el) => el.dataset.pkgName))
 
   const currentNames = new Set(currentEls.map((el) => el.dataset.pkgName))
+  // @ts-expect-error
   if (currentNames.size === topNames.size && [...currentNames].every((name) => topNames.has(name))) {
     return
   }
 
   for (const el of currentEls) {
+    // @ts-expect-error
     if (!topNames.has(el.dataset.pkgName)) {
       el.remove()
     }
@@ -585,14 +592,16 @@ function syncGridToTop(pkgDetails, displayLimit) {
  * @param {FreshPackageDetail[]} pkgDetails
  */
 function reorderCardsByActiveAt(pkgDetails) {
-  const cardEls = [...grid.children].filter((el) => !el.classList.contains("no-results"))
+  const cardEls = /** @type {HTMLElement[]} */ ([...grid.children].filter((el) => !el.classList.contains("no-results")))
   if (cardEls.length < 2) return
 
   const firstRects = cardEls.map((el) => el.getBoundingClientRect())
 
   const sorted = pkgDetails.toSorted(byActiveAtDesc)
+  /** @type {Record<string, HTMLElement>} */
   const nameToEl = {}
   for (const el of cardEls) {
+    // @ts-expect-error
     nameToEl[el.dataset.pkgName] = el
   }
 
@@ -605,10 +614,14 @@ function reorderCardsByActiveAt(pkgDetails) {
 
   requestAnimationFrame(() => {
     for (let i = 0; i < cardEls.length; i++) {
+      // @ts-expect-error
       const dx = firstRects[i].left - lastRects[i].left
+      // @ts-expect-error
       const dy = firstRects[i].top - lastRects[i].top
       if (dx === 0 && dy === 0) continue
+      // @ts-expect-error
       cardEls[i].style.transform = `translate(${dx}px, ${dy}px)`
+      // @ts-expect-error
       cardEls[i].style.transition = "none"
     }
     requestAnimationFrame(() => {
@@ -1067,17 +1080,14 @@ function makeEndLeaf(className = "text-primary") {
 const settings = /** @type {HTMLElement} */ (document.getElementById("settings"))
 
 // 监听自定义 change 事件
-settings.addEventListener(
-  "chart-provider-change",
-  (/** @type {CustomEvent<{ provider: 'npmx' | 'chart.js' }>} */ e) => {
-    const provider = e.detail.provider
-    // console.log("当前 provider:", provider)
-    document.documentElement.setAttribute("data-provider", provider)
-    localStorage.setItem("provider", provider)
-    // 更新页面其他元素
-    updateAllNpmLinks(provider)
-  },
-)
+settings.addEventListener("chart-provider-change", (event) => {
+  const provider = event.detail.provider
+  // console.log("当前 provider:", provider)
+  document.documentElement.setAttribute("data-provider", provider)
+  localStorage.setItem("provider", provider)
+  // 更新页面其他元素
+  updateAllNpmLinks(provider)
+})
 
 /**
  * Change all the a links from npmjs.com to npmx.dev or vice versa.
@@ -1123,8 +1133,7 @@ function updateAllChartColors() {
   }
 }
 
-// @ts-expect-error
-settings.addEventListener("theme-change", (/** @type {CustomEvent<{ theme: string }>} */ e) => {
+settings.addEventListener("theme-change", (e) => {
   const theme = e.detail.theme
   console.log("当前主题:", theme)
 

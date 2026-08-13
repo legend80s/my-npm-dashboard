@@ -1,5 +1,5 @@
 import { Hono } from "hono"
-import { fetchJSON, RED, RESET, YELLOW } from "../../../utils/light-lodash.js"
+import { fetchJSON, RED, RESET, YELLOW } from "../../../shared/utils/light-lodash.js"
 import { MyURL } from "./_utils.js"
 
 const host = "https://api.github.com"

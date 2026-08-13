@@ -1,7 +1,7 @@
 import { Chart, registerables } from "chart.js"
 import { fetchRaw, RANKING_TOP_N, readCache, writeCache } from "./utils/data-loader.js"
 import { $, scrollToElement, URLParams } from "./utils/light-jquery.js"
-import { numberToLocaleString, timeAgo } from "./utils/light-lodash.js"
+import { numberToLocaleString, timeAgo } from "../shared/utils/light-lodash.js"
 
 Chart.register(...registerables)
 
@@ -51,12 +51,14 @@ const METRIC = {
   },
   stars: {
     label: "⭐ Stars",
-    get: (p) => ({ value: numberToLocaleString(p.github?.stars) }),
+    get: (p) => ({ value: numberToLocaleString(p.github.stars) }),
   },
   lastCommit: {
     label: "🕐 最近提交",
     get: (p) => {
-      if (!p.github?.lastCommitDate) return { value: "—" }
+      if (!p.github?.lastCommitDate) {
+        return { value: "—" }
+      }
       const date = new Date(p.github.lastCommitDate)
       return { value: timeAgo(date), title: date.toLocaleString() }
     },
@@ -590,9 +592,11 @@ function renderChart(packages, ranking, container) {
               const pkg = packages[ctx.dataIndex]
 
               if (!pkg) {
+                // @ts-expect-error
                 return `${ranking.label}: ${ranking.format(val)}`
               }
 
+              // @ts-expect-error
               const lines = [`${ranking.label}: ${ranking.format(val)}`]
               if (ranking.key === "weekly-downloads" && pkg.trend) {
                 lines.push(`趋势: ${pkg.trend > 0 ? "+" : ""}${pkg.trend}%`)
@@ -609,11 +613,13 @@ function renderChart(packages, ranking, container) {
           ticks: {
             color: tickColor,
             font: { size: 11 },
+            // @ts-expect-error
             callback: (v) => ranking.format(v),
           },
           beginAtZero: true,
         },
         y: {
+          // @ts-expect-error
           grid: { color: gridColor, drawBorder: false },
           ticks: { color: tickColor, font: { size: 11 } },
         },
@@ -635,6 +641,7 @@ function escapeHtml(str) {
   return String(str).replace(
     /[&<>"']/g,
     (c) =>
+      // @ts-expect-error
       ({
         "&": "&amp;",
         "<": "&lt;",
@@ -645,6 +652,11 @@ function escapeHtml(str) {
   )
 }
 
+/**
+ *
+ * @param {string} emoji
+ * @param {string} msg
+ */
 function showStatus(emoji, msg) {
   statusMsg.style.display = "block"
   const spinClass = emoji === "⏳" ? " loading-spin" : ""

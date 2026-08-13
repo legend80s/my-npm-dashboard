@@ -1,7 +1,7 @@
-/** @import { int } from './base.type.js' */
-/** @import { CommitItem } from './api-github.type.js' */
+/** @import { int } from '../../frontend/utils/base.type.js' */
+/** @import { CommitItem } from '../../frontend/utils/api-github.type.js' */
 
-import { getFirstCommits } from "./api.js"
+import { getFirstCommits } from "../../frontend/utils/api.js"
 
 export const YELLOW = `\x1b[33m`
 export const RED = `\x1b[31m`
@@ -76,11 +76,15 @@ export function timeAgo(date) {
 
 /**
  *
- * @param {int} num
+ * @param {int | null} num
  * @param {Parameters<typeof Number.prototype.toLocaleString>[0]} locale
  * @returns
  */
 export function numberToLocaleString(num, locale = navigator.language) {
+  if (num === null) {
+    return "-"
+  }
+
   if (locale === "zh-CN") {
     return numberToChineseWan(num)
   }
