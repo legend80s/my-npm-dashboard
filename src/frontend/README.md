@@ -4,6 +4,8 @@
   <img src="./src/closed-npm.svg" width="256" />
 </h2>
 
+输入 npm username 能够查看这个用户所有的包，按照第一个版本发布的时间由近及远排序
+
 > My NPM <img src="./src/closed-npm.svg" width="16" align="end" style="vertical-align: middle;" alt="D" title="npm dashboard logo" />ashboard built with Tauri and Vanilla JS
 
 This template should help get you started developing with Tauri in vanilla HTML, CSS and Javascript.
