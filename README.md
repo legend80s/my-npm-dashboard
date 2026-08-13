@@ -6,6 +6,8 @@
 
 输入 npm username 能够查看这个用户所有的包，按照第一个版本发布的时间由近及远排序
 
+All data is from github and npm api and with browser caching for 429.
+
 因为 `Calf` 最特殊的含义就是“大象的幼崽”，
 
 ```

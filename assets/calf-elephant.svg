@@ -9,11 +9,11 @@
       <stop offset="70%" stop-color="#f55f5f"></stop>
       <stop offset="100%" stop-color="#b83b7a"></stop>
     </radialGradient>
-    <linearGradient id="grad2" x1="0%" y1="20%" x2="100%" y2="80%">
+    <linearGradient id="grad" x1="0%" y1="20%" x2="100%" y2="80%">
       <stop offset="0%" stop-color="#7ae0ff"></stop>
       <stop offset="40%" stop-color="#3cb9ff"></stop>
-      <stop offset="70%" stop-color="#5f8aff"></stop>
-      <stop offset="100%" stop-color="#a37eff"></stop>
+      <stop offset="70%" stop-color="#ff9a56"></stop>
+      <stop offset="100%" stop-color="#f55f5f"></stop>
     </linearGradient>
     <linearGradient id="grad3" x1="0%" y1="20%" x2="100%" y2="80%">
       <stop offset="0%" stop-color="#7ae0ff"></stop>
@@ -22,10 +22,10 @@
       <stop offset="100%" stop-color="#b83b7a"></stop>
     </linearGradient>
 
-    <linearGradient id="grad" x1="0%" y1="20%" x2="100%" y2="80%">
+    <linearGradient id="gradx" x1="0%" y1="20%" x2="100%" y2="80%">
       <stop offset="0%" stop-color="#7ae0ff"></stop>
       <stop offset="40%" stop-color="#3cb9ff"></stop>
-      <stop offset="70%" stop-color="black"></stop>
+      <stop offset="70%" stop-color="#000"></stop>
       <stop offset="100%" stop-color="#ff9a56"></stop>
     </linearGradient>
   </defs>
