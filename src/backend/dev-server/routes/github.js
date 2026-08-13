@@ -37,7 +37,7 @@ github.get("/repos/:owner/:repo", async (c) => {
 
   const json = await fetchUsingProxy(url, {
     label: "github repo",
-    verbose: true,
+    verbose: debugging,
   })
 
   return c.json(json)
@@ -53,7 +53,7 @@ github.get("/repos/:owner/:repo/commits", async (c) => {
 
   const json = await fetchUsingProxy(url, {
     label: "github commits",
-    verbose: true,
+    verbose: debugging,
   })
 
   return c.json(json)
@@ -68,7 +68,7 @@ github.get("/repositories/:id/commits", async (c) => {
 
   const json = await fetchUsingProxy(url.toString(), {
     label: "github id commits",
-    verbose: true,
+    verbose: debugging,
   })
 
   return c.json(json)

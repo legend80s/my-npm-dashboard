@@ -5,7 +5,7 @@ import { createServer } from "node:http"
 import { extname, join, normalize, sep } from "node:path"
 
 const debugging = false
-const PORT = 8878
+const PORT = 8848
 const LIMIT = 3
 const NPM_USERNAME = "antfu"
 

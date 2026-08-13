@@ -13,7 +13,7 @@ npmRegistry.get("/:package", async (c) => {
 
   const json = await fetchJSON(`${npmHost}/${name}`, {
     label: "fetch npm package",
-    verbose: true,
+    verbose: false,
   })
 
   // const json = {
