@@ -20,7 +20,9 @@ const SEARCH_SIZE_LIMIT = 250
  */
 export function getMaxSearchSize() {
   const size = Number(localStorage.getItem(MAX_SEARCH_SIZE_KEY))
-  if (!Number.isFinite(size) || size <= 0) return MAX_SEARCH_SIZE
+  if (!Number.isFinite(size) || size <= 0) {
+    return MAX_SEARCH_SIZE
+  }
   return Math.min(SEARCH_SIZE_LIMIT, Math.floor(size))
 }
 

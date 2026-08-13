@@ -78,6 +78,7 @@ class SettingsDialog extends BaseWebElement {
         // @ts-expect-error
         event.target.value
       )
+      dialog.dataset.theme = theme
       // 触发自定义事件（方便外部监听）
       this.dispatchEvent(
         new CustomEvent("theme-change", {
@@ -87,11 +88,14 @@ class SettingsDialog extends BaseWebElement {
     })
 
     // sync radio state with current theme
-    const current = document.documentElement.getAttribute("data-theme") || "dark"
+    const theme = document.documentElement.getAttribute("data-theme") || "dark"
     const radio = /** @type {HTMLInputElement | null} */ (
-      shadowRoot.querySelector(`#themeSwitcher input[value="${current}"]`)
+      shadowRoot.querySelector(`#themeSwitcher input[value="${theme}"]`)
     )
-    if (radio) radio.checked = true
+    if (radio) {
+      radio.checked = true
+    }
+    dialog.dataset.theme = theme
 
     // sync radio state with current chart provider
     const currentProvider = document.documentElement.getAttribute("data-provider") || "npm"

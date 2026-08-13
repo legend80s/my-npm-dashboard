@@ -1,16 +1,19 @@
 /* ===== Theme Variables ===== */
 :root {
-  --bg: #0d1117;
+  /* rgb to oklch https://colorui.io/de/colors/0d1117 */
+  --bg: oklch(17.63% 0.014 258.36);
+  /* --bg: #0d1117; */
   --bg-subtle: #161b22;
   --bg-emphasis: #21262d;
-  --border: #30363d;
+  --border: oklch(33% 0.0149 252.31);
+  /* #30363d; */
   --border-muted: #21262d;
   --text: #e6edf3;
   --text-heading: #f0e6d0;
   --text-muted: #8b949e;
   --text-faint: #484f58;
   --accent: #58a6ff;
-  --accent-green: greenyellow;
+  --accent-green: oklch(91.3% 0.2335 130.02);
   --accent-green-hover: #2ea043;
   --orange: #f0883e;
   --red: #f85149;
@@ -19,17 +22,20 @@
 }
 
 [data-theme="light"] {
-  --bg: #ffffff;
+  --bg: oklch(100% 0 0);
+  /* --bg: #ffffff; */
   --bg-subtle: #f6f8fa;
   --bg-emphasis: #eaeef2;
-  --border: #d0d7de;
+  --border: oklch(87.58% 0.0123 247.97);
+  /* #d0d7de; */
   --border-muted: #d8dee4;
   --text: #1f2328;
   --text-heading: #24292f;
   --text-muted: #656c76;
   --text-faint: #8b949e;
   --accent: #0969da;
-  --accent-green: #1a7f37;
+  --accent-green: oklch(52.44% 0.1401 148.04);
+  /* #1a7f37; */
   --accent-green-hover: #116329;
   --orange: #bc4c00;
   --red: #cf222e;
@@ -589,3 +595,7 @@ button:disabled {
     padding: 12px 16px;
   }
 }
+
+/* * {
+  transition: color 0.2s;
+} */

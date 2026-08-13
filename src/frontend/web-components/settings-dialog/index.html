@@ -23,14 +23,25 @@
     max-width: 90vw;
     min-width: 320px;
     border: 0;
-    border-radius: 0;
+    /* border-radius: 0; */
+    border-inline-start: 0.1rem solid oklch(from var(--border) l c h / 0.25);
+
+    border-radius: 4px;
+
     padding: 1rem;
     box-sizing: border-box;
-    background: var(--bg, #0d1117);
+
+    background: oklch(from var(--bg) l c h / 0.25);
+    /* background: #0d111740; */
+    backdrop-filter: blur(1rem);
     color: var(--text, #e6edf3);
-    &:open {
-      display: flex;
+
+    &[data-theme='light'] {
+      border-inline-start-color: transparent;
+      background: oklch(from var(--bg) l c h / 0.85);
+      backdrop-filter: blur(0.3rem);
     }
+
     flex-direction: column;
     transition:
       translate 0.3s,
@@ -39,6 +50,9 @@
     translate: 100% 0;
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
 
+    &:open {
+      display: flex;
+    }
     .body {
       display: flex;
       flex-direction: column;
@@ -58,8 +72,9 @@
   }
 
   .drawer::backdrop {
-    background: rgba(0, 0, 0, 0.55);
-    transition: opacity 0.3s;
+    /* background: transparent; */
+    /* background: rgba(0, 0, 0, 0.55);
+    transition: opacity 0.3s; */
   }
 
   .drawer h2 {

@@ -79,7 +79,6 @@ export function init(theme) {
     toastElement.style.setProperty("--border-radius", "4px")
 
     const settings = /** @type {HTMLElement} */ (document.getElementById("settings"))
-
     settings.addEventListener("theme-change", (e) => {
       const theme = e.detail.theme
       console.log("当前主题 in sonner:", theme)
