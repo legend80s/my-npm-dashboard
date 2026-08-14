@@ -21,17 +21,15 @@ const faviconPath = fileURLToPath(new URL("../../frontend/closed-npm.svg", impor
 app.use("/favicon.ico", serveStatic({ path: faviconPath }))
 // app.use("/frontend/closed-npm.svg", serveStatic({ path: faviconPath }))
 
-// 自定义中间件：按顺序查找文件，hono 无法做到
-app.use("/*", serveMultipleStaticFolders)
+function cacheAllPath() {
+  app.use("*", async (c, next) => {
+    // serve remote api then cache  to avoid 429 error
+    // 浏览器缓存，不走服务端
+    c.header("Cache-Control", "max-age=3600")
 
-// Only cache API requests not static files.
-app.use("*", async (c, next) => {
-  // serve remote api then cache  to avoid 429 error
-  // 浏览器缓存，不走服务端
-  c.header("Cache-Control", "max-age=3600")
-
-  await next()
-})
+    await next()
+  })
+}
 
 app.use(logger())
 app.use("/*", cors())
@@ -56,7 +54,19 @@ app.route(githubPath, github).route(npmApiPath, npmApi).route(npmRegistryPath, n
  * @param {{port: number}} param0
  */
 export function startServer({ port }) {
+  // 自定义中间件：按顺序查找文件，hono 无法做到
+  // Should not cache static files otherwise the browser will not get the latest html/css/js in development stage.
+  // So the serveMultipleStaticFolders should placed before cacheAPI
+  app.use("/*", serveMultipleStaticFolders)
+  // Only cache API requests to avoid 429 error
+  cacheAllPath()
+
   return serve({ fetch: app.fetch, port }, (info) => {
     console.log(`Server is running on http://localhost:${info.port}`, info)
   })
+}
+
+if (import.meta.main) {
+  cacheAllPath()
+  startServer({ port: 8848 })
 }

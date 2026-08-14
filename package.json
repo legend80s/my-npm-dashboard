@@ -10,9 +10,12 @@
     "tauri": "tauri",
     "typecheck": "tsgo --noEmit",
     "start": "node src/bin/index.js",
-    "dev:api": "cd src/backend && echo Y | pnpm i && node --watch ./dev-server",
-    "dev:live": "live-server ./src --port=1123 --open=\"?limit=3&username=antfu&port=8848\"",
-    "dev": "concurrently --kill-others --names \"LIVE,API\" \"pnpm dev:live\" \"pnpm dev:api\""
+    "// dev": "need reload page manually",
+    "dev": "node --watch-path=./src --watch src/bin/index.js",
+    "dev:api": "cd src/backend && echo Y | pnpm i && node --watch ./dev-server/index.js",
+    "dev:live": "live-server ./src --port=1123 --open=\"/frontend/?limit=3&username=antfu&port=8848\"",
+    "// dev:live-server": "when static files changed, reload page automatically",
+    "dev:live-server": "concurrently --kill-others --names \"LIVE,API\" \"pnpm dev:live\" \"pnpm dev:api\""
   },
   "devDependencies": {
     "@tauri-apps/cli": "^2",
