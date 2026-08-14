@@ -16,14 +16,6 @@ import { npmRegistry, npmRegistryPath } from "./routes/npm-registry.js"
 
 const app = new Hono()
 
-app.use("*", async (c, next) => {
-  // serve remote api then cache  to avoid 429 error
-  // 浏览器缓存，不走服务端
-  c.header("Cache-Control", "max-age=3600")
-
-  await next()
-})
-
 const faviconPath = fileURLToPath(new URL("../../frontend/closed-npm.svg", import.meta.url))
 
 app.use("/favicon.ico", serveStatic({ path: faviconPath }))
@@ -31,6 +23,15 @@ app.use("/favicon.ico", serveStatic({ path: faviconPath }))
 
 // 自定义中间件：按顺序查找文件，hono 无法做到
 app.use("/*", serveMultipleStaticFolders)
+
+// Only cache API requests not static files.
+app.use("*", async (c, next) => {
+  // serve remote api then cache  to avoid 429 error
+  // 浏览器缓存，不走服务端
+  c.header("Cache-Control", "max-age=3600")
+
+  await next()
+})
 
 app.use(logger())
 app.use("/*", cors())
