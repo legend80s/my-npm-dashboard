@@ -158,6 +158,16 @@ button:disabled {
   /* background: var(--bg-subtle); */
   border-radius: 12px;
   /* border: 1px solid var(--border); */
+
+  .avatar {
+    width: 5vw;
+    border-radius: 50%;
+    transition: border-color 1s;
+    border: 3px solid transparent;
+    &:hover {
+      border-color: var(--accent-green);
+    }
+  }
 }
 
 .logo {
@@ -312,7 +322,7 @@ button:disabled {
   margin: 0 auto;
   display: grid;
   /* 40 vw to make 2 card in one line at least in md or lg screen (> 1200px) */
-  grid-template-columns: repeat(auto-fill, minmax(32vw, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(max(500px, 32vw), 1fr));
   gap: 18px;
 
   counter-reset: item;

@@ -437,7 +437,7 @@ async function loadPackages(username, displayLimit, { forceRefresh = false, shou
   // 缓存未命中或强制刷新
   setLoading(true)
   const spinner = new Spinner(grid)
-  spinner.start(`正在搜索 ${username} 的包...`)
+  spinner.start(`正在搜索 ${username} 的第一个包...`)
 
   try {
     /** @type {FreshPackageDetail[]} */
@@ -893,7 +893,9 @@ function init() {
 
     usernameInput.parentElement?.insertAdjacentHTML(
       "beforeend",
-      `<img src="https://avatars.githubusercontent.com/${username}?s=128" alt="github user icon" style="width: 5vw; border-radius: 50%;" />`,
+      `<a href="https://www.npmjs.com/~${username}" target="_blank">
+        <img src="https://avatars.githubusercontent.com/${username}?s=128" alt="github user icon" class="avatar" />
+      </a>`,
       // `<img src="https://unavatar.io/npm/${username}?size=16" alt="" style="width:2.5rem;border-radius: 50%;" />`,
     )
   }
