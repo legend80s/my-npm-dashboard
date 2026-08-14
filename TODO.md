@@ -35,7 +35,9 @@
 - [ ] 现在的缓存有个问题，切换用户后，缓存被清空，导致下次搜索相同用户时，需要重新搜索。
 - [ ] dashboard 页面不展示所以包的 insights 只展示 limit 个包的 insights，但是背后会搜索所有 250 个包，这样用户点击 "查看更多" 时，已经加载了所有包的 insights，无需再搜索。性能会更好。
 - [ ] 目前3个，应该是全部完毕后需要更新
+- [ ] Add ws to notify client to reload page when file in src changed.
 - [ ] logo 将 NPM logo 的 N 改成 D
+- [ ] 性能优化，先出骨架，比如 line chart 需要的数据有了就可以先展示了
 - [ ] pkg-marmot-cache key change
 - [ ] different display count of pkgs for different preset usernames
 - [ ] 增加进度

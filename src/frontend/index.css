@@ -324,8 +324,11 @@ button:disabled {
   /* 40 vw to make 2 card in one line at least in md or lg screen (> 1200px) */
   grid-template-columns: repeat(auto-fit, minmax(max(500px, 32vw), 1fr));
   gap: 18px;
-
   counter-reset: item;
+}
+/* when only 1 child in grid set `place-self: center;` */
+.grid:has(.grid-item:only-child) {
+  place-self: center;
 }
 
 /* Minimal styling: no need to show index when there are less than 5 items */
@@ -337,6 +340,13 @@ button:disabled {
 
 .card {
   counter-increment: item;
+}
+
+/* when screen >= 1200px */
+@media (width >= 1200px) {
+  .card {
+    /* max-width: 48vw; */
+  }
 }
 
 /* ===== Card ===== */
@@ -578,7 +588,7 @@ button:disabled {
 }
 
 /* ===== Responsive ===== */
-@media (max-width: 600px) {
+@media (width <= 600px) {
   .header {
     flex-direction: column;
     align-items: stretch;

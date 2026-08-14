@@ -85,7 +85,7 @@ export class URLParams {
   set(key, value) {
     const url = this.url
     url.searchParams.set(key, value)
-    window.history.pushState({}, "", url)
+    // window.history.pushState({}, "", url)
   }
 
   /**
@@ -94,7 +94,7 @@ export class URLParams {
    */
   replace(key, value) {
     this.url.searchParams.set(key, value)
-    window.history.replaceState({}, "", this.url)
+    // window.history.replaceState({}, "", this.url)
   }
 
   /**
@@ -106,7 +106,7 @@ export class URLParams {
     Object.entries(params).forEach(([key, value]) => {
       url.searchParams.set(key, value)
     })
-    window.history.pushState({}, "", url)
+    // window.history.pushState({}, "", url)
   }
 
   /**
@@ -116,7 +116,7 @@ export class URLParams {
   remove(key) {
     const url = this.url
     url.searchParams.delete(key)
-    window.history.pushState({}, "", url)
+    // window.history.pushState({}, "", url)
   }
 
   /**
@@ -126,7 +126,7 @@ export class URLParams {
   removeMultiple(keys) {
     const url = this.url
     keys.forEach((key) => url.searchParams.delete(key))
-    window.history.pushState({}, "", url)
+    // window.history.pushState({}, "", url)
   }
 
   /**
@@ -156,7 +156,7 @@ export class URLParams {
   clear() {
     const url = new URL(window.location.href)
     url.search = ""
-    window.history.pushState({}, "", url)
+    // window.history.pushState({}, "", url)
   }
 
   /**
@@ -170,6 +170,6 @@ export class URLParams {
     } else {
       url.searchParams.set(key, value)
     }
-    window.history.pushState({}, "", url)
+    // window.history.pushState({}, "", url)
   }
 }

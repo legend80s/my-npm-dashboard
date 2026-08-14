@@ -1,3 +1,5 @@
+import { drawSearchingMascotSVG } from "../constants/icons.js"
+
 export class Spinner {
   static #CLOCKS = ["🕛", "🕐", "🕑", "🕒", "🕓", "🕔", "🕕", "🕖", "🕗", "🕘", "🕙", "🕚"]
 
@@ -19,8 +21,11 @@ export class Spinner {
   #render(msg) {
     const clocks = Spinner.#CLOCKS
 
+    const searchingMascotSVG = drawSearchingMascotSVG({ verticalAlign: "-0.75em" })
+
     this.root.innerHTML = `<div id="${this.id}" class="no-results" style="color:var(--orange);">
       <span class="big xloading-spin">${clocks[0]}</span>
+      ${searchingMascotSVG}
       ${msg}
     </div>`
   }

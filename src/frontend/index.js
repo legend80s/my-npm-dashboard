@@ -682,7 +682,7 @@ function updateCacheInfo(freshness) {
  */
 function createCardElement(pkg) {
   const card = document.createElement("article")
-  card.className = "card card--package"
+  card.className = "grid-item card card--package"
   card.dataset.pkgName = pkg.name
 
   // 构建 GitHub 信息
@@ -907,7 +907,11 @@ function init() {
     const limit = Number(limitInput.value) || config.pkgLimit
     console.log("usernameInput.value:", usernameInput.value, limit)
     if (username) {
-      window.location.href = `?username=${username}&limit=${limit}`
+      const search = new URLSearchParams(location.search)
+      search.set("username", username)
+      search.set("limit", String(limit))
+
+      window.location.href = `?${search.toString()}`
     } else {
       usernameInput.focus()
     }
