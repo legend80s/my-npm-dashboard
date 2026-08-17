@@ -49,25 +49,7 @@
       rel="stylesheet"
       href="https://esm.sh/sourdough-toast@0.3.0/sourdough-toast.css"
     />
-    <script>
-      (() => {
-        var saved = localStorage.getItem('theme');
-        var theme =
-          saved === 'light' || saved === 'dark'
-            ? saved
-            : window.matchMedia('(prefers-color-scheme: light)').matches
-              ? 'light'
-              : 'dark';
-        document.documentElement.setAttribute('data-theme', theme);
-
-        var savedProvider = localStorage.getItem('provider');
-        var provider =
-          savedProvider === 'npmx' || savedProvider === 'npm'
-            ? savedProvider
-            : 'npm';
-        document.documentElement.setAttribute('data-provider', provider);
-      })();
-    </script>
+    <script type="module" src="./utils/sync-cache.js"></script>
   </head>
 
   <body>
