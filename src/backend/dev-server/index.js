@@ -29,6 +29,8 @@ function cacheAllPath() {
 
     await next()
   })
+
+  app.route(githubPath, github).route(npmApiPath, npmApi).route(npmRegistryPath, npmRegistry)
 }
 
 app.use(logger())
@@ -43,8 +45,6 @@ app.use("/*", cors())
 //     wait: true,
 //   }),
 // )
-
-app.route(githubPath, github).route(npmApiPath, npmApi).route(npmRegistryPath, npmRegistry)
 
 // Serve the OpenAPI document
 // Use the middleware to serve Swagger UI at /ui
