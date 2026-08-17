@@ -778,7 +778,7 @@ function createCardElement(pkg) {
           
           <a
             id="firstCommitUrl-${sanitizedId}"
-            href="https://github.com/legend80s/sse-stuntman/commits/main/"
+            href="https://github.com/${pkg.github.owner}/${pkg.github.repo}/commits/main/"
             target="_blank"
             title="at ${new Date(pkg.createdAt).toLocaleString()} · Click to view initial commit 🤰"
           >
