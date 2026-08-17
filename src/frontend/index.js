@@ -14,7 +14,7 @@ import "./web-components/settings-dialog/index.js"
 import "./web-components/badge-dependencies/index.js"
 import "./web-components/fancy-separator.js"
 import "./web-components/sonner-loader/index.js"
-import { $id } from "./utils/light-jquery.js"
+import { $id, URLParams } from "./utils/light-jquery.js"
 import { init as initSonner } from "./web-components/sonner.js"
 import { Spinner } from "./web-components/spinner.js"
 
@@ -73,9 +73,8 @@ maxCount.textContent = ` / ${config.MAX_SEARCH_SIZE}`
 // ============================================================
 //  2. URL 参数读写
 // ============================================================
+const params = new URLParams()
 function getUrlParams() {
-  const params = new URLSearchParams(window.location.search)
-
   return {
     username: params.get("username") || "",
     limit: Math.min(Number(params.get("limit")) || config.pkgLimit, config.pkgLimit),
@@ -88,18 +87,10 @@ function getUrlParams() {
  * @param {number} limit
  */
 function setUrlParams(username, limit) {
-  const params = new URLSearchParams()
-
-  if (username) {
-    params.set("username", username)
-  }
-
-  if (limit) {
-    params.set("limit", String(limit))
-  }
-
-  const newUrl = window.location.pathname + (params.toString() ? `?${params.toString()}` : "")
-  window.history.replaceState({}, "", newUrl)
+  params.setMultiple({
+    username,
+    limit: String(limit),
+  })
 }
 
 // ============================================================
