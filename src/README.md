@@ -20,7 +20,9 @@ A npm dashboard for your recently "born" packages
 
 ## 技术决策
 
-- Native 主义者。使用原生技术栈，不使用框架、不编译、不打包。0 依赖。
+- Native 主义者。
+  - 使用原生技术栈，不使用框架、不编译、不打包。
+  - 尽量 0 依赖，实在不行则用轻量级依赖。
 - 不用 react 甚至 preact 使用 web components
 - 不用 TypeScript 使用原生 JavaScript mjs
 
