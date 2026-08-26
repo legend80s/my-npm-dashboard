@@ -1,0 +1,36 @@
+{
+  "name": "npm-calf",
+  "description": "🐘 An npm dashboard for your recently \"born\" packages.",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "bin": {
+    "calf": "./bin/index.js"
+  },
+  "scripts": {
+    "test": "node --test",
+    "typecheck": "tsgo --noEmit",
+    "start": "node ./bin/index.js",
+    "// dev:node-watch": "need reload page manually",
+    "dev:node-watch": "node --watch-path=./src --watch ./bin/index.js",
+    "dev:api": "cd ./backend && echo Y | pnpm i && node --watch ./dev-server/index.js",
+    "dev:frontend": "live-server ./src --port=1123 --open=\"/frontend/?limit=3&username=antfu&port=8848\"",
+    "// dev": "when static files changed, reload page automatically",
+    "dev": "concurrently --kill-others --names \"LIVE,API\" \"pnpm dev:frontend\" \"pnpm dev:api\"",
+    "pub:patch": "npm version patch",
+    "pub:minor": "npm version minor",
+    "pub:major": "npm version major",
+    "preversion": "npm test && npm run typecheck",
+    "postversion": "npm publish && git push && git push --tags"
+  },
+  "devDependencies": {
+    "@tauri-apps/cli": "^2",
+    "@types/node": "^26.1.1",
+    "concurrently": "^10.0.4",
+    "live-server": "^1.2.2"
+  },
+  "dependencies": {
+    "chart.js": "^4.5.1",
+    "sourdough-toast": "^0.3.0"
+  }
+}

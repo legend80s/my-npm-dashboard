@@ -52,8 +52,10 @@ app.use("/*", cors())
 /**
  *
  * @param {{port: number}} param0
+ * @returns {Promise<{ server: import('@hono/node-server').ServerType, info: import('node:net').AddressInfo }>}
  */
 export function startServer({ port }) {
+  const { resolve, reject, promise } = Promise.withResolvers()
   // 自定义中间件：按顺序查找文件，hono 无法做到
   // Should not cache static files otherwise the browser will not get the latest html/css/js in development stage.
   // So the serveMultipleStaticFolders should placed before cacheAPI
@@ -61,9 +63,11 @@ export function startServer({ port }) {
   // Only cache API requests to avoid 429 error
   cacheAllPath()
 
-  return serve({ fetch: app.fetch, port }, (info) => {
-    console.log(`Server is running on http://localhost:${info.port}`, info)
+  const server = serve({ fetch: app.fetch, port }, (info) => {
+    resolve({ server, info })
   })
+
+  return promise
 }
 
 if (import.meta.main) {

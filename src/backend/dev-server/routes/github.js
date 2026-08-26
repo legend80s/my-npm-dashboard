@@ -12,9 +12,8 @@ export const githubPath = `/${host}`
 // [API] TypeError: fetch failed
 // [API]     at node:internal/deps/undici/undici:13510:13
 // [API]     code: 'UNABLE_TO_VERIFY_LEAF_SIGNATURE'
-
 // add NODE_TLS_REJECT_UNAUTHORIZED=0 to env to disable ssl verification
-process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0"
+// process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0"
 
 // empty string -> no proxy
 const proxies = new Set([
