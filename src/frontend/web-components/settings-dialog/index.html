@@ -38,7 +38,8 @@
 
     &[data-theme='light'] {
       border-inline-start-color: transparent;
-      background: oklch(from var(--bg) l c h / 0.85);
+      /* background: ghostwhite; */
+      background: #f8f8ffc9;
       backdrop-filter: blur(0.3rem);
     }
 
@@ -88,6 +89,9 @@
     border: 1px solid var(--border, #30363d);
     border-radius: 8px;
     padding: 12px;
+
+    display: flex;
+    gap: 2%;
   }
 
   .drawer legend {
@@ -219,7 +223,7 @@
     <fieldset id="searchSizeWrapper">
       <legend>Max search size</legend>
       <label for="maxSearchSizeInput" style="margin-inline-end: 1em"
-        >npm 搜索/显示包数量上限</label
+        >npm 搜索包数量上限</label
       >
       <input
         type="number"
@@ -229,6 +233,17 @@
         max="250"
         step="1"
       />
+
+      <wa-tooltip
+        for="maxSearchSizeInput"
+        style="--max-width: 20em"
+        distance="12"
+        trigger="hover"
+      >
+        <span id="tips" style="font-size: 74%; display: flex"
+          >如果你近期发布的包不在其内，可尝试增大该值</span
+        >
+      </wa-tooltip>
     </fieldset>
   </section>
   <!-- <div class="drawer-actions">

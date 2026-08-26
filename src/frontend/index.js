@@ -5,15 +5,17 @@ import {
   timeAgo as resolveRelativeTime,
 } from "../shared/utils/light-lodash.js"
 import { getFirstCommit, getMaxSearchSize } from "./utils/api.js"
-import { byActiveAtDesc, CACHE_TTL_IN_HOURS, getCache, getCacheTTL } from "./utils/cache.js"
+import { byActiveAtDesc, getCache, getCacheTTL } from "./utils/cache.js"
 import { clearCache, fetchPackageDetails, fetchRaw, writeCache } from "./utils/data-loader.js"
 
 Chart.register(...registerables)
 
 import "./web-components/settings-dialog/index.js"
 import "./web-components/badge-dependencies/index.js"
+import "./web-components/icon-package-search/index.js"
 import "./web-components/fancy-separator.js"
 import "./web-components/sonner-loader/index.js"
+import { CACHE_TTL_IN_HOURS } from "./constants/cache.js"
 import { $id, URLParams } from "./utils/light-jquery.js"
 import { init as initSonner } from "./web-components/sonner.js"
 import { Spinner } from "./web-components/spinner.js"
@@ -392,6 +394,8 @@ async function loadPackages(username, displayLimit, { forceRefresh = false, shou
   if (isLoading) {
     return
   }
+
+  // return
 
   username = username.trim()
   if (!username) {
@@ -882,13 +886,15 @@ function init() {
     // 尝试从缓存加载，无需强制刷新
     loadPackages(username, limit, { forceRefresh: false })
 
-    usernameInput.parentElement?.insertAdjacentHTML(
-      "beforeend",
-      `<a href="https://www.npmjs.com/~${username}" target="_blank">
-        <img src="https://avatars.githubusercontent.com/${username}?s=128" alt="github user icon" class="avatar" />
-      </a>`,
-      // `<img src="https://unavatar.io/npm/${username}?size=16" alt="" style="width:2.5rem;border-radius: 50%;" />`,
-    )
+    const avatar = /** @type {HTMLAnchorElement} */ (document.querySelector("#avatar"))
+    avatar.href = avatar.href.replace("$" + encodeURIComponent("{username}"), username)
+    const img = /** @type {HTMLImageElement} */ (avatar.querySelector("img"))
+    img.src = img.src.replace("$" + encodeURIComponent("{username}"), username)
+    // `<a href="https://www.npmjs.com/~${username}" target="_blank">
+    //   <img src="https://avatars.githubusercontent.com/${username}?s=128" alt="github user icon" class="avatar" />
+    // </a>`,
+    // `<img src="https://unavatar.io/npm/${username}?size=16" alt="" style="width:2.5rem;border-radius: 50%;" />`,
+    // )
   }
 
   // 表单提交
@@ -1137,8 +1143,8 @@ settings.addEventListener("theme-change", (e) => {
   const theme = e.detail.theme
   console.log("当前主题:", theme)
 
-  document.documentElement.setAttribute("data-theme", theme)
-  localStorage.setItem("theme", theme)
+  // document.documentElement.setAttribute("data-theme", theme)
+  // localStorage.setItem("theme", theme)
 
   updateAllChartColors()
 

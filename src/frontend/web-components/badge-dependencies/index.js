@@ -25,14 +25,12 @@ class BadgeDependencies extends BaseWebElement {
 
   async connectedCallback() {
     await this.render()
-    this._rendered = true
     this.update()
   }
 
   async render() {
     // 动态加载模板
-    const response = await fetch("./web-components/badge-dependencies/index.html")
-    const template = await response.text()
+    const template = await fetch("./web-components/badge-dependencies/index.html").then(resp => resp.text())
 
     // console.log("template:", template)
     // throw new Error("error")
@@ -57,6 +55,7 @@ class BadgeDependencies extends BaseWebElement {
     // Switch to npmx even if `?activeTab=dependencies` not take effect
     // Let user to click the dependencies link in npmx page.
     this.query("a").href = `${host}/package/${name}?activeTab=dependencies`
+    this._rendered = true
   }
 
   // 属性变化时重新渲染

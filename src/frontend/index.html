@@ -171,6 +171,18 @@
           />
         </form>
 
+        <a
+          id="avatar"
+          href="https://www.npmjs.com/~${username}"
+          target="_blank"
+        >
+          <img
+            src="https://avatars.githubusercontent.com/${username}?s=128"
+            alt="github user icon"
+            class="avatar"
+          />
+        </a>
+
         <settings-dialog id="settings"></settings-dialog>
 
         <!-- <span class="" id="statusBadge"></span> -->
@@ -229,26 +241,47 @@
     <!-- ===== GRID ===== -->
     <div class="grid" id="grid">
       <div class="no-results">
-        <span class="big">🐿️</span>
+        <span class="big">🐘</span>
         输入 npm username 查看 Ta 所有包，按照第一个版本发布的时间由近及远排序。
 
         <!-- 输入 npm 用户名，帮你查看 Ta 最近发布的包。 -->
 
         如
         <button type="button" class="preset-username username">
+          <icon-package-search is="icon-package-search"></icon-package-search>
           sindresorhus
         </button>
         <fancy-separator></fancy-separator>
-        <button type="button" class="preset-username username">antfu</button>
+        <button type="button" class="preset-username username">
+          <icon-package-search></icon-package-search>
+          antfu
+        </button>
         <fancy-separator></fancy-separator>
         <button type="button" class="preset-username username">
+          <icon-package-search></icon-package-search>
           vercel-release-bot
         </button>
         (点击自动填入)
       </div>
     </div>
 
+    <footer>
+      Every big project starts as a calf. Tend your whole npm herd, sorted by
+      birth date.
+      <p>A npm dashboard for your recently "born" packages</p>
+    </footer>
+
     <!-- ============================================================ -->
     <script type="module" src="./index.js"></script>
+
+    <!-- https://webawesome.com/docs -->
+    <link
+      rel="stylesheet"
+      href="https://ka-f.webawesome.com/webawesome@3.11.0/styles/themes/default.css"
+    />
+    <script
+      type="module"
+      src="https://ka-f.webawesome.com/webawesome@3.11.0/webawesome.loader.js"
+    ></script>
   </body>
 </html>

@@ -2,6 +2,7 @@
 /** @import { CacheData, CaseSuccess, CaseError, FreshPackageDetail } from '../index.type.js' */
 /** @import { int } from './base.type.js' */
 
+import { CACHE_KEY, CACHE_TTL_IN_MS } from "../constants/cache.js"
 import {
   fetchDependentsCount,
   fetchGitHubLastCommit,
@@ -10,7 +11,7 @@ import {
   fetchUserPackages,
   fetchYearlyWeeklyDownloads,
 } from "./api.js"
-import { byActiveAtDesc, CACHE_KEY, CACHE_TTL_IN_MS } from "./cache.js"
+import { byActiveAtDesc } from "./cache.js"
 
 export const RANKING_TOP_N = 5
 

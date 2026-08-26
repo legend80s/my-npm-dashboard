@@ -1,13 +1,15 @@
 import { getMaxSearchSize } from "../../utils/api.js"
-import { KEY_OPEN_SETTINGS, LocalStorage } from "../../utils/cache.js"
+import { LocalStorage } from "../../utils/local-storage.js"
 // import { URLParams } from "../../utils/light-jquery.js"
 import { BaseWebElement } from "../base-web-element.js"
+// @ts-expect-error
+import "https://ka-f.webawesome.com/webawesome@3.11.0/components/tooltip/tooltip.js"
 
 /**
  * @import { Theme } from "../../index.type.js"
  */
 
-const KEY = KEY_OPEN_SETTINGS
+const KEY = "open-settings"
 
 class SettingsDialog extends BaseWebElement {
   constructor() {

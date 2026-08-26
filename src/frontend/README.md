@@ -15,3 +15,5 @@ This template should help get you started developing with Tauri in vanilla HTML,
 - Native 主义者。使用原生技术栈，不使用框架、不编译、不打包。0 依赖。
 - 不用 react 甚至 preact 使用 web components
 - 不用 TypeScript 使用原生 JavaScript mjs
+- CND 资源，不打包
+  - https://webawesome.com/docs/components
