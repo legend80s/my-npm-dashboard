@@ -32,5 +32,18 @@
   "dependencies": {
     "chart.js": "^4.5.1",
     "sourdough-toast": "^0.3.0"
-  }
+  },
+  "keywords": [
+    "npm",
+    "downloads",
+    "statistics",
+    "stats",
+    "dashboard",
+    "cli",
+    "metrics",
+    "packages",
+    "monitoring",
+    "developer-tools",
+    "trends"
+  ]
 }
