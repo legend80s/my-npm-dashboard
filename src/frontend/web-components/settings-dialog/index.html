@@ -110,6 +110,11 @@
     /* font-weight: bold; */
   }
 
+  input[type='radio']:not(:checked),
+  input[type='radio']:not(:checked) + label {
+    cursor: pointer;
+  }
+
   .drawer input[type='radio'] {
     accent-color: var(--accent-green, #58a6ff);
   }
