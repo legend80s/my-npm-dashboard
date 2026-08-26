@@ -2,17 +2,14 @@ import { LocalStorage } from "./local-storage.js"
 
 const localStorage = new LocalStorage()
 
+const DEFAULT_THEME = "dark"
+
 // Function to get the user's preferred color scheme
 // Grabs from local storage if available or falls back to system preference
 function getPreferredScheme() {
   const saved = localStorage.get("theme")
 
-  const theme =
-    saved === "light" || saved === "dark"
-      ? saved
-      : window.matchMedia("(prefers-color-scheme: light)").matches
-        ? "light"
-        : "dark"
+  const theme = saved === "light" || saved === "dark" ? saved : DEFAULT_THEME
 
   return theme
 }
