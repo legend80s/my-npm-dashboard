@@ -1,0 +1,37 @@
+{
+  "name": "logger",
+  "description": "A simple console logger only for Node.js and only for console printing",
+  "private": false,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "test": "node --test",
+    "typecheck": "tsgo --noEmit",
+    "pub:patch": "npm version patch",
+    "pub:minor": "npm version minor",
+    "pub:major": "npm version major",
+    "preversion": "npm test && npm run typecheck",
+    "postversion": "npm publish && git push && git push --tags"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/legend80s/my-npm-dashboard.git"
+  },
+  "homepage": "https://github.com/legend80s/my-npm-dashboard/tree/main/src/backend/utils/logger",
+  "devDependencies": {},
+  "dependencies": {},
+  "keywords": [
+    "consola",
+    "console",
+    "log",
+    "logger",
+    "logging",
+    "debug",
+    "info",
+    "warn",
+    "error",
+    "fatal",
+    "node",
+    "nodejs"
+  ]
+}
