@@ -10,6 +10,7 @@ const BASH_COLORS = {
   green: "\x1b[32m",
   yellow: "\x1b[33m",
   blue: "\x1b[34m",
+  brightBlue: "\x1b[94m",
   magenta: "\x1b[35m",
   cyan: "\x1b[36m",
 }
@@ -36,7 +37,7 @@ const LEVEL = /** @type {const} */ ({
  */
 const decorations = /** @type {const} */ ({
   debug: { emoji: "🐞", color: "" },
-  info: { emoji: styleText("blueBright", "ℹ"), color: "" },
+  info: { emoji: styleText("blueBright", "ℹ"), color: BASH_COLORS.brightBlue },
   warn: { emoji: "🟡", color: BASH_COLORS.yellow },
   error: { emoji: "🔴", color: BASH_COLORS.red },
   success: { emoji: styleText("green", "✔"), color: BASH_COLORS.green },
@@ -126,25 +127,7 @@ export class Logger {
    */
   warn(...args) {
     if (this.level <= LEVEL.WARN) {
-      this.#dispatch("warn", args, {
-        // formatLevel: (level) => {
-        //   const formatted = this.formatLevel(level)
-        //   if (!this.color) {
-        //     return formatted
-        //   }
-        //   // console.log("formatted:", `|${formatted}|`)
-        //   // return formatted
-        //   // `[info]`.match(/(?<start>\W*)(?<level>\w+)(?<end>\W*)/).groups
-        //   // { "start": "[", "level": "info", "end": "]" }
-        //   const result = formatted.match(/(?<start>\W*)(?<level>\w+)(?<end>\W*)/)
-        //   if (result) {
-        //     const { start, level, end } = result.groups ?? {}
-        //     const colorLevel = styleText(["black", "bgYellow"], ` ${level} `)
-        //     return `${start}${colorLevel}${end}`
-        //   }
-        //   return formatted
-        // },
-      })
+      this.#dispatch("warn", args)
     }
   }
 
@@ -153,25 +136,7 @@ export class Logger {
    */
   error(...args) {
     if (this.level <= LEVEL.ERROR) {
-      this.#dispatch("error", args, {
-        // formatLevel: (level) => {
-        //   const formatted = this.formatLevel(level)
-        //   if (!this.color) {
-        //     return formatted
-        //   }
-        //   // console.log("formatted:", `|${formatted}|`)
-        //   // return formatted
-        //   // `[info]`.match(/(?<start>\W*)(?<level>\w+)(?<end>\W*)/).groups
-        //   // { "start": "[", "level": "info", "end": "]" }
-        //   const result = formatted.match(/(?<start>\W*)(?<level>\w+)(?<end>\W*)/)
-        //   if (result) {
-        //     const { start, level, end } = result.groups ?? {}
-        //     const colorLevel = styleText(["white", "bgRed"], ` ${level} `)
-        //     return `${start}${colorLevel}${end}`
-        //   }
-        //   return formatted
-        // },
-      })
+      this.#dispatch("error", args)
     }
   }
 
@@ -181,7 +146,6 @@ export class Logger {
   success(...args) {
     if (this.level <= LEVEL.INFO) {
       this.#dispatch("success", args)
-      // this.#dispatch("info", args, { formatFancy: () => chalk.greenBright("✓") })
     }
   }
 
