@@ -3,11 +3,12 @@
 import { parseArgs } from "node:util"
 import { startServer } from "../backend/dev-server/index.js"
 import { createLogger } from "../backend/utils/logger/index.js"
+import { openBrowser } from "../backend/utils/platform.js"
 // import version and name from package.json
 import pkg from "../package.json" with { type: "json" }
-import { openBrowser } from "../backend/utils/platform.js"
 
 const { name, version, description } = pkg
+const DEFAULT_PORT = 1123
 
 /**
  * @satisfies {import('node:util').ParseArgsOptionsConfig}
@@ -15,19 +16,23 @@ const { name, version, description } = pkg
 const options = {
   help: {
     type: "boolean",
+    default: false,
     short: "h",
   },
   version: {
     type: "boolean",
+    default: false,
     short: "v",
   },
   verbose: {
     type: "boolean",
+    default: false,
     short: "V",
   },
   port: {
     type: "string",
     short: "p",
+    default: String(DEFAULT_PORT),
     // @ts-expect-error
     description: "Port to run the server on",
   },
@@ -67,7 +72,6 @@ async function main() {
 
   const portNum = Number(port || process.env.PORT)
   // const rootDir = new URL("..", import.meta.url).pathname
-  const DEFAULT_PORT = 1123
 
   const { info } = await startServer({
     port: portNum || DEFAULT_PORT,
