@@ -27,6 +27,7 @@ export async function fetchJSON(url, { label, verbose = false }) {
   label = label ? ` ${label}` : ""
 
   if (!res.ok) {
+    // console.error(res)
     throw new Error(`[fetchJSON]${label} "${url}" failed, status: ${res.status}`)
   }
 

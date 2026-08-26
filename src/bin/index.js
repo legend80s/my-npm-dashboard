@@ -77,6 +77,7 @@ async function main() {
     port: portNum || DEFAULT_PORT,
     // root: join(import.meta.dirname, "../"),
     // open, // 自动打开浏览器
+    debug: logger.debug,
   })
 
   const url = `http://localhost:${info.port}`

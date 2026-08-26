@@ -1,5 +1,6 @@
 import { existsSync } from "node:fs"
 import { resolve } from "node:path"
+import { fileURLToPath } from "node:url"
 import { serveStatic } from "@hono/node-server/serve-static"
 
 // 先匹配 frontend 目录
@@ -10,56 +11,62 @@ import { serveStatic } from "@hono/node-server/serve-static"
 // 自定义中间件：按顺序查找文件
 /**
  *
- * @type {Parameters<import('hono').Hono['use']>[1]}
+ * @return {Parameters<import('hono').Hono['use']>[1]}
  */
-export const serveMultipleStaticFolders = async (c, next) => {
-  const path = c.req.path
+export const serveMultipleStaticFolders =
+  (debug = console.log) =>
+  async (c, next) => {
+    const path = c.req.path
+    debug("path:", path)
 
-  // 尝试的目录顺序
-  const roots = ["./frontend", "./shared"]
-  // [frontend, shared]
-  const parts = ["/", ...roots.map((root) => `/${root.split("/").at(-1)}/`)].map(
-    // biome-ignore lint/complexity/noUselessStringRaw: <explanation>
-    (part) => new RegExp(String.raw`^${part}`),
-  )
+    // 尝试的目录顺序
+    const roots = ["../../../frontend", "../../../shared"]
+    // [frontend, shared]
+    const parts = ["/", ...roots.map((root) => `/${root.split("/").at(-1)}/`)].map(
+      // biome-ignore lint/complexity/noUselessStringRaw: <explanation>
+      (part) => new RegExp(String.raw`^${part}`),
+    )
 
-  // console.log("parts:", parts)
+    debug("  parts:", parts)
 
-  for (const root of roots) {
-    // console.log("\n\nsearch in root:", root)
-    for (const part of parts) {
-      // trim prefix /shared/ and retry
-      // console.log("path:", path)
-      const trimmedPath = path.replace(part, "")
-      // console.log("trimmedPath:", trimmedPath)
-      const filePath = resolve(root, trimmedPath)
-      // console.log("    filePath:", filePath)
-      if (existsSync(filePath)) {
-        // 使用 serveStatic 处理找到的文件
-        const handler = serveStatic({ root, path: trimmedPath })
-        return handler(c, next)
+    for (let root of roots) {
+      root = fileURLToPath(new URL(root, import.meta.url))
+
+      // root = resolve(root, import.meta.url)
+      debug("  search in root:", root)
+      for (const part of parts) {
+        // trim prefix /shared/ and retry
+        const trimmedPath = path.replace(part, "")
+        debug(`    trimmedPath: |${trimmedPath}|`)
+        const filePath = resolve(root, trimmedPath)
+        debug("    filePath:", filePath)
+        if (existsSync(filePath)) {
+          // 使用 serveStatic 处理找到的文件
+          const handler = serveStatic({ root, path: trimmedPath })
+          return handler(c, next)
+        }
       }
+      // const trimmedPath = path.slice(1) // 去掉开头的 /
+      // const filePath = resolve(root, trimmedPath) // 去掉开头的 /
+      // console.log("filePath:", filePath)
+      // if (existsSync(filePath)) {
+      //   // 使用 serveStatic 处理找到的文件
+      //   const handler = serveStatic({ root, path: trimmedPath })
+      //   return handler(c, next)
+      // } else {
+      //   // trim prefix /shared/ and retry
+      //   const trimmedPath = path.replace(/^\/shared\//, "")
+      //   const filePath = resolve(root, trimmedPath)
+      //   console.log("    filePath:", filePath)
+      //   if (existsSync(filePath)) {
+      //     // 使用 serveStatic 处理找到的文件
+      //     const handler = serveStatic({ root, path: trimmedPath })
+      //     return handler(c, next)
+      //   }
+      // }
     }
-    // const trimmedPath = path.slice(1) // 去掉开头的 /
-    // const filePath = resolve(root, trimmedPath) // 去掉开头的 /
-    // console.log("filePath:", filePath)
-    // if (existsSync(filePath)) {
-    //   // 使用 serveStatic 处理找到的文件
-    //   const handler = serveStatic({ root, path: trimmedPath })
-    //   return handler(c, next)
-    // } else {
-    //   // trim prefix /shared/ and retry
-    //   const trimmedPath = path.replace(/^\/shared\//, "")
-    //   const filePath = resolve(root, trimmedPath)
-    //   console.log("    filePath:", filePath)
-    //   if (existsSync(filePath)) {
-    //     // 使用 serveStatic 处理找到的文件
-    //     const handler = serveStatic({ root, path: trimmedPath })
-    //     return handler(c, next)
-    //   }
-    // }
-  }
 
-  // 都没找到，继续下一个中间件
-  await next()
-}
+    // 都没找到，继续下一个中间件
+    debug("  no file found")
+    await next()
+  }
