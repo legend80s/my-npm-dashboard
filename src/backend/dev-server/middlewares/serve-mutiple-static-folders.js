@@ -16,7 +16,7 @@ export const serveMultipleStaticFolders = async (c, next) => {
   const path = c.req.path
 
   // 尝试的目录顺序
-  const roots = ["./src/frontend", "./src/shared"]
+  const roots = ["./frontend", "./shared"]
   // [frontend, shared]
   const parts = ["/", ...roots.map((root) => `/${root.split("/").at(-1)}/`)].map(
     // biome-ignore lint/complexity/noUselessStringRaw: <explanation>
