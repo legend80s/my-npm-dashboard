@@ -31,11 +31,9 @@
   "devDependencies": {
     "@tauri-apps/cli": "^2",
     "@types/node": "^26.1.1",
-    "concurrently": "^10.0.4",
-    "live-server": "^1.2.2"
-  },
-  "dependencies": {
     "chart.js": "^4.5.1",
+    "concurrently": "^10.0.4",
+    "live-server": "^1.2.2",
     "sourdough-toast": "^0.3.0"
   },
   "keywords": [
@@ -50,5 +48,9 @@
     "monitoring",
     "developer-tools",
     "trends"
-  ]
+  ],
+  "dependencies": {
+    "@hono/node-server": "^2.1.1",
+    "hono": "^4.13.5"
+  }
 }
