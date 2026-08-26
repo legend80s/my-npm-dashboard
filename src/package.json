@@ -23,6 +23,11 @@
     "preversion": "npm test && npm run typecheck",
     "postversion": "npm publish && git push && git push --tags"
   },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/legend80s/my-npm-dashboard.git"
+  },
+  "homepage": "https://github.com/legend80s/my-npm-dashboard/tree/main/src",
   "devDependencies": {
     "@tauri-apps/cli": "^2",
     "@types/node": "^26.1.1",
