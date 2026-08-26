@@ -1,8 +1,8 @@
 {
   "name": "npm-calf",
   "description": "🐘 An npm dashboard for your recently \"born\" packages.",
-  "private": true,
-  "version": "0.0.0",
+  "private": false,
+  "version": "0.0.1",
   "type": "module",
   "bin": {
     "calf": "./bin/index.js"
