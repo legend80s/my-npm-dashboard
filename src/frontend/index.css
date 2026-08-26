@@ -19,6 +19,14 @@
   --red: #f85149;
   --gold: gold;
   --btn-text: #fff;
+
+  /* twilight glow grad3 color pallette */
+  --mascot-fill-stop-1: #7ae0ff;
+  --mascot-fill-stop-2: #3cb9ff;
+  --mascot-fill-stop-3: #ff9a56;
+  --mascot-fill-stop-4: #f55f5f;
+
+  --mascot-initial-opacity: 0.65;
 }
 
 [data-theme="light"] {
@@ -44,6 +52,19 @@
   --red: #cf222e;
   --gold: #9a6700;
   --btn-text: #fff;
+
+  /* <stop offset="0%" stop-color="#7ae0ff"></stop>
+                <stop offset="40%" stop-color="#3cb9ff"></stop>
+                <stop offset="70%" stop-color="#000"></stop>
+                <stop offset="100%" stop-color="#ff9a56"></stop> */
+
+  /* twilight glow grad3 color pallette */
+  --mascot-fill-stop-1: #7ae0ff;
+  --mascot-fill-stop-2: #3cb9ff;
+  --mascot-fill-stop-3: #000;
+  --mascot-fill-stop-4: #ff9a56;
+
+  --mascot-initial-opacity: 0.5;
 }
 
 /* ===== Reset & Base ===== */
@@ -545,15 +566,61 @@ button:disabled {
 .no-results {
   grid-column: 1 / -1;
   text-align: center;
-  padding: 60px 20px;
+  padding: 30px 20px 60px 20px;
   color: var(--text-muted);
   font-size: 1rem;
+
+  .bulb {
+    opacity: 0.75;
+    transition:
+      opacity 0.6s ease-in-out,
+      transform 0.6s ease-in-out;
+
+    &:hover {
+      opacity: 1;
+      /* 变大 */
+      --transform: scale(1.1);
+    }
+  }
+
+  .mascot {
+    opacity: var(--mascot-initial-opacity);
+    transition:
+      rotate 0.8s ease-in-out,
+      transform 0.8s ease-in-out,
+      opacity 0.6s ease-in-out;
+    &:hover {
+      rotate: -1deg;
+      transform: scale(1.05);
+      opacity: 1;
+    }
+  }
+  &:has(.bulb:hover) .mascot {
+    /* transform: scale(1.1); */
+    opacity: 1;
+  }
+}
+
+.sr-only {
+  position: absolute !important;
+  width: 1px !important;
+  height: 1px !important;
+  padding: 0 !important;
+  margin: -1px !important;
+  overflow: hidden !important;
+  clip: rect(0, 0, 0, 0) !important;
+  white-space: nowrap !important;
+  border: 0 !important;
 }
 
 .no-results .big {
   font-size: 6rem;
   display: block;
   margin-bottom: 16px;
+
+  svg {
+    width: 16rem;
+  }
 }
 
 /* ===== Loading Spin ===== */
@@ -636,5 +703,4 @@ footer {
   margin-top: 22vh;
   right: 31vw;
   font-size: 75%;
-  font-family: cursive;
 }

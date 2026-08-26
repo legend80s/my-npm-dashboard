@@ -15,6 +15,9 @@ import "./web-components/badge-dependencies/index.js"
 import "./web-components/icon-package-search/index.js"
 import "./web-components/fancy-separator.js"
 import "./web-components/sonner-loader/index.js"
+// icon-bulb-on-a-string-at-a-slight-angle
+import "./web-components/icon-bulb-on-a-string-at-a-slight-angle/index.js"
+
 import { CACHE_TTL_IN_HOURS } from "./constants/cache.js"
 import { $id, URLParams } from "./utils/light-jquery.js"
 import { init as initSonner } from "./web-components/sonner.js"
