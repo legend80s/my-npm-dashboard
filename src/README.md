@@ -20,6 +20,16 @@ A npm dashboard for your recently "born" packages
 
 ## 技术决策
 
+A npm dashboard but also a "dashboard" for all the modern web technologies.
+
+- Web Components
+- async import(cnd)
+- JavaScript but with ES Modules and strict TypeScript types
+
+
+- Use native technologies, no frameworks, no compilation, no packaging.
+
+
 - Native 主义者。
   - 使用原生技术栈，不使用框架、不编译、不打包。
   - 尽量 0 依赖，实在不行则用轻量级依赖。
