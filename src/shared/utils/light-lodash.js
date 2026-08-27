@@ -7,10 +7,11 @@ export const RESET = `\x1b[0m`
 /**
  *
  * @param {int} ms
- * @returns
+ * @returns {Promise<int>} the actual time it took to sleep
  */
 export function sleep(ms) {
-  return new Promise((resolve) => setTimeout(resolve, ms))
+  const start = Date.now()
+  return new Promise((resolve) => setTimeout(() => resolve(Date.now() - start), ms))
 }
 
 /**
@@ -28,7 +29,9 @@ export async function fetchJSON(url, { label, verbose = false }) {
 
   if (!res.ok) {
     // console.error(res)
-    throw new Error(`[fetchJSON]${label} "${url}" failed, status: ${res.status}`)
+    /** @type {string | null} */
+    const text = await safeAsyncCall(async () => await res.text())
+    throw new Error(`[fetchJSON]${label} "${url}" failed, status: ${res.status}, resp: ${text}`)
   }
 
   const data = await res.json()
@@ -124,5 +127,36 @@ if (import.meta.main) {
     deepStrictEqual(numberToChineseWan(1_2305_3975), "1 亿 2305 万 3975")
     // @ts-expect-error
     deepStrictEqual(numberToChineseWan(2305_3975), "2305 万 3975")
+  })
+}
+
+/**
+ * @template T
+ * @param {() => Promise<T>} asyncFunc
+ * @returns {Promise<T | null>}
+ */
+export async function safeAsyncCall(asyncFunc) {
+  try {
+    return await asyncFunc()
+  } catch (_error) {
+    return null
+  }
+}
+
+if (import.meta.main) {
+  const { test } = await import("node:test")
+  const { deepStrictEqual } = await import("node:assert")
+
+  test("safeAsyncCall", () => {
+    // @ts-expect-error
+    deepStrictEqual(
+      safeAsyncCall(() => Promise.resolve(1)),
+      1,
+    )
+    // @ts-expect-error
+    deepStrictEqual(
+      safeAsyncCall(() => Promise.reject(1)),
+      null,
+    )
   })
 }
