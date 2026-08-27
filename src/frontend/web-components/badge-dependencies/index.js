@@ -10,6 +10,8 @@ const HOST_MAPPING = /** @type {const} */ ({
   // docker: 'https://hub.docker.com/r/',
 })
 
+const componentName = "badge-dependencies"
+
 class BadgeDependencies extends BaseWebElement {
   _rendered = false
 
@@ -30,7 +32,7 @@ class BadgeDependencies extends BaseWebElement {
 
   async render() {
     // 动态加载模板
-    const template = await fetch("./web-components/badge-dependencies/index.html").then(resp => resp.text())
+    const template = await this.fetchTemplate(componentName)
 
     // console.log("template:", template)
     // throw new Error("error")
@@ -134,4 +136,4 @@ class BadgeDependencies extends BaseWebElement {
   }
 }
 
-customElements.define("badge-dependencies", BadgeDependencies)
+customElements.define(componentName, BadgeDependencies)

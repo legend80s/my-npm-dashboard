@@ -11,6 +11,8 @@ import "https://ka-f.webawesome.com/webawesome@3.11.0/components/tooltip/tooltip
 
 const KEY = "open-settings"
 
+const componentName = "settings-dialog"
+
 class SettingsDialog extends BaseWebElement {
   constructor() {
     super()
@@ -24,8 +26,7 @@ class SettingsDialog extends BaseWebElement {
 
   async connectedCallback() {
     // 动态加载模板
-    const response = await fetch("./web-components/settings-dialog/index.html")
-    const template = await response.text()
+    const template = await this.fetchTemplate(componentName)
 
     // console.log("template:", template)
     // throw new Error("error")
@@ -137,4 +138,4 @@ class SettingsDialog extends BaseWebElement {
   }
 }
 
-customElements.define("settings-dialog", SettingsDialog)
+customElements.define(componentName, SettingsDialog)

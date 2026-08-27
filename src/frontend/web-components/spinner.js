@@ -23,7 +23,7 @@ export class Spinner {
 
     const searchingMascotSVG = drawSearchingMascotSVG({ verticalAlign: "-0.75em" })
 
-    this.root.innerHTML = `<div id="${this.id}" class="no-results" style="color:var(--orange);">
+    this.root.innerHTML = `<div id="${this.id}" class="no-results" style="">
       <span class="big xloading-spin">${clocks[0]}</span>
       ${searchingMascotSVG}
       ${msg}
