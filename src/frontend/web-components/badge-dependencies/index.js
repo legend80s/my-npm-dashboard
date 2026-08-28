@@ -31,14 +31,9 @@ class BadgeDependencies extends BaseWebElement {
   }
 
   async render() {
-    // 动态加载模板
-    const template = await this.fetchTemplate(componentName)
-
-    // console.log("template:", template)
-    // throw new Error("error")
-
     const shadowRoot = /** @type {ShadowRoot} */ (this.shadowRoot)
-    shadowRoot.innerHTML = template
+
+    shadowRoot.innerHTML = await this.fetchTemplate(componentName)
 
     const name = this.getAttribute("name")
     const provider = this.getAttribute("provider")
