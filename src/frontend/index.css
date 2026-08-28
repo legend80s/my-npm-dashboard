@@ -720,7 +720,6 @@ input {
   transition: border-color 0.2s;
 }
 
-footer {
-  text-align: center;
+copyright-footer {
   font-size: clamp(14px, 75%, 1rem);
 }
