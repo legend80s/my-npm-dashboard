@@ -6,13 +6,18 @@
   button {
     background: transparent;
     border: none;
+    padding: 0;
     font-size: 1.5em;
-    transition: background 0.2s;
+    transition:
+      opacity 0.2s,
+      background 0.2s;
     border-radius: 8px;
+    opacity: 0.65;
   }
 
   button:hover {
-    background: var(--border);
+    /* background: var(--border); */
+    opacity: 1;
   }
 
   .drawer {
@@ -78,11 +83,13 @@
     transition: opacity 0.3s; */
   }
 
-  .drawer h2 {
+  h2 {
     margin-top: 0;
     margin-bottom: 0.75rem;
     font-size: 1.25rem;
     color: var(--text-heading, var(--text, #e6edf3));
+
+    font-family: var(--font-cursive);
   }
 
   .drawer fieldset {
@@ -97,11 +104,16 @@
   .drawer legend {
     padding: 0 6px;
     color: var(--text-muted, #8b949e);
+    font-family: var(--font-cursive);
   }
 
   .drawer label {
     font-size: 0.875rem;
     color: var(--text);
+  }
+
+  input {
+    font-family: var(--font-cursive);
   }
 
   input:checked + label {

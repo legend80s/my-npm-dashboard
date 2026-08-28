@@ -87,7 +87,8 @@ html[lang="zh-CN"] {
     fangsong, "TsangerJinKai02", "Source Han Serif SC", "Source Han Serif CN", "Noto Serif CJK SC", "Noto Serif SC",
     "Songti SC", Georgia, serif;
   --chn-and-eng: var(--system-font-without-serif), var(--serif);
-
+  /* from tab-out chrome extension */
+  --font-cursive: "Nunito", "Comic Sans MS", cursive, sans-serif;
   body {
     font-family: var(--chn-and-eng);
   }
@@ -238,6 +239,10 @@ button:disabled {
   align-items: center;
   gap: calc(12 / 16 * 1rem);
   flex-wrap: wrap;
+}
+
+input {
+  font-family: var(--font-cursive);
 }
 
 .header-right input[type="text"],
