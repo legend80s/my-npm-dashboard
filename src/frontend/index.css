@@ -46,6 +46,8 @@
   --text-faint: #8b949e;
   --accent: #0969da;
   --accent-green: oklch(52.44% 0.1401 148.04);
+  /* --accent-green: oklch(47.214% 0.12811 131.33); */
+
   /* #1a7f37; */
   --accent-green-hover: #116329;
   --orange: #bc4c00;
@@ -124,7 +126,8 @@ a {
 }
 
 button {
-  padding: 8px 14px;
+  padding: 0;
+  /* padding: 8px 14px; */
   border-radius: 8px;
   border: 1px solid var(--border);
   background: var(--bg-emphasis);
@@ -132,10 +135,12 @@ button {
   font-size: 0.875rem;
   cursor: pointer;
   transition: background 0.2s;
+  opacity: 0.65;
 }
 
 button:hover {
-  background: var(--border);
+  /* background: var(--border); */
+  opacity: 1;
 }
 
 button:disabled {
@@ -188,10 +193,22 @@ button:disabled {
     width: 5vw;
 
     border-radius: 50%;
-    transition: border-color 1s;
+    transition:
+      rotate 0.5s ease-in-out,
+      border-color 1s;
     border: 3px solid transparent;
     &:hover {
       border-color: var(--accent-green);
+      rotate: -4.5deg;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .avatar {
+      transition: none;
+      &:hover {
+        rotate: 0deg;
+      }
     }
   }
 }
@@ -345,7 +362,8 @@ button:disabled {
 .grid {
   /* max-width: 95vw; */
   /* padding-inline: 1rem; */
-  margin: 0 auto;
+  margin-inline: auto;
+  margin-bottom: 32vh;
   display: grid;
   /* 40 vw to make 2 card in one line at least in md or lg screen (> 1200px) */
   grid-template-columns: repeat(auto-fit, minmax(max(500px, 32vw), 1fr));
@@ -567,7 +585,7 @@ button:disabled {
   grid-column: 1 / -1;
   text-align: center;
   padding: 30px 20px 60px 20px;
-  color: var(--text-muted);
+  /* color: var(--text-muted); */
   font-size: 1rem;
 
   .bulb {
@@ -699,6 +717,5 @@ button:disabled {
 
 footer {
   text-align: center;
-  margin-top: 22vh;
   font-size: clamp(14px, 75%, 1rem);
 }
