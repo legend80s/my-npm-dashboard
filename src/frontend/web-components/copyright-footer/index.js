@@ -36,7 +36,7 @@ window.customElements.define(
         birth date.
         <p>A npm dashboard for your recently "born" packages</p>
         <p class="text-muted mt-1">
-          Copyright © 2026-${curYear || "present"} @legend80s.com. All Rights Reserved.
+          Copyright © 2026-${curYear === 2026 ? "present" : curYear} @legend80s.com. All Rights Reserved.
         </p>
       </footer>`
     }
