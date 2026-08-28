@@ -435,7 +435,8 @@ async function loadPackages(username, displayLimit, { forceRefresh = false, shou
   // 缓存未命中或强制刷新
   setLoading(true)
   const spinner = new Spinner(grid)
-  spinner.start(`正在搜索 ${username} 的第一个包...`)
+  spinner.start(`正在搜索 <span style="color: var(--orange)">${username}</span> 的第一个包...`)
+  return
 
   try {
     /** @type {FreshPackageDetail[]} */
