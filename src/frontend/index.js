@@ -17,11 +17,13 @@ import "./web-components/fancy-separator.js"
 import "./web-components/sonner-loader/index.js"
 // icon-bulb-on-a-string-at-a-slight-angle
 import "./web-components/icon-bulb-on-a-string-at-a-slight-angle/index.js"
+// copyright-footer
+import "./web-components/copyright-footer/index.js"
 
 import { CACHE_TTL_IN_HOURS } from "./constants/cache.js"
 import { $id, URLParams } from "./utils/light-jquery.js"
+import { Spinner } from "./web-components/searching-spinner/spinner.js"
 import { init as initSonner } from "./web-components/sonner.js"
-import { Spinner } from "./web-components/spinner.js"
 
 const NPMJS_DOMAIN = `https://www.npmjs.com`
 const NPMX_DOMAIN = `https://npmx.dev`

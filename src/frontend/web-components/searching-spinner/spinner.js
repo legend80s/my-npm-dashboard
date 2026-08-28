@@ -1,5 +1,5 @@
-import { drawSearchingMascotSVG } from "../constants/icons.js"
-import { html } from "../utils/lit.js"
+import { drawSearchingMascotSVG } from "../../constants/icons.js"
+import { html } from "../../utils/lit.js"
 
 export class Spinner {
   static #CLOCKS = ["🕛", "🕐", "🕑", "🕒", "🕓", "🕔", "🕕", "🕖", "🕗", "🕘", "🕙", "🕚"]
