@@ -1,4 +1,4 @@
-import { drawSearchingMascotSVG } from "../../constants/icons.js"
+import { drawElephantMascotFlippingThroughSVG, drawPackageSearchSvg } from "../../constants/icons.js"
 import { html } from "../../utils/lit.js"
 
 export class Spinner {
@@ -22,7 +22,7 @@ export class Spinner {
   #render(msg) {
     const clocks = Spinner.#CLOCKS
 
-    const searchingMascotSVG = drawSearchingMascotSVG({ width: "2.5em", verticalAlign: "revert" }, "searching-mascot")
+    const searchingMascotSVG = drawRandomSearchingMascotSVG()
 
     this.root.innerHTML = html`<div id="${this.id}" class="no-results" style="">
       <style>
@@ -171,5 +171,35 @@ export class Spinner {
       this.root.querySelector(`#${this.id}`)?.remove()
       // document.getElementById(this.id)?.remove()
     }
+  }
+}
+
+/**
+ * @returns {import('../../constants/icons.type.js').SVGString}
+ */
+function drawRandomSearchingMascotSVG() {
+  // lazy called functions for cpu efficiency
+  const svgs = [
+    () => drawElephantMascotFlippingThroughSVG({ width: "2.5em" }, "searching-mascot"),
+    () => drawPackageSearchSvg({ width: "2em" }, "searching-mascot"),
+  ]
+
+  const randIndex = Math.floor(Math.random() * svgs.length)
+
+  const randomOne = svgs[randIndex]?.()
+
+  assert(randomOne)
+
+  return randomOne
+}
+
+/**
+ * @param {unknown} value
+ * @param {string} msg
+ * @returns {asserts value is NonNullable<typeof value>}
+ */
+function assert(value, msg = `Expected 'val' to be truthy, but received ${value} of type ${typeof value}`) {
+  if (!value) {
+    throw new Error(msg)
   }
 }
