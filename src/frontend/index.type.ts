@@ -238,3 +238,20 @@ export type GitHubCommitResponse = {
   }
   // ... 其他字段省略
 }
+/**
+ * 谓词：判断 S 是否包含子串 T，返回 true / false
+ */
+type Contains<S extends string, T extends string> = S extends `${string}${T}${string}` ? true : false
+
+type ResolveIfContains<S extends string, NeedSub extends string> = Contains<S, NeedSub> extends true ? S : never
+type RejectIfContains<S extends string, BadSub extends string> = Contains<S, BadSub> extends true ? never : S
+
+// type RejectIfContains<S extends string, BadSub extends string> = S extends `${string}${BadSub}${string}` ? never : S
+// type ResolveIfContains<S extends string, NeedSub extends string> = S extends `${string}${NeedSub}${string}` ? S : never
+
+type NeedHyphen<T extends string> = ResolveIfContains<T, "-">
+// type NeedHyphen<T extends string> = RejectIfContains<T, "-"> extends never ? T : never
+type NoDot<T extends string> = RejectIfContains<T, ".">
+type NoSlash<T extends string> = RejectIfContains<T, "/">
+
+export type FolderName<T extends string> = NoSlash<NoDot<NeedHyphen<T>>>

@@ -20,6 +20,7 @@ import "./web-components/icon-bulb-on-a-string-at-a-slight-angle/index.js"
 // copyright-footer
 import "./web-components/copyright-footer/index.js"
 import "./web-components/result-error/index.js"
+import "./web-components/icon-awesome/index.js"
 
 import { CACHE_TTL_IN_HOURS } from "./constants/cache.js"
 import { $id, URLParams } from "./utils/light-jquery.js"
@@ -552,7 +553,10 @@ function updateStats(pkgDetails, username, fromCache, cacheTimestamp) {
   sortAvatar.src = `https://avatars.githubusercontent.com/${username}?s=64`
   sortAvatar.hidden = false
 
-  // const sortInfo = /** @type {HTMLElement} */ (document.getElementById("sortInfo"))
+  const sortInfo = /** @type {HTMLElement} */ (document.getElementById("sortInfo"))
+
+  // @ts-expect-error
+  sortInfo.querySelector("icon-awesome").style.display = "none"
   // const usernameElement = sortInfo.querySelector(".text-primary")
   // if (usernameElement && usernameElement.textContent.trim() !== username) {
   //   usernameElement.textContent = username

@@ -54,3 +54,5 @@
 - [ ] server request log prettify `<--` and `-->` is ugly.
 - [ ] logger to npm package.
 - [ ] add badges
+- [ ] max search limit in home page can be clicked and then open settings dialog and focus on the input field.
+- [ ] mascot randomize

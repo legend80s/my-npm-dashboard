@@ -235,8 +235,7 @@ function addAttrToSvg(cssProps, className, svg) {
   const style = stylish(cssProps)
   const str = svg.replace(/<svg/g, `<svg class="${className}" style="${style}"`)
 
-  // @ts-expect-error
-  return str
+  return /** @type {SVGString} */ (str)
 }
 
 /** @type {DrawSVG} */
