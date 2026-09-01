@@ -1,4 +1,12 @@
-import { drawElephantMascotFlippingThroughSVG, drawPackageSearchSvg } from "../../constants/icons.js"
+import {
+  drawElephantDrinkingSvg,
+  drawElephantGrazingSvg,
+  drawElephantLookingUpSvg,
+  drawElephantMascotFlippingThroughSVG,
+  drawElephantRunningSvg,
+  drawElephantWatchingHourglassSvg,
+  drawPackageSearchSvg,
+} from "../../constants/icons.js"
 import { html } from "../../utils/lit.js"
 
 export class Spinner {
@@ -182,6 +190,11 @@ function drawRandomSearchingMascotSVG() {
   const svgs = [
     () => drawElephantMascotFlippingThroughSVG({ width: "2.5em" }, "searching-mascot"),
     () => drawPackageSearchSvg({ width: "2em" }, "searching-mascot"),
+    () => drawElephantDrinkingSvg({ width: "2.5em" }, "searching-mascot"),
+    () => drawElephantWatchingHourglassSvg({ width: "2.5em" }, "searching-mascot"),
+    () => drawElephantLookingUpSvg({ width: "2.5em" }, "searching-mascot"),
+    () => drawElephantRunningSvg({ width: "2.5em" }, "searching-mascot"),
+    () => drawElephantGrazingSvg({ width: "2.5em" }, "searching-mascot"),
   ]
 
   const randIndex = Math.floor(Math.random() * svgs.length)
