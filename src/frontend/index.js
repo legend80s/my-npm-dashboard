@@ -19,6 +19,7 @@ import "./web-components/sonner-loader/index.js"
 import "./web-components/icon-bulb-on-a-string-at-a-slight-angle/index.js"
 // copyright-footer
 import "./web-components/copyright-footer/index.js"
+import "./web-components/result-error/index.js"
 
 import { CACHE_TTL_IN_HOURS } from "./constants/cache.js"
 import { $id, URLParams } from "./utils/light-jquery.js"
@@ -351,7 +352,9 @@ async function renderChart(container, pkgName, weeklyData) {
               },
               callback: (value) => {
                 // @ts-expect-error
-                if (value >= 1000) return value / 1000 + "k"
+                if (value >= 1000) {
+                  return `${value / 1000}k`
+                }
                 return value
               },
             },
@@ -438,7 +441,7 @@ async function loadPackages(username, displayLimit, { forceRefresh = false, shou
   setLoading(true)
   const spinner = new Spinner(grid)
   spinner.start(`正在搜索 <span style="color: var(--orange)">${username}</span> 的第一个包...`)
-  return
+  // return
 
   try {
     /** @type {FreshPackageDetail[]} */
@@ -493,7 +496,7 @@ async function loadPackages(username, displayLimit, { forceRefresh = false, shou
 
     grid.innerHTML = `
         <div class="no-results">
-            <span class="big">❌</span>
+            <span class="big"><result-error></result-error></span>
             ${
               // @ts-expect-error
               err.message || "加载失败，请检查网络或重试"
