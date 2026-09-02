@@ -2,8 +2,11 @@ import type { LevelKey, LevelNumber } from "./index.js"
 
 export type LoggerOptions = {
   level: LevelNumber
-  withTimestamp?: boolean
-  formatTimestamp?: (date: Date) => string
+  showTime?: boolean
+  /** Show elapsed time since the previous message. */
+  showDiff?: boolean
+  toHumanTime?: (timeDiff: number) => string
+  formatTime?: (date: Date) => string
   formatLevel?: (level: LevelKey) => string
 
   /**

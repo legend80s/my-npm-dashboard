@@ -1,4 +1,5 @@
 // import { consola } from "consola";
+/** @typedef {number} int */
 
 import { styleText } from "node:util"
 
@@ -21,7 +22,7 @@ const BASH_COLORS = {
  * 当你设置一个日志级别（例如 info），只有优先级 ≥ info 的日志（即 info、warn、error、fatal）会被输出；而 trace 和 debug 级别的日志会被忽略。这正是日志级别配置的核心作用。
  * none: 用于关闭所有日志输出（静默模式）。
  */
-const LEVEL = /** @type {const} */ ({
+export const LEVEL = /** @type {const} */ ({
   DEBUG: 1,
   INFO: 2,
   get SUCCESS() {
@@ -54,8 +55,12 @@ export class Logger {
    */
   constructor(opts) {
     this.level = opts.level
-    this.withTimestamp = opts.withTimestamp ?? true
-    this.formatTimestamp = opts.formatTimestamp ?? ((date) => date.toISOString())
+    this.showTime = opts.showTime ?? true
+    this.showDiff = opts.showDiff ?? false
+    this.toHumanTime = opts.toHumanTime
+    /** @type {int | null} */
+    this.now = null
+    this.formatTimestamp = opts.formatTime ?? ((date) => date.toISOString())
     this.color = opts.color ?? false
     this.emoji = opts.emoji ?? false
     this.formatLevel =
@@ -156,7 +161,12 @@ export class Logger {
    * @param {Pick<LoggerOptions, 'formatLevel'>} pickEmoji
    */
   #dispatch(level, args, { formatLevel = this.formatLevel } = {}) {
-    const leadings = [this.withTimestamp && this.formatTimestamp(new Date()), formatLevel(level)]
+    const leadings = [
+      this.showTime && this.formatTimestamp(new Date()),
+      // showDiff
+      this.showDiff && this.#formatDiff(),
+      formatLevel(level),
+    ]
       .filter(Boolean)
       .join(" ")
 
@@ -168,6 +178,28 @@ export class Logger {
 
     return console[level !== "success" ? level : "info"](leadings + color, ...args, BASH_COLORS.reset)
   }
+
+  #formatDiff() {
+    const diff = this.now ? Date.now() - this.now : 0
+    this.now = Date.now()
+
+    const humanTime = this.#toHumanTime(diff)
+
+    return `${BASH_COLORS.yellow}+${humanTime}${BASH_COLORS.reset}`
+  }
+
+  /**
+   *
+   * @param {int} diff
+   * @returns
+   */
+  #toHumanTime(diff) {
+    if (typeof this.toHumanTime === "function") {
+      return this.toHumanTime(diff)
+    }
+
+    return `${diff.toLocaleString("en")}ms`
+  }
 }
 
 /**
@@ -177,11 +209,19 @@ export class Logger {
 export function createLogger({ verbose }) {
   return new Logger({
     level: verbose ? LEVEL.DEBUG : LEVEL.INFO,
-    withTimestamp: true,
-    formatTimestamp: (date) => date.toLocaleString(),
+    showTime: true,
+    formatTime: (date) => date.toLocaleString(),
+    toHumanTime: (diff) => {
+      if (diff < 1000) {
+        return `${diff}ms`
+      }
+
+      return `${Math.floor(diff / 1000)}.${String(diff % 1000).padStart(3, "0")}s`
+    },
     // formatLevel: (level) => `[${level.toUpperCase()}]`,
     color: true,
     // emoji: true,
+    showDiff: true,
   })
 }
 
@@ -195,12 +235,32 @@ const isMain = () => {
 
 if (isMain()) {
   const logger = createLogger({ verbose: true })
+  const { setTimeout: sleep } = await import("node:timers/promises")
 
   logger.debug("Using consola 3.0.0")
+
+  await sleep(100)
   logger.debug("Using consola", "3.0.0")
+
+  await sleep(100)
   logger.debug("Using consola", "v", 3)
-  logger.info("Using consola 3.0.0")
+
+  await sleep(100)
+  logger.info("Using consola", {
+    string: "3.0.0",
+    boolean: true,
+    number: 123,
+    array: [1, 2, 3],
+    object: { a: 1, b: 2 },
+  })
+
+  await sleep(100)
   logger.warn("A new version of consola is available: 3.0.1")
+
+  await sleep(1000)
   logger.success("Project built!")
-  logger.error(new Error("This is an example error. Everything is fine!"))
+
+  setTimeout(() => {
+    logger.error(new Error("This is an example error. Everything is fine!"))
+  }, 1000)
 }
