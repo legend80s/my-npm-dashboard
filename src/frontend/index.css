@@ -76,6 +76,18 @@
   box-sizing: border-box;
 }
 
+.h2,
+.h3,
+h1,
+h2,
+h3,
+h4 {
+  /* font-weight: 600; */
+  letter-spacing: -0.02em;
+  line-height: calc(4px + 2ex);
+  margin-bottom: 0.65em;
+}
+
 :root {
   font-size: clamp(16px, 100vw / 2560 * 28.6, 36px);
   --system-font-without-serif: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto;
@@ -94,7 +106,7 @@ html[lang="zh-CN"] {
   }
 }
 
-@function --px2rem(--px) {
+@function --px2rem(--px <number>) {
   --base: 16;
   result: calc(var(--px) / var(--base) * 1rem);
 }
