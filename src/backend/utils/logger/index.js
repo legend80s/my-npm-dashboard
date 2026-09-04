@@ -49,6 +49,8 @@ const decorations = /** @type {const} */ ({
 /** @import { LoggerOptions } from './logger.type.js' */
 
 export class Logger {
+  /** @type {int | null} */
+  #now = null
   /**
    *
    * @param {LoggerOptions} opts
@@ -57,9 +59,8 @@ export class Logger {
     this.level = opts.level
     this.showTime = opts.showTime ?? true
     this.showDiff = opts.showDiff ?? false
-    this.toHumanTime = opts.toHumanTime
-    /** @type {int | null} */
-    this.now = null
+    this.diffToHumanTime = opts.diffToHumanTime
+    this.#now = null
     this.formatTimestamp = opts.formatTime ?? ((date) => date.toISOString())
     this.color = opts.color ?? false
     this.emoji = opts.emoji ?? false
@@ -180,10 +181,10 @@ export class Logger {
   }
 
   #formatDiff() {
-    const diff = this.now ? Date.now() - this.now : 0
-    this.now = Date.now()
+    const diff = this.#now ? Date.now() - this.#now : 0
+    this.#now = Date.now()
 
-    const humanTime = this.#toHumanTime(diff)
+    const humanTime = this.#diffToHumanTime(diff)
 
     return `${BASH_COLORS.yellow}+${humanTime}${BASH_COLORS.reset}`
   }
@@ -193,9 +194,9 @@ export class Logger {
    * @param {int} diff
    * @returns
    */
-  #toHumanTime(diff) {
-    if (typeof this.toHumanTime === "function") {
-      return this.toHumanTime(diff)
+  #diffToHumanTime(diff) {
+    if (typeof this.diffToHumanTime === "function") {
+      return this.diffToHumanTime(diff)
     }
 
     return `${diff.toLocaleString("en")}ms`
@@ -211,7 +212,7 @@ export function createLogger({ verbose }) {
     level: verbose ? LEVEL.DEBUG : LEVEL.INFO,
     showTime: true,
     formatTime: (date) => date.toLocaleString(),
-    toHumanTime: (diff) => {
+    diffToHumanTime: (diff) => {
       if (diff < 1000) {
         return `${diff}ms`
       }
@@ -235,6 +236,11 @@ const isMain = () => {
 
 if (isMain()) {
   const logger = createLogger({ verbose: true })
+
+  logger.info("Hello from the wasteland.")
+  logger.warn("Watch out for walkers.")
+  logger.error("We lost another one.")
+
   const { setTimeout: sleep } = await import("node:timers/promises")
 
   logger.debug("Using consola 3.0.0")
