@@ -2,7 +2,7 @@
 
 > **walking-log** is a colorful yet minimal console log for **Node.js only**.
 
-> 🔠 就是一个 Node.js 控制台彩色 console.log 而已，不涉及浏览器，仅为 Node.js CLI 提供纯粹、简单的信息输出。
+> <img src="https://raw.githubusercontent.com/legend80s/pocket/refs/heads/main/src/backend/utils/logger/assets/languages.svg" width="20" height="20" alt="languages" /> 就是一个 Node.js 控制台彩色 console.log 而已，不涉及浏览器，仅为 Node.js CLI 提供纯粹、简单的信息输出。
 
 ## Features
 
