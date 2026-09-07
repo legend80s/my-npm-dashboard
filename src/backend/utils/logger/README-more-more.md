@@ -1,5 +1,7 @@
 # walking-log
 
+<img src="https://p3-sign.toutiaoimg.com/tos-cn-i-axegupay5k/2705235ec25a40c3b0ff47aa8fea06cc~tplv-tt-origin-web:gif.jpeg?_iz=58558&from=article.pc_detail&lk3s=953192f4&x-expires=1789354101&x-signature=LmG%2BLicfghPuwIAxpe5Zps2zybI%3D" alt="from https://www.toutiao.com/article/7421183099322794505/" />
+
 > *"We are the walking dead."* — a humble nod to Rick Grimes' famous line, because in a world of over-engineering, sometimes you just need something that keeps it simple and keeps things going.
 >
 > <img src="https://github.com/legend80s/my-npm-dashboard/raw/refs/heads/main/src/backend/utils/logger/assets/languages.svg" width="16" height="16" alt="Chinese:" /> *"We are the walking dead."* —— 这是对 Rick Grimes 经典台词的谦卑致敬。因为在过度工程化的世界里，有时候你只需要一个能保持简单、持续前行的小工具。
