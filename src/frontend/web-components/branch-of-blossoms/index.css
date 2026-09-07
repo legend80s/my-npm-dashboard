@@ -1,0 +1,86 @@
+[data-theme="light"] {
+  /* copy from https://moeka.app/zh-cn/ */
+  .site-shell {
+    --serif-font: "Noto Serif Site SC", "Noto Serif SC", serif;
+    --nav-pill-width: 200px;
+    --nav-pill-padding-x: 0px;
+    --nav-pill-gap: 14px;
+    --language-pill-width: 109px;
+    --tagline-width: 274px;
+    --tagline-gap: 0px;
+    --tagline-mobile-gap: 0px;
+    --tagline-justify: space-between;
+    --tagline-letter-spacing: 0.6em;
+    --tagline-letter-offset: -0.4em;
+    --tagline-font-size: 20px;
+    --tagline-mobile-font-size: 17px;
+    --tagline-mobile-gutter: 44px;
+    position: relative;
+    isolation: isolate;
+    min-height: 100dvh;
+    overflow: visible;
+    background-color: #f3ecdf;
+    /* background-image:
+    linear-gradient(#fffaf1b8, #fffaf1b8), url(../images/paper-waves.png), url(../images/paper-texture.png); */
+
+    background-image: url(./paper-waves.png);
+    background-size:
+      cover,
+      100% auto,
+      100% auto;
+    background-position: 50%, top, top;
+    background-repeat: no-repeat, no-repeat, repeat-y;
+    background-attachment: fixed, fixed, fixed;
+    background-blend-mode: multiply, normal, normal;
+  }
+
+  .site-shell:after {
+    content: "";
+    position: fixed;
+    top: -36px;
+    right: -36px;
+    width: min(92vw, 850px);
+    aspect-ratio: 1.77683316;
+    z-index: 1;
+    pointer-events: none;
+    will-change: transform;
+    background-image: url(./flower-shadow.webp);
+    background-repeat: no-repeat;
+    background-size: contain;
+    background-position: 100% 0;
+    mix-blend-mode: multiply;
+    opacity: 0.15;
+    transform-origin: 88% 8%;
+    animation: flower-shadow-sway 4s ease-in-out infinite;
+  }
+
+  /* html:has(#refreshBtn:hover) {
+  .site-shell:after {
+    opacity: 1;
+  }
+} */
+}
+
+@keyframes flower-shadow-sway {
+  0% {
+    transform: perspective(900px) rotate(-0.7deg) rotateX(0.35deg) skew(-0.7deg) scale(1);
+  }
+
+  35% {
+    transform: perspective(900px) rotate(0.5deg) rotateX(-0.25deg) skew(0.8deg) scale(1.012);
+  }
+
+  68% {
+    transform: perspective(900px) rotate(-0.15deg) rotateX(0.2deg) skew(-0.35deg) scale(1.006);
+  }
+
+  to {
+    transform: perspective(900px) rotate(-0.7deg) rotateX(0.35deg) skew(-0.7deg) scale(1);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .site-shell:after {
+    animation: none;
+  }
+}
