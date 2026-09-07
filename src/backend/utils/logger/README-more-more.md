@@ -44,6 +44,8 @@ When you need a simple, lightweight logging solution for your Node.js CLI projec
 
 ## The Story Behind the Name / 命名由来
 
+<img src="https://p3-sign.toutiaoimg.com/tos-cn-i-6w9my0ksvp/d6437ccdf7724a1c9cc3404d3222cf8e~tplv-tt-origin-web:gif.jpeg?_iz=58558&from=article.pc_detail&lk3s=953192f4&x-expires=1789354101&x-signature=OenpOdZioQqmaGF5RDtuOKkF1BM%3D" alt="from https://www.toutiao.com/article/7421183099322794505/" />
+
 The name **walking-log** is inspired by the iconic TV series *The Walking Dead* — but with a developer's twist.
 
 In the show, "walkers" are relentless, single-minded creatures. They don't stop. They don't overthink. They just **walk** — slowly, steadily, endlessly.
