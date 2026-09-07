@@ -1,4 +1,4 @@
-## Advanced walking-log 🧟
+## Fully-loaded version of walking-log 🧟
 
 Need a more tailored one?
 
@@ -6,7 +6,7 @@ Need a more tailored one?
 import { Logger, LEVEL } from 'walking-log'
 
 const logger = new Logger({
-  level: LEVEL.DEBUG,
+  level: LEVEL.INFO,
   diffToHumanTime: (diff) => {
     if (diff < 1000) {
       return `${diff}ms`
@@ -54,4 +54,4 @@ logger.error(new Error("This is an example error. Everything is fine!"))
 >
 > *"We are the walking dead."* —— 这是对 Rick Grimes 经典台词的谦卑致敬。因为在过度工程化的世界里，有时候你只需要一个能保持简单、持续前行的小工具。
 
-[Want read even more? 还想要阅读更多？](https://github.com/legend80s/todo/logger/README-more-more.md)
+[Want read even more? 还想要阅读更多？](./README-more-more.md)
