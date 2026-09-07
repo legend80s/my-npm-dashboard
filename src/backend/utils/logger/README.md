@@ -1,13 +1,12 @@
 # 🧟 walking-log
 
-<div align="center">
+<div align="center" style="margin-bottom: 1rem;">
   <a href="https://www.npmjs.com/package/walking-log" style="display: flex; align-items: endx; justify-content: center;">
     <img src="https://koboyo.com/icons/svg/zombie.svg" width="200" alt="cartoon zombie from https://koboyo.com/icons?q=zombie" />
 
 <img src="https://koboyo.com/icons/svg/cartoon-terminal-error-line.svg" alt="cartoon terminal error line from https://koboyo.com/icons?q=terminal" width="100" />
   </a>
 </div>
-
 
 > **walking-log** is a colorful yet minimal console log for **Node.js only**.
 
@@ -30,11 +29,11 @@ import { createLogger } from 'walking-log'
 
 const logger = createLogger({ verbose: true })
 
-logger.debug('walking-log is a colorful yet minimal console log for Node.js only.')
-logger.info('We are the walking dead. / 我们就是行尸走肉。')
-logger.warn('Watch out for walkers.')
-logger.success('Walkers clear.')
-logger.error('We lost another teammate!')
+logger.debug("I'm not the good guy anymore.")
+logger.info("We are the walking dead.")
+logger.warn("If you don't fight, you die.")
+logger.success("We survive this by pulling together, not apart.")
+logger.error("I didn't ask for this. I killed my best friend for you people.")
 ```
 
 [Want a more tailored one? 想要阅读更多？](./README-more.md)
