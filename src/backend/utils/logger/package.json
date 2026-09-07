@@ -19,9 +19,9 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/legend80s/my-npm-dashboard.git"
+    "url": "https://github.com/legend80s/my-npm-dashboard/blob/main/src/backend/utils/logger"
   },
-  "homepage": "https://github.com/legend80s/my-npm-dashboard/tree/main/src/backend/utils/logger",
+  "homepage": "https://github.com/legend80s/my-npm-dashboard/blob/main/src/backend/utils/logger/README.md",
   "devDependencies": {},
   "dependencies": {},
   "keywords": [
