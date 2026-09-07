@@ -1,7 +1,7 @@
 # 🧟 walking-log
 
 <div align="center">
-  <img src="https://koboyo.com/icons/svg/cartoon-zombie.svg" width="300" alt="cartoon zombie from https://koboyo.com/icons?q=zombie" />
+  <img src="https://koboyo.com/icons/svg/zombie-2.svg" width="200" alt="cartoon zombie from https://koboyo.com/icons?q=zombie" />
 </div>
 
 
