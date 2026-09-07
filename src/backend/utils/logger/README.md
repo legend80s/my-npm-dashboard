@@ -1,7 +1,11 @@
 # 🧟 walking-log
 
 <div align="center">
-  <img src="https://koboyo.com/icons/svg/zombie-2.svg" width="200" alt="cartoon zombie from https://koboyo.com/icons?q=zombie" />
+  <a href="https://www.npmjs.com/package/walking-log" style="display: flex; align-items: endx; justify-content: center;">
+    <img src="https://koboyo.com/icons/svg/zombie.svg" width="200" alt="cartoon zombie from https://koboyo.com/icons?q=zombie" />
+
+<img src="https://koboyo.com/icons/svg/cartoon-terminal-error-line.svg" alt="cartoon terminal error line from https://koboyo.com/icons?q=terminal" width="100" />
+  </a>
 </div>
 
 
