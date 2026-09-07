@@ -68,8 +68,6 @@ Like a walker, it has one purpose: move forward. In our case, that means printin
 
 就像行者一样，它只有一个目标：往前走。在它的语境里，就是把你告诉它打印的东西，原原本本地打印在你的 Node.js 终端里。
 
-> *"We are the walking log."* —— 这是对 Rick Grimes 经典台词的谦卑致敬。因为在过度工程化的世界里，有时候你只需要一个能保持简单、持续前行的小工具。
-
 ## Why "log" not "logger"? / 为什么是 "log" 而不是 "logger"？
 
 Because it's not trying to be a full-fledged **logger** with all the bells and whistles. It's just a **log** — a single, honest print statement. Simple, humble, and enough.
