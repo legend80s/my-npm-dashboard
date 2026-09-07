@@ -48,10 +48,4 @@ logger.error(new Error("This is an example error. Everything is fine!"))
 | `formatLevel` | How to print level. | `(level) => '[' + level + ']'` | |
 | `pickEmoji` | Render emoji by level. | - | |
 
----
-
-> *"We are the walking dead."* — a humble nod to Rick Grimes' famous line, because in a world of over-engineering, sometimes you just need something that keeps it simple and keeps things going.
->
-> *"We are the walking dead."* —— 这是对 Rick Grimes 经典台词的谦卑致敬。因为在过度工程化的世界里，有时候你只需要一个能保持简单、持续前行的小工具。
-
 [Want read even more? 还想要阅读更多？](./README-more-more.md)
