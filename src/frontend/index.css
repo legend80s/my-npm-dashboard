@@ -505,6 +505,11 @@ input {
   text-decoration: none;
 }
 
+.light {
+  .card-name {
+    padding-bottom: --px2rem(6);
+  }
+}
 .card-name {
   font-size: min(1.125rem, 24px);
   font-weight: 600;
