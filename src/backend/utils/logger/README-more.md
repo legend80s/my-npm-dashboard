@@ -15,22 +15,8 @@ const logger = new Logger({
   },
 })
 
-logger.debug("The Walking Log Episode 3.0.0")
-logger.debug("The Walking Log Episode", "3.0.0")
-logger.debug("The Walking Log Episode", "v", 3)
 
-logger.info("The Walking Log Episode", {
-  string: "3.0.0",
-  boolean: true,
-  number: 123,
-  array: [1, 2, 3],
-  object: { a: 1, b: 2 },
-})
-
-logger.warn("A new version of walking-log is available: 3.0.1")
-
-logger.success("Project built!")
-
+logger.warn("A new version of walking-log is available: 0.0.5")
 logger.error(new Error("This is an example error. Everything is fine!"))
 ```
 

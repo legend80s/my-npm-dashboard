@@ -1,4 +1,4 @@
-# walking-log
+# walking-log <img src="https://koboyo.com/icons/svg/zombie.svg" width="50" alt="cartoon zombie from https://koboyo.com/icons?q=zombie" />
 
 <img src="https://p3-sign.toutiaoimg.com/tos-cn-i-axegupay5k/2705235ec25a40c3b0ff47aa8fea06cc~tplv-tt-origin-web:gif.jpeg?_iz=58558&from=article.pc_detail&lk3s=953192f4&x-expires=1789354101&x-signature=LmG%2BLicfghPuwIAxpe5Zps2zybI%3D" alt="from https://www.toutiao.com/article/7421183099322794505/" />
 
@@ -20,7 +20,7 @@ Like a walker in the terminal wasteland, it does one thing and does it well — 
 
 When the world is full of complex logging frameworks, be a walker. Keep it simple. Keep it moving.
 
-<img src="https://github.com/legend80s/my-npm-dashboard/raw/refs/heads/main/src/backend/utils/logger/assets/languages.svg" width="16" height="16" alt="Chinese:" />
+中文 <img src="https://github.com/legend80s/my-npm-dashboard/raw/refs/heads/main/src/backend/utils/logger/assets/languages.svg" width="16" height="16" alt="Chinese:" />：
 
 - 🧟 仅限 Node.js —— 不会游荡到浏览器领域。
 - 🎯 单一职责 —— 打印到控制台。就这些。没有插件，没有冗余。
