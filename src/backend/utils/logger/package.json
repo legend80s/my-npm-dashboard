@@ -5,17 +5,20 @@
   "version": "0.0.3",
   "type": "module",
   "main": "index.js",
+  "types": "dist/index.d.ts",
   "files": [
+    "dist",
     "index.js",
     "logger.type.ts"
   ],
   "scripts": {
     "test": "node --test",
     "typecheck": "tsgo --noEmit",
+    "generate:types": "tsgo index.js --declaration --emitDeclarationOnly --outDir dist --ignoreConfig --allowJs",
     "pub:patch": "npm version patch",
     "pub:minor": "npm version minor",
     "pub:major": "npm version major",
-    "preversion": "npm test && npm run typecheck",
+    "preversion": "npm test && npm run typecheck && npm run generate:types",
     "postversion": "npm publish && git push && git push --tags"
   },
   "repository": {
