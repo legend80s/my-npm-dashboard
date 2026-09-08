@@ -12,6 +12,7 @@ const compileLocales = (i18nKey) => {
   const elements = document.querySelectorAll(`[${i18nKey}]:not([data-i18n-translated])`)
   // and all the shadowRoot
   const customElements = Array.from(document.getElementsByTagName("settings-dialog"), (el) =>
+    // @ts-expect-error
     Array.from(el.shadowRoot.querySelectorAll(`[${i18nKey}]:not([data-i18n-translated])`)),
   )
     .filter((xs) => xs.length > 0)
@@ -27,18 +28,21 @@ const compileLocales = (i18nKey) => {
   // const all = [...elements, ...customElements]
 
   nodes.forEach((element) => {
+    // @ts-expect-error
     const key = element.getAttribute(i18nKey)
     // mark as translated to avoid re-translation
+    // @ts-expect-error
     element.setAttribute("data-i18n-translated", "true")
 
-    // @ts-expect-error
     const translation = t(key)
     // console.log(`compileLocales: "${key}" → "${translation}"`)
 
     const pos = i18nKey.split("-").at(-1)
     if (pos === "title") {
+      // @ts-expect-error
       element.title = translation
     } else {
+      // @ts-expect-error
       element.textContent = translation
     }
   })
