@@ -4,11 +4,13 @@ import { serve } from "@hono/node-server"
 import { serveStatic } from "@hono/node-server/serve-static"
 import { Hono } from "hono"
 import { cors } from "hono/cors"
+
 // import { cache } from "hono/cache"
-import { logger } from "hono/logger"
+// import { logger } from "hono/logger"
 
 // import { cache } from "@hono/node-server/cache" // 注意这个导入路径
 
+import { logger } from "./middlewares/fancy-logger.js"
 import { serveMultipleStaticFolders } from "./middlewares/serve-mutiple-static-folders.js"
 import { github, githubPath } from "./routes/github.js"
 import { npmApi, npmApiPath } from "./routes/npm-api.js"
