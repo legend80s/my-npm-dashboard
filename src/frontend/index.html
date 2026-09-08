@@ -219,8 +219,9 @@
           style="width: --px2rem(28); aspect-ratio: 1 / 1; border-radius: 50%"
         />
         <span title="按照第一个版本发布的时间由近及远排序"
-          ><icon-awesome class="mr-1"></icon-awesome>最近在忙着开发什么？</span
-        >
+          ><icon-awesome class="mr-1"></icon-awesome
+          ><span data-i18n-key="recently"></span
+        ></span>
       </div>
       <!-- <span class="stat-item">📦 包数 <strong id="pkgCount">-</strong></span> -->
       <!-- <span class="stat-item">📥 周总下载 <strong id="totalDownloads">-</strong></span> -->
@@ -338,6 +339,11 @@
 
     <!-- ============================================================ -->
     <script type="module" src="./index.js"></script>
+    <script type="module">
+      import { compileLocales } from "./utils/compile-locales.js";
+
+      compileLocales()
+    </script>
 
     <!-- https://webawesome.com/docs -->
     <link
