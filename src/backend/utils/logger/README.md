@@ -1,4 +1,4 @@
-# 🧟 walking-log
+# walking-log
 
 <p>
   <div align="center" style="margin-bottom: 1rem;">
@@ -38,4 +38,4 @@ logger.success("We survive this by pulling together, not apart.")
 logger.error("I didn't ask for this. I killed my best friend for you people.")
 ```
 
-[Want a more tailored one? 想要阅读更多？](./README-more.md)
+[🧟 <img width="16" height="16" alt="zombie" src="https://koboyo.com/icons/svg/cartoon-zombie-process.svg"/> Want a more tailored one? 想要阅读更多？](./README-more.md)
