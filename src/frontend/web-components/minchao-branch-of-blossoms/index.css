@@ -1,4 +1,33 @@
+/* Credit: https://mimo.xiaomi.com/zh/mimocode */
+/* Huiwen Mincho (汇文明朝体) — subset to just the glyphs this page uses (~111KB).
+         Any glyph not in the subset falls back to Noto Serif SC (loaded online). */
+@font-face {
+  font-family: "Huiwen Mincho";
+  src: url("/frontend/assets/fonts/huiwen-mincho-subset.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+:root {
+  --font-mincho: "Huiwen Mincho", "Noto Serif SC", "Songti SC", "STSong", Georgia, serif;
+}
+
+[data-theme="dark"] {
+  .main-pkg {
+    font-family: "none", sans-serif;
+  }
+}
+
 [data-theme="light"] {
+  &[lang="zh-CN"] {
+    body {
+      font-family: var(--font-mincho);
+      .main-pkg {
+        font-size: 150%;
+      }
+    }
+  }
+
   /* copy from https://moeka.app/zh-cn/ */
   .site-shell {
     --serif-font: "Noto Serif Site SC", "Noto Serif SC", serif;

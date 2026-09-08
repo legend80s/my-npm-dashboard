@@ -988,7 +988,7 @@ function renderHottest({ name, latestWeekDownloads }, username) {
   hottestPkg.innerHTML = name
     ? `<div style="display: flex; align-items: center;">
     ${startLeaf}
-      <a href="${NPMJS_DOMAIN}/${name}" title="当前最热包 🔥 | 前往 npm" style="color:inherit; font-weight: bold;" target="_blank">
+      <a href="${NPMJS_DOMAIN}/${name}" title="当前最热包 🔥 | 前往 npm" class="main-pkg" style="color:inherit; font-weight: bold;" target="_blank">
         ${name}
       </a>
     ${endLeaf}

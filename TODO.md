@@ -52,7 +52,7 @@
 - [ ] 搜索中显示『正在搜索 antfu 的包...』，应该显示进度『正在搜索 antfu 的第N个包...』
 - [x] 当 dashboard 页面应该搜索完一个就展示一个，无需等待所有包都搜索完
 - [ ] server request log prettify `<--` and `-->` is ugly.
-- [ ] logger to npm package.
+- [x] logger to npm package.
 - [ ] add badges
 - [ ] max search limit in home page can be clicked and then open settings dialog and focus on the input field.
 - [ ] mascot randomize
