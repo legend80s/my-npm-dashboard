@@ -13,6 +13,7 @@ window.customElements.define(
       const curYear = new Date().getFullYear()
       return html`
         <style>
+          @import url("lit-tailwind.css");
           /* ===== Reset & Base ===== */
           * {
             margin: 0;
@@ -22,9 +23,6 @@ window.customElements.define(
           .text-muted {
             color: var(--text-muted);
           }
-          .mt-1 {
-            margin-top: 0.25rem;
-          }
           
           footer {
             text-align: center;
@@ -32,9 +30,11 @@ window.customElements.define(
         </style>
 
         <footer>
-        Every big project starts as a calf. Tend your whole npm herd, sorted by
-        birth date.
-        <p>A npm dashboard for your recently "born" packages</p>
+        <p class="" style="font-family: Georgia, sans-serif;">
+          Every big project starts as a calf. Tend your whole npm herd, sorted by
+          birth date.
+        </p>
+        <p class="italic">A npm dashboard for your recently "born" packages</p>
         <p class="text-muted mt-1">
           Copyright © 2026-${curYear === 2026 ? "present" : curYear} @legend80s.com. All Rights Reserved.
         </p>

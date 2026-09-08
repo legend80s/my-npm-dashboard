@@ -56,3 +56,4 @@
 - [ ] add badges
 - [ ] max search limit in home page can be clicked and then open settings dialog and focus on the input field.
 - [ ] mascot randomize
+- [ ] css randomize th amplitude of the branch of blossoms like it is in the wind. not applicable safari only.

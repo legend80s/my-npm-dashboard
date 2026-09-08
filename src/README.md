@@ -1,7 +1,7 @@
 # Calf 🐘 - Your NPM Dashboard
 
 <h2 align="center">
-  <img src="./assets/calf-elephant.svg" width="300" />
+  <img src="https://raw.githubusercontent.com/legend80s/pocket/refs/heads/main/src/assets/calf-elephant.svg" width="300" />
 </h2>
 
 输入 npm username 能够查看这个用户所有的包，按照第一个版本发布的时间由近及远排序

@@ -23,7 +23,7 @@
     /* background-image:
     linear-gradient(#fffaf1b8, #fffaf1b8), url(../images/paper-waves.png), url(../images/paper-texture.png); */
 
-    background-image: url(./paper-waves.png);
+    /* background-image: url(./paper-waves.png); */
     background-size:
       cover,
       100% auto,
@@ -44,21 +44,22 @@
     z-index: 1;
     pointer-events: none;
     will-change: transform;
+    transition: opacity 0.4s ease-in-out;
     background-image: url(./flower-shadow.webp);
     background-repeat: no-repeat;
     background-size: contain;
     background-position: 100% 0;
     mix-blend-mode: multiply;
-    opacity: 0.15;
+    opacity: 0.2;
     transform-origin: 88% 8%;
     animation: flower-shadow-sway 4s ease-in-out infinite;
   }
+}
 
-  /* html:has(#refreshBtn:hover) {
+html:has(#refreshBtn:hover) {
   .site-shell:after {
     opacity: 1;
   }
-} */
 }
 
 @keyframes flower-shadow-sway {

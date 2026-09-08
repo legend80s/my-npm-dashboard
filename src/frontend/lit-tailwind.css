@@ -38,3 +38,7 @@
 .mr-3 {
   margin-right: 0.75rem;
 }
+
+.italic {
+  font-style: italic;
+}

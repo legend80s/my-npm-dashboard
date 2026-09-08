@@ -76,12 +76,36 @@
   box-sizing: border-box;
 }
 
+/* @font-face {
+  font-family: "Plantin MT Pro";
+  src:
+    url(https://pi.dev/fonts/PlantinNowVariable-Upright.woff2) format("woff2-variations"),
+    url(https://pi.dev/fonts/PlantinNowVariable-Upright.woff2) format("woff2");
+  font-weight: 200 800;
+  font-style: normal;
+  font-display: block;
+} */
+
+/* @font-face {
+  font-display: swap;
+  font-family: Arbutus Slab;
+  font-style: normal;
+  font-weight: 400;
+  src:
+    local("Arbutus Slab Regular"),
+    local("ArbutusSlab-Regular"),
+    url(assets/fonts/arbutus-slab-v9-latin-regular.woff2) format("woff2");
+} */
+
 .h2,
 .h3,
 h1,
 h2,
 h3,
 h4 {
+  /* font-family:
+    Arbutus Slab,
+    sans-serif; */
   /* font-weight: 600; */
   letter-spacing: -0.02em;
   line-height: calc(4px + 2ex);
@@ -92,6 +116,8 @@ h4 {
   font-size: clamp(16px, 100vw / 2560 * 28.6, 36px);
   --system-font-without-serif: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto;
   --system-font: var(--system-font-without-serif), sans-serif;
+
+  --pi-serif: "Plantin MT Pro", "Plantin MT Std", Plantin, Georgia, serif;
 }
 
 html[lang="zh-CN"] {
@@ -452,7 +478,6 @@ input {
   box-shadow: 0 2px 12px rgb(0 0 0 / 30%);
 }
 
-
 .npmx-embed-downloads-chart,
 #npmx-index-h1-logo-normal {
   display: none;
@@ -753,5 +778,6 @@ input {
 }
 
 copyright-footer {
-  font-size: clamp(14px, 75%, 1rem);
+  /* font-size: 1rem; */
+  font-size: clamp(14px, 90%, 1rem);
 }

@@ -352,8 +352,10 @@ async function renderChart(container, pkgName, weeklyData) {
                 size: 8,
               },
               callback: (value) => {
-                // @ts-expect-error
+                // console.log("renderChart callback value", value)
+                // @ts-expect-error value is number
                 if (value >= 1000) {
+                  // @ts-expect-error
                   return `${value / 1000}k`
                 }
                 return value
