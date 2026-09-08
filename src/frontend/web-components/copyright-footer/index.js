@@ -1,6 +1,7 @@
 // class="relative overflow-hidden rounded-xl border border-gray-200 bg-gray-50 p-0.5 sm:p-1"
 
 import { html } from "../../utils/lit.js"
+import { t } from "../../utils/locales.js"
 
 window.customElements.define(
   "copyright-footer",
@@ -31,10 +32,9 @@ window.customElements.define(
 
         <footer>
         <p class="" style="font-family: Georgia, sans-serif;">
-          Every big project starts as a calf. Tend your whole npm herd, sorted by
-          birth date.
+          ${t("slogan1")}
         </p>
-        <p class="italic">A npm dashboard for your recently "born" packages</p>
+        <p class="">${t("slogan2")}</p>
         <p class="text-muted mt-1">
           Copyright © 2026-${curYear === 2026 ? "present" : curYear} @legend80s.com. All Rights Reserved.
         </p>

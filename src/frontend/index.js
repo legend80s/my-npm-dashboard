@@ -22,7 +22,7 @@ import "./web-components/copyright-footer/index.js"
 import "./web-components/result-error/index.js"
 import "./web-components/icon-awesome/index.js"
 
-import { CACHE_TTL_IN_HOURS } from "./constants/cache.js"
+import { CACHE_TTL_IN_HOURS, KEY_PROVIDER } from "./constants/cache.js"
 import { $id, URLParams } from "./utils/light-jquery.js"
 import { Spinner } from "./web-components/searching-spinner/spinner.js"
 import { init as initSonner } from "./web-components/sonner.js"
@@ -1092,7 +1092,7 @@ settings.addEventListener("chart-provider-change", (event) => {
   const provider = event.detail.provider
   // console.log("当前 provider:", provider)
   document.documentElement.setAttribute("data-provider", provider)
-  localStorage.setItem("provider", provider)
+  localStorage.setItem(KEY_PROVIDER, provider)
   // 更新页面其他元素
   updateAllNpmLinks(provider)
 })

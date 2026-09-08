@@ -1,5 +1,5 @@
 import { onChildChange } from "./light-jquery.js"
-import { t } from "./locales.js"
+import { getLocale, t } from "./locales.js"
 
 // Find and translate all the `[data-i18n-key]` element in DOM.
 let start = Date.now()
@@ -59,3 +59,5 @@ function compile() {
 compile()
 
 onChildChange(compile, { debounceTime: 100 })
+
+document.documentElement.lang = getLocale()

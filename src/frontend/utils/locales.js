@@ -12,8 +12,8 @@ export function isChinese() {
 }
 
 export function getLocale() {
-  return "en-US"
-  return "zh-CN"
+  // return "en-US"
+  // return "zh-CN"
   return navigator.language
 }
 
@@ -81,6 +81,8 @@ const zh = {
   recently: "最近在忙着开发什么？",
   "hottestTrend.none": "近期无下载量攀升的包",
   no: "（无）",
+  slogan1: "每个大项目都始于一只初生牛犊。按“分娩”日期管理你的整个 npm 牧群。",
+  slogan2: "一个为你最近“诞生”的包而设的 npm 仪表盘。",
 }
 
 // ── English ───────────────────────────────────────
@@ -153,6 +155,8 @@ const en = {
   小时: "hours",
   分钟: "minutes",
   数据来自: "Data from",
+  slogan1: "Every big project starts as a calf. Tend your whole npm herd, sorted by birth date.",
+  slogan2: `A npm dashboard for your recently "born" packages`,
 }
 
 // ── Select locale ─────────────────────────────────
@@ -170,7 +174,7 @@ export function t(key, vars = {}) {
   let template = locale[key]
   if (template === undefined) {
     // 中文可以当做 key 直接返回，英文则提示缺失翻译
-    ;/[a-zA-Z]/.test(key) && console.error(`Missing translation for key: ${key}`)
+    ;/^[a-zA-Z]+$/.test(key) && console.error(`Missing translation for key: ${key}`)
 
     return key
   }

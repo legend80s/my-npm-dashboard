@@ -8,6 +8,7 @@ const DEFAULT_THEME = "dark"
 // Grabs from local storage if available or falls back to system preference
 function getPreferredScheme() {
   const saved = localStorage.get("theme")
+  // console.log("saved theme:", saved)
 
   const theme = saved === "light" || saved === "dark" ? saved : DEFAULT_THEME
 
@@ -47,5 +48,6 @@ function applyScheme(theme) {
 
 // npmx or npm? default is npm
 const savedProvider = localStorage.get("provider")
+// console.log("savedProvider:", savedProvider)
 const provider = savedProvider === "npmx" || savedProvider === "npm" ? savedProvider : "npm"
 document.documentElement.setAttribute("data-provider", provider)

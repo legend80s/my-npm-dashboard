@@ -134,6 +134,19 @@ if (import.meta.main) {
 
 /**
  * @template T
+ * @param {() => T} syncFunc
+ * @returns {T | null}
+ */
+export function safeCall(syncFunc) {
+  try {
+    return syncFunc()
+  } catch (_error) {
+    return null
+  }
+}
+
+/**
+ * @template T
  * @param {() => Promise<T>} asyncFunc
  * @returns {Promise<T | null>}
  */

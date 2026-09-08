@@ -1,3 +1,4 @@
+import { safeCall } from "../../shared/utils/light-lodash.js"
 import { CACHE_KEY_PREFIX } from "../constants/cache.js"
 
 // ============================================================
@@ -40,6 +41,6 @@ export class LocalStorage {
       return null
     }
 
-    return JSON.parse(cached)
+    return safeCall(() => JSON.parse(cached)) ?? cached
   }
 }
