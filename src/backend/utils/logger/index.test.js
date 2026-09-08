@@ -1,5 +1,6 @@
 import { execSync } from "node:child_process"
 import { test } from "node:test"
+import { fileURLToPath } from "node:url"
 import { createLogger, LEVEL, Logger } from "./index.js"
 
 test("new Logger", () => {
@@ -51,5 +52,7 @@ test("createLogger", () => {
 })
 
 test("#e2e logger", () => {
-  execSync("node ./index.js", { stdio: "inherit" })
+  const url = new URL("./index.js", import.meta.url)
+  const path = fileURLToPath(url)
+  execSync(`node ${path}`, { stdio: "inherit" })
 })
