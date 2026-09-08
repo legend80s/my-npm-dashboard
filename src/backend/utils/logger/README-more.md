@@ -34,4 +34,4 @@ logger.error(new Error("This is an example error. Everything is fine!"))
 | `formatLevel` | How to print level. | `(level) => '[' + level + ']'` | |
 | `pickEmoji` | Render emoji by level. | - | |
 
-[Want read even more? 还想要阅读更多？](./README-more-more.md)
+[🧟 Want read even more? 还想要阅读更多？](./README-more-more.md)

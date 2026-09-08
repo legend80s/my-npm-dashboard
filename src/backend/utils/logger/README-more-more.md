@@ -1,4 +1,4 @@
-# walking-log <img src="https://koboyo.com/icons/svg/zombie.svg" width="50" alt="cartoon zombie from https://koboyo.com/icons?q=zombie" />
+<h1 align="center">walking-log</h1>
 
 <img src="https://p3-sign.toutiaoimg.com/tos-cn-i-axegupay5k/2705235ec25a40c3b0ff47aa8fea06cc~tplv-tt-origin-web:gif.jpeg?_iz=58558&from=article.pc_detail&lk3s=953192f4&x-expires=1789354101&x-signature=LmG%2BLicfghPuwIAxpe5Zps2zybI%3D" alt="from https://www.toutiao.com/article/7421183099322794505/" />
 
