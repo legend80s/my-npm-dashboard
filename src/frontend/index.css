@@ -394,7 +394,7 @@ input {
   border-radius: 10px;
   /* border: 1px solid var(--border); */
   font-size: 1.25rem;
-  color: var(--text-muted);
+  /* color: var(--text-muted); */
 
   icon-awesome {
     vertical-align: middle;

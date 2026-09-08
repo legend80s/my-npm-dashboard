@@ -1,4 +1,5 @@
 import { CACHE_KEY, CACHE_TTL_IN_MS } from "../constants/cache.js"
+import { t } from "./locales.js"
 
 /** @import { CacheData, FreshPackageDetail, PackageDetail } from '../index.type.js' */
 
@@ -99,20 +100,20 @@ export function getCacheTTL() {
   try {
     const cached = localStorage.getItem(CACHE_KEY)
     if (!cached) {
-      return "无缓存"
+      return t("无缓存")
     }
     const data = JSON.parse(cached)
     const elapsed = Date.now() - data.timestamp
     const remaining = CACHE_TTL_IN_MS - elapsed
     if (remaining <= 0) {
-      return "已过期"
+      return t("已过期")
     }
     const hours = Math.floor(remaining / (60 * 60 * 1000))
     const minutes = Math.floor((remaining % (60 * 60 * 1000)) / (60 * 1000))
     if (hours > 0) {
-      return `${hours}小时${minutes}分钟`
+      return `${hours} ${t("小时")} ${minutes} ${t("分钟")}`
     }
-    return `${minutes}分钟`
+    return `${minutes}${t("分钟")}`
   } catch (parseError) {
     console.error("getCacheTTL 缓存读取失败:", parseError)
     return "--"

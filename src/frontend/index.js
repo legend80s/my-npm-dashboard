@@ -26,6 +26,7 @@ import { CACHE_TTL_IN_HOURS } from "./constants/cache.js"
 import { $id, URLParams } from "./utils/light-jquery.js"
 import { Spinner } from "./web-components/searching-spinner/spinner.js"
 import { init as initSonner } from "./web-components/sonner.js"
+import { getLocale, t } from "./utils/locales.js"
 
 const NPMJS_DOMAIN = `https://www.npmjs.com`
 const NPMX_DOMAIN = `https://npmx.dev`
@@ -678,8 +679,8 @@ function updateCacheInfo(freshness) {
   // console.log("freshness:", freshness)
 
   const ttlDisplay = document.getElementById("cacheTTL")
-  const remainTime = freshness === "cache" ? ` · 剩余 <strong>${getCacheTTL()}</strong>` : ""
-  ttlDisplay?.setHTMLUnsafe(`TTL <strong>${CACHE_TTL_IN_HOURS}</strong> 小时${remainTime}`)
+  const remainTime = freshness === "cache" ? ` | ${t("剩余")} <strong>${getCacheTTL()}</strong>` : ""
+  ttlDisplay?.setHTMLUnsafe(`TTL <strong>${CACHE_TTL_IN_HOURS}</strong> ${t("小时")}${remainTime}`)
 }
 
 // ============================================================
@@ -791,7 +792,7 @@ function createCardElement(pkg) {
 
           <fancy-separator></fancy-separator>
 
-          <img src="https://img.shields.io/badge/🚀%20发布-${publishedDisplay}-brightgreen?logoColor=cyan" title="${new Date(pkg.publishedAt).toLocaleString()}" alt="weekly trend: ↑ 1%">
+          <img src="https://img.shields.io/badge/🚀%20${t("发布")}-${publishedDisplay}-brightgreen?logoColor=cyan" title="${new Date(pkg.publishedAt).toLocaleString()}" alt="latest publish time">
           
           <fancy-separator></fancy-separator>
           
@@ -802,7 +803,7 @@ function createCardElement(pkg) {
             title="at ${new Date(pkg.createdAt).toLocaleString()} · Click to view initial commit 🤰"
           >
             <img
-              src="https://img.shields.io/badge/🤰%20诞生于-${createdDisplay}-brightgreen?logoColor=cyan" 
+              src="https://img.shields.io/badge/🤰%20${t("诞生于")}-${createdDisplay}-brightgreen?logoColor=cyan" 
               alt="诞生于 ${createdDisplay}"
               style="vertical-align: bottom;"
             />
@@ -1012,7 +1013,7 @@ function renderHottestTrend({ name, trend }, username) {
         ${name}
       </a>
     ${endLeaf} <span style="margin-inline-start: 0.2em;">(</span><a href="insight.html?username=${encodeURIComponent(username)}&rank=trend" target="_self" title="📊 前往洞察页面" class='text-primary' style="font-size: 110%;">🚀+${trend}%</a>)`
-    : "<span style='font-size: 0.8em;'>（无）<span style='font-size:80%;'>近期无下载量攀升的包</span></span>"
+    : "<span style='font-size: 0.8em;' data-i18n-key='no'></span><span style='font-size:64%;' data-i18n-key='hottestTrend.none'></span>"
 }
 
 /**
@@ -1045,29 +1046,15 @@ function getFreshnessLabel(fromCache, cacheTimestamp) {
   let freshness
 
   if (fromCache && cacheTimestamp) {
-    const elapsed = now - cacheTimestamp
-    const elapsedMinutes = Math.floor(elapsed / (60 * 1000))
-    const elapsedHours = Math.floor(elapsed / (60 * 60 * 1000))
-    const elapsedDays = Math.floor(elapsed / (24 * 60 * 60 * 1000))
+    const relativeTime = resolveRelativeTime(new Date(cacheTimestamp))
 
-    let relativeTime
-    if (elapsedDays > 0) {
-      relativeTime = `${elapsedDays} 天前`
-    } else if (elapsedHours > 0) {
-      relativeTime = `${elapsedHours} 小时前`
-    } else if (elapsedMinutes > 0) {
-      relativeTime = `${elapsedMinutes} 分钟前`
-    } else {
-      relativeTime = "刚刚"
-    }
-
-    const cacheTimeStr = new Date(cacheTimestamp).toLocaleString()
-    timeDisplay = `📦 缓存数据 · ${cacheTimeStr} (${relativeTime})`
+    const cacheTimeStr = new Date(cacheTimestamp).toLocaleString(getLocale())
+    timeDisplay = `📦 ${t("缓存数据")} 🔘 ${cacheTimeStr} (${relativeTime})`
     freshness = "cache"
   } else {
     // 实时数据
-    const realTimeStr = new Date(now).toLocaleString()
-    timeDisplay = `📡 实时数据 · ${realTimeStr}`
+    const realTimeStr = new Date(now).toLocaleString(getLocale())
+    timeDisplay = `📡 ${t("实时数据")} 🟢 ${realTimeStr}`
     freshness = "realtime"
   }
 

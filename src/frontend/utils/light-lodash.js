@@ -25,3 +25,28 @@ export function stylish(cssProps) {
 function toHyphenCase(cssPropKey) {
   return cssPropKey.replace(/[A-Z]/g, (match) => `-${match.toLowerCase()}`)
 }
+
+/**
+ *
+ * @param {Function} func
+ * @param {number} delay
+ * @returns
+ */
+export function debounce(func, delay = 0) {
+  /** @type {NodeJS.Timeout} */
+  let timer
+
+  /**
+   * @param  {...unknown} args
+   * @this {unknown}
+   */
+  return function debounced(...args) {
+    if (timer) {
+      clearTimeout(timer)
+    }
+
+    timer = setTimeout(() => {
+      func.apply(this, args)
+    }, delay)
+  }
+}

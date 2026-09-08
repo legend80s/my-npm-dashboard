@@ -1,3 +1,5 @@
+import { getLocale, isChinese } from "../../frontend/utils/locales.js"
+
 /** @import { int } from '../../frontend/utils/base.type.js' */
 
 export const YELLOW = `\x1b[33m`
@@ -39,7 +41,7 @@ export async function fetchJSON(url, { label, verbose = false }) {
   return data
 }
 
-const rtf = new Intl.RelativeTimeFormat("zh-CN", { numeric: "auto" })
+const rtf = new Intl.RelativeTimeFormat(isChinese() ? "zh-CN" : "en-US", { numeric: "auto" })
 
 const DIVISIONS = /** @type {const} */ ([
   { amount: 60, name: "seconds" },
@@ -81,7 +83,7 @@ export function timeAgo(date) {
  * @param {Parameters<typeof Number.prototype.toLocaleString>[0]} locale
  * @returns
  */
-export function numberToLocaleString(num, locale = navigator.language) {
+export function numberToLocaleString(num, locale = getLocale()) {
   if (num === null) {
     return "-"
   }

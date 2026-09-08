@@ -1,13 +1,57 @@
+import { onChildChange } from "./light-jquery.js"
 import { t } from "./locales.js"
 
 // Find and translate all the `[data-i18n-key]` element in DOM.
-export const compileLocales = () => {
-  const elements = document.querySelectorAll("[data-i18n-key]")
-  elements.forEach((element) => {
-    const key = element.getAttribute("data-i18n-key")
+let start = Date.now()
+
+/**
+ *
+ * @param {string} i18nKey
+ */
+const compileLocales = (i18nKey) => {
+  const elements = document.querySelectorAll(`[${i18nKey}]:not([data-i18n-translated])`)
+  // and all the shadowRoot
+  const customElements = Array.from(document.getElementsByTagName("settings-dialog"), (el) =>
+    Array.from(el.shadowRoot.querySelectorAll(`[${i18nKey}]:not([data-i18n-translated])`)),
+  )
+    .filter((xs) => xs.length > 0)
+    .flat(Infinity)
+  // console.log("elements:", elements)
+  // console.log("customElements:", customElements)
+  const nodes = [...elements, ...customElements]
+  // console.log("nodes:", nodes)
+
+  console.log(`compileLocales: found ${nodes.length} elements with ${i18nKey}`, "gap:", Date.now() - start, "ms")
+  start = Date.now()
+
+  // const all = [...elements, ...customElements]
+
+  nodes.forEach((element) => {
+    const key = element.getAttribute(i18nKey)
+    // mark as translated to avoid re-translation
+    element.setAttribute("data-i18n-translated", "true")
 
     // @ts-expect-error
     const translation = t(key)
-    element.textContent = translation
+    // console.log(`compileLocales: "${key}" → "${translation}"`)
+
+    const pos = i18nKey.split("-").at(-1)
+    if (pos === "title") {
+      element.title = translation
+    } else {
+      element.textContent = translation
+    }
   })
 }
+
+function compile() {
+  const identities = ["data-i18n-key", "data-i18n-title"]
+
+  identities.forEach((identity) => {
+    compileLocales(identity)
+  })
+}
+
+compile()
+
+onChildChange(compile, { debounceTime: 100 })

@@ -1,3 +1,5 @@
+import { debounce } from "./light-lodash.js"
+
 /**
  *
  * @param {string} selector
@@ -172,4 +174,37 @@ export class URLParams {
     }
     window.history.pushState({}, "", url)
   }
+}
+
+/**
+ *
+ * @param {Function} cb
+ * @param {{predicate?: (node: Node) => boolean, root?: string | Node, config?: MutationObserverInit, debounceTime?: number}} [param1]
+ */
+export function onChildChange(cb, { predicate = () => true, root = document.body, config, debounceTime } = {}) {
+  // observe everything except attributes
+  const defaultConfig = {
+    childList: true, // observe direct children
+    subtree: true, // and lower descendants too
+    // characterDataOldValue: true // pass old data to callback
+  }
+
+  config ??= defaultConfig
+
+  const debouncedCallback = debounceTime ? debounce(cb, debounceTime) : cb
+
+  const observer = new MutationObserver((mutationRecords) => {
+    // console.log('observe mutationRecords:', mutationRecords);
+    const mutation = mutationRecords.find(({ target }) => {
+      return predicate(target)
+    })
+
+    if (mutation) {
+      debouncedCallback(mutation.target)
+    }
+  })
+
+  const node = typeof root === "string" ? $(root) : root
+  // @ts-expect-error
+  observer.observe(node, config)
 }

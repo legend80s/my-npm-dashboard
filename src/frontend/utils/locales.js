@@ -6,9 +6,15 @@
  *
  * @returns {boolean}
  */
-function isChinese() {
-  return false
-  // return navigator.language.includes("zh")
+export function isChinese() {
+  // return false
+  return getLocale().includes("zh")
+}
+
+export function getLocale() {
+  return "en-US"
+  return "zh-CN"
+  return navigator.language
 }
 
 // ── 中文 ──────────────────────────────────────────
@@ -73,6 +79,8 @@ const zh = {
 
   // 最近在忙着开发什么？
   recently: "最近在忙着开发什么？",
+  "hottestTrend.none": "近期无下载量攀升的包",
+  no: "（无）",
 }
 
 // ── English ───────────────────────────────────────
@@ -127,28 +135,43 @@ const en = {
   "list.footer.path": "📁 Install path: {path}",
 
   "template.error.no_description": "Template {name} does not have a description",
+
+  recently: "What are you building these days?",
+  // 近期无下载量攀升的包
+  "hottestTrend.none": "No recent download spikes.",
+  no: "（none）",
+  发布: "Publish",
+  诞生于: "Born",
+  "npm 搜索包数量上限": "Limit to search in npm registry",
+  刷新: "Refresh",
+  "强制刷新数据（忽略缓存）": "Force refresh data (ignore cache)",
+  无缓存: "No cache",
+  已过期: "Expired",
+  缓存数据: "Cache data",
+  实时数据: "Real-time data",
+  剩余: "Remaining",
+  小时: "hours",
+  分钟: "minutes",
+  数据来自: "Data from",
 }
 
 // ── Select locale ─────────────────────────────────
 
-/**
- * @returns {Record<string, string>}
- */
-function getLocale() {
-  return isChinese() ? zh : en
-}
+const locale = isChinese() ? zh : en
 
 /**
  * 翻译函数
- * @param {string} key - 翻译 key，如 "add.result.header"
+ * @param {keyof (typeof en & typeof zh)} key - 翻译 key，如 "add.result.header"
  * @param {Record<string, string | number | undefined>} [vars] - 插值变量，如 { name: "foo" }
  * @returns {string}
  */
 export function t(key, vars = {}) {
-  const lang = /** @type {Record<string, string>} */ (getLocale())
-  let template = lang[key]
+  // @ts-expect-error
+  let template = locale[key]
   if (template === undefined) {
-    console.error(`Missing translation for key: ${key}`)
+    // 中文可以当做 key 直接返回，英文则提示缺失翻译
+    ;/[a-zA-Z]/.test(key) && console.error(`Missing translation for key: ${key}`)
+
     return key
   }
   if (!vars) {
