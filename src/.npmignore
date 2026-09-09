@@ -1,0 +1,5 @@
+backend/utils/logger/*
+**/README.md
+**/README.zh.md
+**/package.json
+**/pnpm-lock.yaml
