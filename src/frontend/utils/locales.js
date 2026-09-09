@@ -157,6 +157,9 @@ const en = {
   数据来自: "Data from",
   slogan1: "Every big project starts as a calf. Tend your whole npm herd, sorted by birth date.",
   slogan2: `A npm dashboard for your recently "born" packages`,
+  "如果你近期发布的包不在其内，可尝试增大该值": "Don't see your latest packages? try increasing this value",
+  "📊 前往洞察页面": "📊 Go to Insight page",
+  "势头最猛：当前增速最快包": "Hottest Trend: packages with the highest growth rate right now",
 }
 
 // ── Select locale ─────────────────────────────────

@@ -411,6 +411,10 @@ input {
   color: var(--text);
 }
 
+.main-pkg {
+  font-size: 120%;
+}
+
 /* ===== Grid ===== */
 .grid {
   /* max-width: 95vw; */

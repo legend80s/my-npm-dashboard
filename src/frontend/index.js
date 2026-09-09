@@ -993,7 +993,7 @@ function renderHottest({ name, latestWeekDownloads }, username) {
         ${name}
       </a>
     ${endLeaf}
-    <span style="margin-inline-start: 0.2em;">(🔥</span><a href="insight.html?username=${encodeURIComponent(username)}&rank=weekly-downloads" target="_self" title="📊 前往洞察页面" style="font-size: 60%;">
+    <span style="margin-inline-start: 0.2em;">(🔥</span><a href="insight.html?username=${encodeURIComponent(username)}&rank=weekly-downloads" target="_self" data-i18n-title="📊 前往洞察页面" style="font-size: 60%;">
       Last 7 Days Downloads <span class='text-primary' style='font-family: Georgia; font-size: calc(20 / 16 * 1rem)'>${numberToLocaleString(latestWeekDownloads)}</span>
     </a>)
     </div>`
@@ -1012,7 +1012,7 @@ function renderHottestTrend({ name, trend }, username) {
       <a href="${NPMJS_DOMAIN}/package/${name}" target="_blank" title="当前增速最快包 🚀 | 前往 npm" style="color:inherit;">
         ${name}
       </a>
-    ${endLeaf} <span style="margin-inline-start: 0.2em;">(</span><a href="insight.html?username=${encodeURIComponent(username)}&rank=trend" target="_self" title="📊 前往洞察页面" class='text-primary' style="font-size: 110%;">🚀+${trend}%</a>)`
+    ${endLeaf} <span style="margin-inline-start: 0.2em;">(</span><a href="insight.html?username=${encodeURIComponent(username)}&rank=trend" target="_self" data-i18n-title="📊 前往洞察页面" class='text-primary' style="font-size: 110%;">🚀+${trend}%</a>)`
     : "<span style='font-size: 0.8em;' data-i18n-key='no'></span><span style='font-size:64%;' data-i18n-key='hottestTrend.none'></span>"
 }
 
