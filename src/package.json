@@ -29,6 +29,10 @@
     "url": "git+https://github.com/legend80s/my-npm-dashboard.git"
   },
   "homepage": "https://github.com/legend80s/my-npm-dashboard/tree/main/src",
+  "dependencies": {
+    "@hono/node-server": "^2.1.1",
+    "hono": "^4.13.5"
+  },
   "devDependencies": {
     "@tauri-apps/cli": "^2",
     "@types/node": "^26.1.1",
@@ -49,9 +53,5 @@
     "monitoring",
     "developer-tools",
     "trends"
-  ],
-  "dependencies": {
-    "@hono/node-server": "^2.1.1",
-    "hono": "^4.13.5"
-  }
+  ]
 }
