@@ -14,6 +14,9 @@ importers:
       hono:
         specifier: ^4.13.5
         version: 4.13.5
+      walking-log:
+        specifier: ^0.0.4
+        version: 0.0.4
     devDependencies:
       '@tauri-apps/cli':
         specifier: ^2
@@ -849,6 +852,9 @@ packages:
   vary@1.1.2:
     resolution: {integrity: sha512-BNGbWLfd0eUPabhkXUVm0j8uuvREyTh5ovRa/dyow/BqAbZJyC+5fU+IzQOzmAKzYqYRAISoRhdQr3eIZ/PXqg==}
     engines: {node: '>= 0.8'}
+
+  walking-log@0.0.4:
+    resolution: {integrity: sha512-MvXsOm932qwNktsfZPkFm7sNEG0WgsSQeT2JESSBQwRtMc9NGH1cstMPAp20Ff08ES3xxh0hwQ6denpVxjhQOQ==}
 
   websocket-driver@0.7.5:
     resolution: {integrity: sha512-ZL2+3c7kMBdIRCMz6l8jQMHyGVxj+UL+xVk74Ombiciboca8rHa15L86B19E5oh1pL9Ii/uj54gtsIrZGMo6zA==}
@@ -1725,6 +1731,8 @@ snapshots:
   uuid@3.4.0: {}
 
   vary@1.1.2: {}
+
+  walking-log@0.0.4: {}
 
   websocket-driver@0.7.5:
     dependencies:

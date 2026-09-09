@@ -1,8 +1,8 @@
 #!/usr/bin/env node
 
 import { parseArgs } from "node:util"
+import { createLogger } from "walking-log"
 import { startServer } from "../backend/dev-server/index.js"
-import { createLogger } from "../backend/utils/logger/index.js"
 import { openBrowser } from "../backend/utils/platform.js"
 // import version and name from package.json
 import pkg from "../package.json" with { type: "json" }
