@@ -100,9 +100,26 @@ export async function fetchPackageMetadata(pkgName, shouldBustCache = false) {
 
 /**
  * 获取最近一年（52周）的周聚合下载量
- * @param {string} pkgName - 包名
+ * @type {typeof fetchYearlyWeeklyDownloadsCore}
  */
 export async function fetchYearlyWeeklyDownloads(pkgName, shouldBustCache = false) {
+  try {
+    return await fetchYearlyWeeklyDownloadsCore(pkgName, shouldBustCache)
+  } catch (err) {
+    console.error("[fetchYearlyWeeklyDownloadsCore]", err)
+    return {
+      weekly: [],
+      total: 0,
+      trend: 0,
+    }
+  }
+}
+
+/**
+ * 获取最近一年（52周）的周聚合下载量
+ * @param {string} pkgName - 包名
+ */
+async function fetchYearlyWeeklyDownloadsCore(pkgName, shouldBustCache = false) {
   // await sleep(3000)
 
   // 计算日期范围：从今天往前推 364 天

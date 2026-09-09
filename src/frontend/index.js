@@ -188,7 +188,10 @@ async function renderChart(container, pkgName, weeklyData) {
   // })
   // 检查数据是否有效
   if (!weeklyData || weeklyData.length === 0 || weeklyData.every((w) => w.total === 0)) {
-    container.innerHTML = `<div class="chart-placeholder">📊 暂无下载数据</div>`
+    container.innerHTML = `<div class="chart-placeholder">
+      <img src="https://koboyo.com/icons/svg/cartoon-person-beside-404-style.svg" alt="A person beside a 404 style sign" />
+      ${t("暂无下载数据")}
+    </div>`
     return
   }
 
@@ -754,8 +757,7 @@ function createCardElement(pkg) {
 
   // console.log("pkg.createdAt:", pkg.createdAt)
 
-  // @ts-expect-error
-  const latestWeekDownloads = pkg.weeklyData.at(-1).total
+  const latestWeekDownloads = pkg.weeklyData.at(-1)?.total || 0
 
   const theme = document.documentElement.dataset.theme
   // console.log("theme:", theme)
