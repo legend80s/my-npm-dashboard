@@ -1,19 +1,20 @@
-import { onChildChange } from "./light-jquery.js"
+import { $$, onChildChange } from "./light-jquery.js"
 import { getLocale, t } from "./locales.js"
 
 // Find and translate all the `[data-i18n-text]` element in DOM.
-let start = Date.now()
+// let start = Date.now()
 
 /**
  *
  * @param {string} i18nKey
  */
 const compileLocales = (i18nKey) => {
-  const elements = document.querySelectorAll(`[${i18nKey}]:not([data-i18n-translated])`)
+  const toTranslateSelector = `[${i18nKey}]:not([data-i18n-translated])`
+  const elements = $$(toTranslateSelector)
   // and all the shadowRoot
-  const customElements = Array.from(document.getElementsByTagName("settings-dialog"), (el) =>
+  const customElements = Array.from($$("settings-dialog"), (el) =>
     // @ts-expect-error
-    Array.from(el.shadowRoot.querySelectorAll(`[${i18nKey}]:not([data-i18n-translated])`)),
+    Array.from(el.shadowRoot.querySelectorAll(toTranslateSelector)),
   )
     .filter((xs) => xs.length > 0)
     .flat(Infinity)
@@ -22,8 +23,8 @@ const compileLocales = (i18nKey) => {
   const nodes = [...elements, ...customElements]
   // console.log("nodes:", nodes)
 
-  console.log(`compileLocales: found ${nodes.length} elements with ${i18nKey}`, "gap:", Date.now() - start, "ms")
-  start = Date.now()
+  // console.log(`compileLocales: found ${nodes.length} elements with ${i18nKey}`, "gap:", Date.now() - start, "ms")
+  // start = Date.now()
 
   // const all = [...elements, ...customElements]
 
