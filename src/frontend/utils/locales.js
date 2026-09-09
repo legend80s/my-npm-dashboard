@@ -160,6 +160,7 @@ const en = {
   "如果你近期发布的包不在其内，可尝试增大该值": "Don't see your latest packages? try increasing this value",
   "📊 前往洞察页面": "📊 Go to Insight page",
   "势头最猛：当前增速最快包": "Hottest Trend: packages with the highest growth rate right now",
+  最近七天下载量: "Last 7 Days Downloads",
 }
 
 // ── Select locale ─────────────────────────────────

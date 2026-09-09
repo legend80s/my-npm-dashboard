@@ -1,7 +1,7 @@
 import { onChildChange } from "./light-jquery.js"
 import { getLocale, t } from "./locales.js"
 
-// Find and translate all the `[data-i18n-key]` element in DOM.
+// Find and translate all the `[data-i18n-text]` element in DOM.
 let start = Date.now()
 
 /**
@@ -49,7 +49,7 @@ const compileLocales = (i18nKey) => {
 }
 
 function compile() {
-  const identities = ["data-i18n-key", "data-i18n-title"]
+  const identities = ["data-i18n-text", "data-i18n-title"]
 
   identities.forEach((identity) => {
     compileLocales(identity)

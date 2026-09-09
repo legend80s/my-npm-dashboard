@@ -24,9 +24,9 @@ import "./web-components/icon-awesome/index.js"
 
 import { CACHE_TTL_IN_HOURS, KEY_PROVIDER } from "./constants/cache.js"
 import { $id, URLParams } from "./utils/light-jquery.js"
+import { getLocale, t } from "./utils/locales.js"
 import { Spinner } from "./web-components/searching-spinner/spinner.js"
 import { init as initSonner } from "./web-components/sonner.js"
-import { getLocale, t } from "./utils/locales.js"
 
 const NPMJS_DOMAIN = `https://www.npmjs.com`
 const NPMX_DOMAIN = `https://npmx.dev`
@@ -994,7 +994,7 @@ function renderHottest({ name, latestWeekDownloads }, username) {
       </a>
     ${endLeaf}
     <span style="margin-inline-start: 0.2em;">(🔥</span><a href="insight.html?username=${encodeURIComponent(username)}&rank=weekly-downloads" target="_self" data-i18n-title="📊 前往洞察页面" style="font-size: 60%;">
-      Last 7 Days Downloads <span class='text-primary' style='font-family: Georgia; font-size: calc(20 / 16 * 1rem)'>${numberToLocaleString(latestWeekDownloads)}</span>
+      ${t("最近七天下载量")} <span class='text-primary' style='font-family: Georgia; font-size: calc(20 / 16 * 1rem)'>${numberToLocaleString(latestWeekDownloads)}</span>
     </a>)
     </div>`
     : "-"
@@ -1013,7 +1013,7 @@ function renderHottestTrend({ name, trend }, username) {
         ${name}
       </a>
     ${endLeaf} <span style="margin-inline-start: 0.2em;">(</span><a href="insight.html?username=${encodeURIComponent(username)}&rank=trend" target="_self" data-i18n-title="📊 前往洞察页面" class='text-primary' style="font-size: 110%;">🚀+${trend}%</a>)`
-    : "<span style='font-size: 0.8em;' data-i18n-key='no'></span><span style='font-size:64%;' data-i18n-key='hottestTrend.none'></span>"
+    : "<span style='font-size: 0.8em;' data-i18n-text='no'></span><span style='font-size:64%;' data-i18n-text='hottestTrend.none'></span>"
 }
 
 /**
