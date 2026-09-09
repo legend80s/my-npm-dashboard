@@ -16,7 +16,7 @@ window.customElements.define(
 
       return html`
         <style>
-          @import url("lit-tailwind.css");
+          @import url("light-tailwind.css");
           /* ===== Reset & Base ===== */
           * {
             margin: 0;
