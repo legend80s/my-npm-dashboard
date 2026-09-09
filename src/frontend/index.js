@@ -22,7 +22,7 @@ import "./web-components/copyright-footer/index.js"
 import "./web-components/result-error/index.js"
 import "./web-components/icon-awesome/index.js"
 
-import { CACHE_TTL_IN_HOURS, KEY_PROVIDER } from "./constants/cache.js"
+import { CACHE_TTL_IN_HOURS, KEY_PROVIDER, MAX_SEARCH_SIZE_KEY } from "./constants/cache.js"
 import { $id, URLParams } from "./utils/light-jquery.js"
 import { getLocale, t } from "./utils/locales.js"
 import { Spinner } from "./web-components/searching-spinner/spinner.js"
@@ -1163,7 +1163,7 @@ settings.addEventListener("theme-change", (e) => {
 // @ts-expect-error
 settings.addEventListener("max-search-size-change", (/** @type {CustomEvent<{ size: number }>} */ e) => {
   const size = Math.min(250, Math.max(1, Math.floor(Number(e.detail.size))))
-  localStorage.setItem("maxSearchSize", String(size))
+  localStorage.setItem(MAX_SEARCH_SIZE_KEY, String(size))
   limitInput.max = String(size)
   maxCount.textContent = ` / ${size}`
 

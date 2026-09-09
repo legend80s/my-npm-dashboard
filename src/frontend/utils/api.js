@@ -2,6 +2,7 @@
 /** @import { CommitItem } from '../../frontend/utils/api-github.type.js' */
 
 import { fetchJSON, sleep } from "../../shared/utils/light-lodash.js"
+import { MAX_SEARCH_SIZE_KEY } from "../constants/cache.js"
 import { URLParams } from "./light-jquery.js"
 
 // ============================================================
@@ -13,7 +14,6 @@ import { URLParams } from "./light-jquery.js"
 export const MAX_SEARCH_SIZE = 5
 // export const MAX_SEARCH_SIZE = 100
 
-const MAX_SEARCH_SIZE_KEY = "maxSearchSize"
 const SEARCH_SIZE_LIMIT = 250
 
 /**
