@@ -10,6 +10,7 @@ import { cors } from "hono/cors"
 
 // import { cache } from "@hono/node-server/cache" // 注意这个导入路径
 
+import { onApiError } from "./middlewares/error.js"
 import { logger } from "./middlewares/fancy-logger.js"
 import { serveMultipleStaticFolders } from "./middlewares/serve-mutiple-static-folders.js"
 import { github, githubPath } from "./routes/github.js"
@@ -17,6 +18,8 @@ import { npmApi, npmApiPath } from "./routes/npm-api.js"
 import { npmRegistry, npmRegistryPath } from "./routes/npm-registry.js"
 
 const app = new Hono()
+
+app.onError(onApiError)
 
 const faviconPath = fileURLToPath(new URL("../../frontend/closed-npm.svg", import.meta.url))
 
