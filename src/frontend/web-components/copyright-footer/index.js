@@ -1,7 +1,7 @@
 // class="relative overflow-hidden rounded-xl border border-gray-200 bg-gray-50 p-0.5 sm:p-1"
 
 import { html } from "../../utils/lit.js"
-import { t } from "../../utils/locales.js"
+import { isChinese, t } from "../../utils/locales.js"
 
 window.customElements.define(
   "copyright-footer",
@@ -12,6 +12,8 @@ window.customElements.define(
     }
     template() {
       const curYear = new Date().getFullYear()
+      const mainSloganCls = isChinese() ? "font-bold" : "font-medium"
+
       return html`
         <style>
           @import url("lit-tailwind.css");
@@ -34,7 +36,7 @@ window.customElements.define(
         <p class="" style="font-family: Georgia, sans-serif;">
           ${t("slogan1")}
         </p>
-        <p class="">${t("slogan2")}</p>
+        <p class="${mainSloganCls}">${t("slogan2")}</p>
         <p class="text-muted mt-1">
           Copyright © 2026-${curYear === 2026 ? "present" : curYear} @legend80s.com. All Rights Reserved.
         </p>

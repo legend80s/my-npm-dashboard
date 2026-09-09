@@ -42,3 +42,11 @@
 .italic {
   font-style: italic;
 }
+
+.font-medium {
+  font-weight: 500;
+}
+
+.font-bold {
+  font-weight: 700;
+}
