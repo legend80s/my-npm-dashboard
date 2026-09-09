@@ -81,8 +81,8 @@ const zh = {
   recently: "最近在忙着开发什么？",
   "hottestTrend.none": "近期无下载量攀升的包",
   no: "（无）",
-  slogan1: "每个大项目都始于一只初生牛犊。按“分娩”日期管理你的整个 npm 牧群。",
-  slogan2: "一个为你最近“诞生”的包而设的 npm 仪表盘。",
+  slogan1: "每个大项目都始于一只初生牛犊。按「分娩」日期管理你的整个 npm 牧群",
+  slogan2: "一个为你最近「诞生」的包而设计的 npm 仪表盘",
 }
 
 // ── English ───────────────────────────────────────
@@ -178,6 +178,7 @@ export function t(key, vars = {}) {
 
     return key
   }
+
   if (!vars) {
     return template
   }
