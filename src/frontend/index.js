@@ -381,9 +381,13 @@ async function renderChart(container, pkgName, weeklyData) {
     // @ts-expect-error
     container.__chart = chart
     charts.add(chart)
+    // throw new Error("test error")
   } catch (error) {
     console.error("Chart.js 渲染失败:", error)
-    container.innerHTML = `<div class="chart-placeholder">📊 图表加载失败</div>`
+    container.innerHTML = `<div class="chart-placeholder">
+      <img src="https://koboyo.com/icons/svg/cartoon-person-catching-error-early.svg" alt="A person catching an error early" />
+      ${t("图表加载失败")}
+    </div>`
   }
 }
 

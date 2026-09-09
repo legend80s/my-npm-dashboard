@@ -106,6 +106,7 @@ const en = {
   "势头最猛：当前增速最快包": "Hottest Trend: packages with the highest growth rate right now",
   最近七天下载量: "Last 7 Days Downloads",
   暂无下载数据: "No download data yet.",
+  图表加载失败: "Chart rendered failed.",
 }
 
 // ── Select locale ─────────────────────────────────
