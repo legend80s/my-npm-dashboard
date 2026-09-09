@@ -22,4 +22,10 @@ pnpx npm-calf
 - 不用 react preact 使用 web components
 - 不用 TypeScript 使用原生 JavaScript mjs
 
-All data is from github and npm api and with browser caching for 429.
+### 无需 GitHub 或 npm token
+
+> ⚡ 性能和 & 429
+
+数据来自 github 和 npm 开放 api，服务端采用 [hono](https://hono.dev/) 包装这些 API 提供一对一的缓存 API（Cache-Control: max-age=3600），以便利用浏览器缓存防止 429。
+
+因此你可以无需填任何 token 而且二次启动速度极快！

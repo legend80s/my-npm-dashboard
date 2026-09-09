@@ -25,4 +25,11 @@ A npm dashboard and also a "dashboard" for all the modern web technologies.
 - JavaScript but with ES Modules and strict TypeScript types
 - Use native technologies, no bundling, no frameworks, no compilation.
 
-All data is from github and npm api and with browser caching for 429.
+### Zero config — No need for github or npm token
+
+> ⚡ Performance & 429
+
+All data is from github and npm API and with browser caching to avoid 429 using [hono](https://hono.dev/) (Cache-Control: max-age=3600
+).
+
+Therefore no token required, and the secondary startup is blazing fast ⚡.
