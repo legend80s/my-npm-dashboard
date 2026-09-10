@@ -112,7 +112,11 @@ class SettingsDialog extends BaseWebElement {
 
     // sync max search size input
     const searchSizeInput = /** @type {HTMLInputElement} */ (shadowRoot.getElementById("maxSearchSizeInput"))
-    searchSizeInput.value = String(getMaxSearchSize())
+    const size = getMaxSearchSize()
+    searchSizeInput.value = String(size)
+
+    // Fill registry search link.
+    this.#fillRegistrySearchLink(size)
 
     // max search size
     searchSizeInput.addEventListener("change", () => {
@@ -135,6 +139,18 @@ class SettingsDialog extends BaseWebElement {
 
   closeModal = () => {
     this.query("dialog").close()
+  }
+
+  /**
+   * @param {import('../../utils/base.type.js').int} size
+   */
+  #fillRegistrySearchLink = async (size) => {
+    const linkE = await this.queryAsync("#registrySearchLink")
+    const username = new URLSearchParams(location.search).get("username")
+
+    // biome-ignore lint/suspicious/noAssignInExpressions: more concise than if else
+    username && (linkE.href = linkE.href.replace("TO_FILL_MAINTAINER", username))
+    linkE.href = linkE.href.replace("TO_FILL_SIZE", String(2 * size))
   }
 }
 

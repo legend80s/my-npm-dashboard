@@ -177,7 +177,6 @@ export class URLParams {
 }
 
 /**
- *
  * @param {Function} cb
  * @param {{predicate?: (node: Node) => boolean, root?: string | Node, config?: MutationObserverInit, debounceTime?: number}} [param1]
  */

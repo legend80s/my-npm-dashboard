@@ -1,16 +1,54 @@
+import { sleep } from "../../shared/utils/light-lodash.js"
+
+/** @import { InferElementType } from '../utils/base.type.js' */
+
 export class BaseWebElement extends HTMLElement {
   /**
-   * @template {keyof HTMLElementTagNameMap} K
+   * @template {(string & {}) | keyof HTMLElementTagNameMap} K
    * @param {K} selector
-   * @returns {HTMLElementTagNameMap[K]}
+   * @returns {K extends keyof HTMLElementTagNameMap ? HTMLElementTagNameMap[K] : InferElementType<K>}
    */
-  query(selector) {
+  query = (selector) => {
+    const element = this.#queryCore(selector)
+
+    // @ts-expect-error
+    return element
+  }
+
+  /**
+   *
+   * @param {string} selector
+   * @param {{throwErrorOnNil?: boolean}} options
+   * @returns
+   */
+  #queryCore(selector, { throwErrorOnNil = true } = {}) {
     const element = this.shadowRoot?.querySelector(selector)
-    if (!element) {
+    if (!element && throwErrorOnNil) {
       throw new Error(`this.shadowRoot.querySelector("${selector}") not found`)
     }
 
     return element
+  }
+
+  /**
+   * @template {(string & {}) | keyof HTMLElementTagNameMap} K
+   * @param {K} selector
+   * @returns {Promise<K extends keyof HTMLElementTagNameMap ? HTMLElementTagNameMap[K] : InferElementType<K>>}
+   */
+  async queryAsync(selector) {
+    const GAP_IN_MS = 100
+
+    for (let i = 0; i < 10; i++) {
+      const element = this.#queryCore(selector, { throwErrorOnNil: false })
+      if (element) {
+        // @ts-expect-error
+        return element
+      }
+
+      await sleep(GAP_IN_MS)
+    }
+
+    throw new Error(`this.shadowRoot.querySelector("${selector}") not found`)
   }
 
   /**

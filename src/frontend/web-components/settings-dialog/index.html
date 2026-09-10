@@ -108,7 +108,7 @@
     /* font-family: var(--font-cursive); */
   }
 
-  .drawer label {
+  label {
     font-size: 0.875rem;
     color: var(--text);
   }
@@ -192,6 +192,10 @@
     padding-top: 16px;
     flex: 1;
   }
+
+  label[for='maxSearchSizeInput'] {
+    font-size: small;
+  }
 </style>
 
 <button
@@ -238,20 +242,25 @@
     </fieldset>
 
     <fieldset id="searchSizeWrapper" style="align-items: center">
-      <legend>Max search size</legend>
-      <label
+      <legend>Max pkg search size in npm registry</legend>
+      <!-- <label
         for="maxSearchSizeInput"
         style="margin-inline-end: 1em"
         data-i18n-text="npm 搜索包数量上限"
-      ></label>
+      ></label> -->
       <input
         type="number"
         id="maxSearchSizeInput"
-        style="width: 5em; text-align: center"
+        style="width: 4em; text-align: center"
         min="1"
         max="250"
         step="1"
       />
+
+      <span
+        style="font-size: 0.75rem"
+        data-i18n-html="how-to-set-search-limit"
+      ></span>
 
       <wa-tooltip
         for="maxSearchSizeInput"

@@ -3,11 +3,9 @@
  */
 
 /**
- *
  * @returns {boolean}
  */
 export function isChinese() {
-  // return false
   return getLocale().includes("zh")
 }
 
@@ -18,7 +16,6 @@ export function getLocale() {
 }
 
 // ── 中文 ──────────────────────────────────────────
-
 const zh = {
   // index.js
   "help.text": `\
@@ -39,10 +36,7 @@ const zh = {
 
 ## 文档:
   https://github.com/legend80s/pocket`,
-  "version.label": "pelican v{version}",
-  "error.generic": "❌ 发生错误: {message}",
 
-  // add.js
   "add.error.shell_detect": "❌ 无法检测 Shell 类型，请确保使用 zsh 或 bash",
 
   // template.js
@@ -54,6 +48,15 @@ const zh = {
   no: "（无）",
   slogan1: "每个大项目都始于一只初生牛犊。按「分娩」日期管理你的整个 npm 牧群",
   slogan2: "一个为你最近「诞生」的包而设计的 npm 仪表盘",
+
+  "how-to-set-search-limit": `先
+    <a
+      id="registrySearchLink"
+      href="https://registry.npmjs.org/-/v1/search?text=maintainer:TO_FILL_MAINTAINER&size=TO_FILL_SIZE"
+      target="_blank"
+      >打开</a
+    >
+    搜索你想要的包，调整 &size 直到找到然后将 size 设置到此处`,
 }
 
 // ── English ───────────────────────────────────────
@@ -78,9 +81,6 @@ const en = {
 ## Docs:
   https://github.com/legend80s/pocket`,
   "version.label": "pelican v{version}",
-  "error.generic": "❌ Error: {message}",
-
-  "add.error.shell_detect": "❌ Cannot detect shell type. Please use zsh or bash",
 
   recently: "What are you building these days?",
   // 近期无下载量攀升的包
@@ -107,6 +107,15 @@ const en = {
   最近七天下载量: "Last 7 Days Downloads",
   暂无下载数据: "No download data yet.",
   图表加载失败: "Chart rendered failed.",
+
+  "how-to-set-search-limit": `
+    <a
+      id="registrySearchLink"
+      href="https://registry.npmjs.org/-/v1/search?text=maintainer:TO_FILL_MAINTAINER&size=TO_FILL_SIZE"
+      target="_blank"
+      >Click</a
+    >
+    and adjust \`&size\` until the pkg find then set it back here.`,
 }
 
 // ── Select locale ─────────────────────────────────
