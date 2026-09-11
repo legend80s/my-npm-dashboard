@@ -1,4 +1,4 @@
-import type { LevelKey, LevelNumber } from "./index.js"
+import type { Decorations, LevelKey, LevelNumber } from "./index.js"
 
 export type LoggerOptions = {
   /**
@@ -30,4 +30,6 @@ export type LoggerOptions = {
    */
   emoji?: boolean
   pickEmoji?: (level: LevelKey) => string
+
+  decorations?: Partial<Decorations>
 }

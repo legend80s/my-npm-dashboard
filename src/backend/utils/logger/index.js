@@ -3,7 +3,7 @@
 
 import { styleText } from "node:util"
 
-const BASH_COLORS = {
+export const BASH_COLORS = {
   reset: "\x1b[0m",
   bold: "\x1b[1m",
   gray: "\x1b[90m",
@@ -40,14 +40,15 @@ export const LEVEL = /** @type {const} */ ({
 /**
  * @satisfies { { [key in LevelKey | 'success']: { emoji: string, color: string } } }
  */
-const decorations = /** @type {const} */ ({
+const decorations = {
   debug: { emoji: "🐞", color: BASH_COLORS.cyanBright },
   info: { emoji: styleText("blueBright", "ℹ"), color: "" },
   warn: { emoji: "🟡", color: BASH_COLORS.yellow },
   error: { emoji: "🔴", color: BASH_COLORS.red },
   success: { emoji: styleText("green", "✔"), color: BASH_COLORS.green },
-})
+}
 
+/** @typedef { typeof decorations } Decorations */
 /** @typedef { typeof LEVEL[keyof typeof LEVEL] } LevelNumber */
 /** @typedef { Exclude<Lowercase<keyof typeof LEVEL>, 'none'> } LevelKey */
 /** @import { LoggerOptions } from './logger.type.js' */
@@ -66,6 +67,10 @@ export class Logger {
     this.diffToHumanTime = opts.diffToHumanTime
     this.#now = null
     this.formatTimestamp = opts.formatTime ?? ((date) => date.toISOString())
+    this.decorations = {
+      ...decorations,
+      ...opts.decorations,
+    }
     this.color = opts.color ?? false
     this.emoji = opts.emoji ?? false
     this.formatLevel =
@@ -80,7 +85,7 @@ export class Logger {
       })
 
     /** @type {NonNullable<LoggerOptions['pickEmoji']>} */
-    this.pickEmoji = opts.pickEmoji ?? ((level) => decorations[level].emoji)
+    this.pickEmoji = opts.pickEmoji ?? ((level) => this.decorations[level].emoji)
   }
 
   /**
@@ -179,7 +184,7 @@ export class Logger {
       return console[level !== "success" ? level : "info"](leadings, ...args)
     }
 
-    const color = decorations[level].color
+    const color = this.decorations[level].color
 
     return console[level !== "success" ? level : "info"](leadings + color, ...args, BASH_COLORS.reset)
   }
