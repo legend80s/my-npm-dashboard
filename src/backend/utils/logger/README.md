@@ -10,7 +10,7 @@
   </div>
 </p>
 
-> A 🎈 light-weight substitution of [![consola](https://img.shields.io/badge/consola-gray?logo=github)](https://github.com/unjs/consola). consola is great but it's too heavy for my needs.
+> A 🎈 light-weight substitution of <a verticalAlign="sub" style="vertical-align:sub;" href="https://github.com/unjs/consola"><img alt="consola" src="https://img.shields.io/badge/consola-gray?logo=github"></a>. consola is great but it's too heavy for my needs.
 >
 > **walking-log** is a colorful yet minimal console log for **Node.js only**.
 
