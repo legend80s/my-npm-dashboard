@@ -16,11 +16,13 @@ pnpx npm-calf
 
 ## 技术决策
 
-- Native 主义者。
-  - 使用原生技术栈，不使用框架、不编译、不打包。
-  - 尽量 0 依赖，实在不行则用轻量级依赖。
-- 不用 react preact 使用 web components
-- 不用 TypeScript 使用原生 JavaScript mjs
+Native 主义者。
+
+- 使用原生技术栈，不使用框架、不编译、不打包 & 采用 Modern JS 和 CSS 编码。
+  - 不用 react / vue / preact 使用 Web Components
+  - Runtime 不用 TypeScript 使用原生 JavaScript + ESM + *.type.ts
+  - No less / scss / tailwindcss, 使用现代 CSS 语法
+- 尽量 0 依赖，实在不行则用轻量级依赖。
 
 ### 无需 GitHub 或 npm token
 
