@@ -124,11 +124,7 @@ export async function fetchPackageDetails({ name, version }, dependents, forceRe
   const publishedAt = meta.time[version] || meta.time.modified
   const createdAt = meta.time.created
 
-  const latestVerData =
-    version !== "--"
-      ? // @ts-expect-error
-        meta.versions?.[version]
-      : null
+  const latestVerData = version !== "--" ? meta.versions?.[version] : null
   const unpackedSize = latestVerData?.dist?.unpackedSize ?? null
   const dependencyCount = Object.keys(latestVerData?.dependencies || {}).length
   const versionCount = Object.keys(meta.versions || {}).length

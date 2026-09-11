@@ -151,7 +151,8 @@ interface VersionOfPkg {
   directories: Directories
   _nodeVersion: string
   _hasShrinkwrap: boolean
-  devDependencies: DevDependencies
+  devDependencies?: Dependencies
+  dependencies?: Dependencies
   _npmOperationalInternal: NpmOperationalInternal
 }
 
@@ -164,36 +165,14 @@ interface Bugs {
   url: string
 }
 
-interface _002 {
-  name: string
-  version: string
-  keywords: string[]
-  author: string
-  license: string
-  _id: string
-  maintainers: Maintainer[]
-  bin: Bin
-  dist: Dist
-  type: string
-  gitHead: string
-  scripts: Scripts
-  _npmUser: Maintainer
-  _npmVersion: string
-  description: string
-  directories: Directories
-  _nodeVersion: string
-  _hasShrinkwrap: boolean
-  devDependencies: DevDependencies
-  _npmOperationalInternal: NpmOperationalInternal
-}
-
 interface NpmOperationalInternal {
   tmp: string
   host: string
 }
 
-interface DevDependencies {
-  "@types/node": string
+type Dependencies = {
+  [pkgName: string]: string
+  // "@types/node": string
 }
 
 type Directories = {}
