@@ -85,6 +85,30 @@ test("createLogger", () => {
   logger.error(new Error("This is an example error. Everything is fine!"))
 })
 
+test("createLogger print nothing", () => {
+  const logger = createLogger({ verbose: false, level: LEVEL.NONE })
+
+  logger.debug("Using consola 3.0.0")
+
+  logger.debug("Using consola", "3.0.0")
+
+  logger.debug("Using consola", "v", 3)
+
+  logger.info("Using consola", {
+    string: "3.0.0",
+    boolean: true,
+    number: 123,
+    array: [1, 2, 3],
+    object: { a: 1, b: 2 },
+  })
+
+  logger.warn("A new version of consola is available: 3.0.1")
+
+  logger.success("Project built!")
+
+  logger.error(new Error("This is an example error. Everything is fine!"))
+})
+
 test("#e2e logger", () => {
   const url = new URL("./index.js", import.meta.url)
   const path = fileURLToPath(url)

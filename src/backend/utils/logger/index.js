@@ -214,9 +214,9 @@ export class Logger {
 
 /**
  *
- * @param {{ verbose: undefined | boolean }} param0
+ * @param {Omit<LoggerOptions, 'level'> & { level?: LevelNumber; verbose: undefined | boolean }} param0
  */
-export function createLogger({ verbose }) {
+export function createLogger({ verbose, ...rest }) {
   return new Logger({
     level: verbose ? LEVEL.DEBUG : LEVEL.INFO,
     showTime: true,
@@ -232,6 +232,8 @@ export function createLogger({ verbose }) {
     color: true,
     // emoji: true,
     showDiff: true,
+
+    ...rest,
   })
 }
 

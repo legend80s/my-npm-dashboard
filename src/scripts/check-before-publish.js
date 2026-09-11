@@ -33,6 +33,10 @@ const { values } = parseArgs({
     },
     // TODO version and help
     threshold: { type: "string", default: String(DEFAULT_THRESHOLD), description: "the threshold" },
+    // silent: {
+    //   type: "boolean",
+    //   default: false,
+    // },
     // throws when threshold overflow
     throw: {
       type: "boolean",
