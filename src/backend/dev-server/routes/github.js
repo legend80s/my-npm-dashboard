@@ -28,7 +28,7 @@ const proxies = new Set([
   .toArray()
 
 github.get("/repos/:owner/:repo", async (c) => {
-  // fetch https://api.github.com/repos/legend80s/pocket
+  // fetch https://api.github.com/repos/legend80s/my-npm-dashboard
   const owner = c.req.param("owner")
   const repo = c.req.param("repo")
 
@@ -44,7 +44,7 @@ github.get("/repos/:owner/:repo", async (c) => {
 
 // const url = `https://api.github.com/repos/${encodeURIComponent(owner)}/${encodeURIComponent(repo)}/commits?per_page=1`
 github.get("/repos/:owner/:repo/commits", async (c) => {
-  // fetch https://api.github.com/repos/legend80s/pocket/commits?per_page=1
+  // fetch https://api.github.com/repos/legend80s/my-npm-dashboard/commits?per_page=1
   const owner = c.req.param("owner")
   const repo = c.req.param("repo")
 

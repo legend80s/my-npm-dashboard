@@ -1,5 +1,5 @@
 /**
- * https://api.github.com/repos/legend80s/pocket
+ * https://api.github.com/repos/legend80s/my-npm-dashboard
  */
 export interface RepoResp {
   id: number

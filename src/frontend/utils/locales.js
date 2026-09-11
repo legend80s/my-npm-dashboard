@@ -35,7 +35,7 @@ const zh = {
   pelican catch <fish_name1> <fish_name2> ... 批量安装
 
 ## 文档:
-  https://github.com/legend80s/pocket`,
+  https://github.com/legend80s/my-npm-dashboard`,
 
   "add.error.shell_detect": "❌ 无法检测 Shell 类型，请确保使用 zsh 或 bash",
 
@@ -79,7 +79,7 @@ const en = {
   pelican catch <alias_name1> <alias_name2>   Install multiple aliases
 
 ## Docs:
-  https://github.com/legend80s/pocket`,
+  https://github.com/legend80s/my-npm-dashboard`,
   "version.label": "pelican v{version}",
 
   recently: "What are you building these days?",

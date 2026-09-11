@@ -1,7 +1,7 @@
 # NPM-Calf 🐘 - Your NPM Dashboard
 
 <h2 align="center">
-  <img src="https://raw.githubusercontent.com/legend80s/pocket/refs/heads/main/src/assets/calf-elephant.svg" width="300" />
+  <img src="https://raw.githubusercontent.com/legend80s/my-npm-dashboard/refs/heads/main/src/assets/calf-elephant.svg" width="300" />
 </h2>
 
 [中文](./README.zh.md) | English
