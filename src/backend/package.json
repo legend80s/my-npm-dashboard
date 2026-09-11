@@ -10,9 +10,5 @@
   },
   "keywords": [],
   "author": "",
-  "license": "ISC",
-  "dependencies": {
-    "@hono/node-server": "^2.0.12",
-    "hono": "^4.12.32"
-  }
+  "license": "ISC"
 }
