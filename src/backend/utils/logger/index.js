@@ -12,9 +12,13 @@ const BASH_COLORS = {
   yellow: "\x1b[33m",
   blue: "\x1b[34m",
   brightBlue: "\x1b[94m",
+  // '亮青色'
+  cyanBright: "\x1b[96m",
   magenta: "\x1b[35m",
   cyan: "\x1b[36m",
 }
+
+// styleText('cyanBright')
 
 /**
  * `trace (最低) < debug < info < warn < error < fatal (最高)`
@@ -37,8 +41,8 @@ export const LEVEL = /** @type {const} */ ({
  * @satisfies { { [key in LevelKey | 'success']: { emoji: string, color: string } } }
  */
 const decorations = /** @type {const} */ ({
-  debug: { emoji: "🐞", color: "" },
-  info: { emoji: styleText("blueBright", "ℹ"), color: BASH_COLORS.brightBlue },
+  debug: { emoji: "🐞", color: BASH_COLORS.cyanBright },
+  info: { emoji: styleText("blueBright", "ℹ"), color: "" },
   warn: { emoji: "🟡", color: BASH_COLORS.yellow },
   error: { emoji: "🔴", color: BASH_COLORS.red },
   success: { emoji: styleText("green", "✔"), color: BASH_COLORS.green },
