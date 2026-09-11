@@ -18,7 +18,7 @@
 
 ## Features
 
-**0** dependencies, just one file with 120 LOC 🤏. It's a drop-in replacement for [consola](https://github.com/unjs/consola).
+**0** dependencies, just one file with 120 LOC 🤏. It's a drop-in replacement for consola.
 
 Copy or install however you like.
 
