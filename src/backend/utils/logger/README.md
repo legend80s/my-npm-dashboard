@@ -10,7 +10,7 @@
   </div>
 </p>
 
-> A light-weight substitution of [![consola](https://img.shields.io/badge/consola-gray?logo=github)](https://github.com/unjs/consola). consola is great but it's too heavy for my needs.
+> A light-weight 🎈 substitution of [![consola](https://img.shields.io/badge/consola-gray?logo=github)](https://github.com/unjs/consola). consola is great but it's too heavy for my needs.
 >
 > **walking-log** is a colorful yet minimal console log for **Node.js only**.
 
@@ -18,7 +18,7 @@
 
 ## Features
 
-Zero dependencies, just one file with 120 LOC. It's a drop-in replacement for [consola](https://github.com/unjs/consola).
+**0** dependencies, just one file with 120 LOC 🤏. It's a drop-in replacement for [consola](https://github.com/unjs/consola).
 
 Copy or install however you like.
 
