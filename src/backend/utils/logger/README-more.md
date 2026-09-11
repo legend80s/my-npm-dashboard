@@ -33,6 +33,6 @@ logger.error(new Error("This is an example error. Everything is fine!"))
 | `diffToHumanTime` | Time diff to human readable string. | (timeDiff: number) => `${timeDiff.toLocaleString("en")}ms` | |
 | `formatLevel` | How to print level. | `(level) => '[' + level + ']'` | |
 | `pickEmoji` | Render emoji by level. | - | |
-| `decorations` | Customize color and emoji. See [customize](./index.test.js#L33) | [default `decorations`](./index.js#L43) | |
+| `decorations` | Customize color and emoji. See [customize](./index.test.js#L38). | [default `decorations`](./index.js#L43) | |
 
 [🧟 Want read even more? 还想要阅读更多？](./README-more-more.md)
