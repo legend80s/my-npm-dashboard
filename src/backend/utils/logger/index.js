@@ -113,7 +113,7 @@ export class Logger {
   /**
    * @param  {unknown[]} args
    */
-  debug = (...args) => {
+  debug(...args) {
     if (this.level <= LEVEL.DEBUG) {
       this.#dispatch("debug", args)
     }
