@@ -8,6 +8,7 @@ import readline from "node:readline"
 import { parseArgs } from "node:util"
 import { createLogger } from "walking-log"
 import { fetchJSON } from "../shared/utils/light-lodash.js"
+import { LEVEL } from "walking-log"
 
 /** @import { NpmPackDryRunJSONItem, NpmPackDryRunJSON } from './check.type.ts' */
 
@@ -33,10 +34,10 @@ const { values } = parseArgs({
     },
     // TODO version and help
     threshold: { type: "string", default: String(DEFAULT_THRESHOLD), description: "the threshold" },
-    // silent: {
-    //   type: "boolean",
-    //   default: false,
-    // },
+    silent: {
+      type: "boolean",
+      default: false,
+    },
     // throws when threshold overflow
     throw: {
       type: "boolean",
@@ -54,8 +55,9 @@ const colors = {
   RESET: "\x1b[0m",
 }
 
+// @ts-expect-error
 const logger = createLogger({
-  verbose: values.verbose,
+  level: values.silent ? LEVEL.ERROR : values.verbose ? LEVEL.DEBUG : LEVEL.INFO,
 })
 
 async function main() {

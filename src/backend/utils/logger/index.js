@@ -214,7 +214,7 @@ export class Logger {
 
 /**
  *
- * @param {Omit<LoggerOptions, 'level'> & { level?: LevelNumber; verbose: undefined | boolean }} param0
+ * @param {Omit<LoggerOptions, 'level'> & { level?: LevelNumber; verbose?: boolean }} param0
  */
 export function createLogger({ verbose, ...rest }) {
   return new Logger({
