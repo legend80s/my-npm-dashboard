@@ -18,10 +18,10 @@ export function sleep(ms) {
 
 /**
  * @param {string} url
- * @param {{ label: string; verbose?: boolean }} options
+ * @param {{ label?: string; verbose?: boolean }} options
  * @returns {Promise<unknown>}
  */
-export async function fetchJSON(url, { label, verbose = false }) {
+export async function fetchJSON(url, { label, verbose = false } = {}) {
   if (verbose) {
     console.log(`${YELLOW}  [fetchJSON]`, label, url, RESET)
   }

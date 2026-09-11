@@ -1,6 +1,6 @@
-export type NpmPackDryRunJSON = Item[]
+export type NpmPackDryRunJSON = NpmPackDryRunJSONItem[]
 
-type Item = {
+export type NpmPackDryRunJSONItem = {
   id: string
   name: string
   version: string

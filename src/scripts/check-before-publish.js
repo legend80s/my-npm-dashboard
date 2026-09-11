@@ -9,11 +9,17 @@ import { parseArgs } from "node:util"
 import { createLogger } from "walking-log"
 import { fetchJSON } from "../shared/utils/light-lodash.js"
 
-/** @typedef {number} int */
+/** @import { NpmPackDryRunJSONItem, NpmPackDryRunJSON } from './check.type.ts' */
 
-const DEFAULT_THRESHOLD = 5
+/** @typedef {number} int */
+/** @typedef {NpmPackDryRunJSONItem['files'][0]} File */
+/** @typedef {`${string}/${string}`} Directory */
+
+const DEFAULT_THRESHOLD = 6
 const pkgName = "npm-calf"
 const testing = false
+
+const PACK_DRY_RUN_CMD = `npm pack --dry-run`
 
 // abort if there is any error
 const { values } = parseArgs({
@@ -50,7 +56,7 @@ async function main() {
   await check()
 }
 async function check() {
-  const { diff, version, totalFiles, prevFileCount, prevVersion } = await fetchDiff()
+  const { diff, version, totalFiles, prevFileCount, prevVersion, files } = await fetchDiff()
   const threshold = Number(values.threshold)
 
   if (Math.abs(diff) > threshold) {
@@ -69,7 +75,9 @@ async function check() {
     const msg2 = `The diff (Math.abs(${totalFiles} - ${prevFileCount}) = ${diff}) ${red("❯")} threshold (${threshold}).`
     logger.error(colors.RESET + msg2 + colors.RESET)
 
-    const msg3 = `This usually shows sign of error which means there are many files missing or extra files added by mistake.`
+    printFilesStats(files)
+
+    const msg3 = `This usually shows sign of error which means there are too many files missing or too many extra files added by mistake.`
     logger.error(msg3)
 
     const isInteractive = process.stdin.isTTY
@@ -85,7 +93,11 @@ async function check() {
 
       logger.debug("  Exit with error log only")
     } else {
-      const answer = await confirmInteractive(`\nIf it's OK to continue publishing enter "yes", "n" to abort.\n❯ `)
+      console.log()
+      console.log(`1. Confirm the files above to publish are all expected.`)
+      const answer = await confirmInteractive(
+        `2. If it's OK to continue publishing enter "yes", "n" to abort.\n${cyan("❯")} `,
+      )
       if (answer !== "yes") {
         logger.debug("Aborted by user.\n")
 
@@ -108,32 +120,33 @@ async function fetchDiff() {
 }
 
 async function fetchDiffCore() {
+  logger.info(`Start check files count for`, pkgName)
+
   const { latestVersionFileCount: prevFileCount, latestVersion: prevVersion } =
     await getPrevPublishedFilesCount(pkgName)
 
-  logger.info(`Previous published v${prevVersion} files count is`, prevFileCount)
+  logger.info(`Previous published v${prevVersion} files count:`, prevFileCount)
 
-  const tarballDetails = await getToPublishFilesCount()
+  const tarballDetails = await fetchToPublishInfo()
 
-  const { name, entryCount: totalFiles, version } = tarballDetails
+  const { name, entryCount: totalFiles, version, files } = tarballDetails
 
+  const msgWrongDir = `Check if \`${PACK_DRY_RUN_CMD}\` ran in the wrong directory.`
   if (name !== pkgName) {
-    throw new Error(
-      `Tarball name mismatch. Expected "${pkgName}", but got "${name}". Check if \`npm pack --dry-run\` ran in the wrong directory.`,
-    )
+    throw new Error(`Tarball name mismatch. Expected "${pkgName}", but got "${name}". ${msgWrongDir}`)
   }
 
   if (version === prevVersion) {
     throw new Error(
-      `Version to publish v${version} should not the same with prev version v${prevVersion}. Check if \`npm pack --dry-run\` ran in the wrong directory.`,
+      `Version to publish v${version} should not the same with prev version v${prevVersion}. ${msgWrongDir}`,
     )
   }
 
-  logger.info(`To publish ${name} v${version} files count is`, totalFiles)
+  logger.info(`To publish v${version} files count:`, totalFiles)
 
   const diff = totalFiles - prevFileCount
 
-  return { diff, prevVersion, prevFileCount, totalFiles, version }
+  return { diff, prevVersion, prevFileCount, totalFiles, version, files }
 }
 
 /**
@@ -190,23 +203,71 @@ async function getPrevPublishedFilesCount(pkgName) {
 }
 
 /**
- * @returns {Promise<{ name: string, version: string, entryCount: int }>}
+ * @returns {Promise<Pick<NpmPackDryRunJSONItem, 'name' | 'version' | 'entryCount' | 'files'>>}
  */
-async function getToPublishFilesCount() {
+async function fetchToPublishInfo() {
   if (testing) {
     return {
       name: pkgName,
       version: "1.3.0",
       entryCount: 659,
+      files: new Array(659),
     }
   }
-  const stdout = execSync(`npm pack --dry-run --json`).toString("utf-8")
+  const stdout = execSync(`${PACK_DRY_RUN_CMD} --json`).toString("utf-8")
 
-  const parsed = /** @type {import('./check.type.js').NpmPackDryRunJSON} */ (JSON.parse(stdout))
+  const parsed = /** @type {NpmPackDryRunJSON} */ (JSON.parse(stdout))
 
   assert(parsed[0])
 
   return parsed[0]
+}
+
+/**
+ *
+ * @param {string | undefined} filepath
+ * @returns {filepath is Directory}
+ */
+function isDir(filepath) {
+  return !!filepath && !filepath.includes(".")
+}
+
+/**
+ *
+ * @param {File[]} files
+ */
+function printFilesStats(files) {
+  // group by second level dir if no second level dir use first lever fallback to whole file name
+  const grouped = files.reduce(
+    (acc, file) => {
+      const [first, second] = file.path.split("/")
+      // if (file.path.includes("assets")) {
+      //   console.log("assets", file.path)
+      // }
+      if (isDir(second)) {
+        acc[second] = [...(acc[second] || []), file]
+      } else if (isDir(first)) {
+        assert(first)
+        acc[first] = [...(acc[first] || []), file]
+      } else {
+        acc[file.path] = [...(acc[file.path] || []), file]
+      }
+
+      return acc
+    },
+    /** @type {Record<string, File[]>} */ ({}),
+  )
+
+  const sorted = Object.entries(grouped).sort((a, b) => b[1].length - a[1].length)
+
+  console.log()
+  logger.info("## Files stats (by parsing", green(`\`${PACK_DRY_RUN_CMD} --json\``), "and grouped):")
+  sorted.forEach(([key, files], index) => {
+    // logger.info(index + 1, `\b.`, key, ":", files.length)
+    logger.info(`${cyan(index + 1)}.`, key, "\b:", files.length)
+  })
+  // console.log(Object.fromEntries(sorted.map(([key, files]) => [key, files.length])))
+  console.log()
 }
 
 /**

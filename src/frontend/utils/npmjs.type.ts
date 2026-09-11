@@ -117,18 +117,18 @@ interface Time {
 }
 
 interface Versions {
-  "0.0.2": _002
-  "0.0.3": _003
-  "0.0.4": _003
-  "0.0.5": _003
-  "0.0.6": _006
-  "1.0.0": _006
-  "1.1.0": _110
-  "1.1.1": _110
-  "1.1.2": _110
+  [version: string]: VersionOfPkg
+  // "0.0.3": _003
+  // "0.0.4": _003
+  // "0.0.5": _003
+  // "0.0.6": _006
+  // "1.0.0": _006
+  // "1.1.0": VersionOfPkg
+  // "1.1.1": VersionOfPkg
+  // "1.1.2": VersionOfPkg
 }
 
-interface _110 {
+interface VersionOfPkg {
   name: string
   version: string
   keywords: string[]
@@ -141,70 +141,6 @@ interface _110 {
   bin: Bin
   dist: Dist
   main: string
-  type: string
-  gitHead: string
-  scripts: Scripts2
-  _npmUser: Maintainer
-  repository: Repository
-  _npmVersion: string
-  description: string
-  directories: Directories
-  _nodeVersion: string
-  _hasShrinkwrap: boolean
-  devDependencies: DevDependencies
-  _npmOperationalInternal: NpmOperationalInternal
-}
-
-interface _006 {
-  name: string
-  version: string
-  keywords: string[]
-  author: string
-  license: string
-  _id: string
-  maintainers: Maintainer[]
-  homepage: string
-  bugs: Bugs
-  bin: Bin
-  dist: Dist
-  type: string
-  gitHead: string
-  scripts: Scripts2
-  _npmUser: Maintainer
-  repository: Repository
-  _npmVersion: string
-  description: string
-  directories: Directories
-  _nodeVersion: string
-  _hasShrinkwrap: boolean
-  devDependencies: DevDependencies
-  _npmOperationalInternal: NpmOperationalInternal
-}
-
-interface Scripts2 {
-  test: string
-  start: string
-  coverage: string
-  "pub:major": string
-  "pub:minor": string
-  "pub:patch": string
-  typecheck: string
-  preversion: string
-  postversion: string
-}
-
-interface _003 {
-  name: string
-  version: string
-  keywords: string[]
-  author: string
-  license: string
-  _id: string
-  maintainers: Maintainer[]
-  homepage: string
-  bugs: Bugs
-  bin: Bin
-  dist: Dist
   type: string
   gitHead: string
   scripts: Scripts
@@ -262,16 +198,7 @@ interface DevDependencies {
 
 type Directories = {}
 
-interface Scripts {
-  test: string
-  start: string
-  "pub:major": string
-  "pub:minor": string
-  "pub:patch": string
-  typecheck: string
-  preversion: string
-  postversion: string
-}
+type Scripts = Record<string, string>
 
 interface Dist {
   shasum: string
