@@ -6,6 +6,7 @@ import assert from "node:assert"
 import { execSync } from "node:child_process"
 import readline from "node:readline"
 import { parseArgs } from "node:util"
+// @ts-expect-error
 import { createLogger } from "walking-log"
 import { fetchJSON } from "../shared/utils/light-lodash.js"
 

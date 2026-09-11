@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 
 import { parseArgs } from "node:util"
+// @ts-expect-error
 import { createLogger } from "walking-log"
 import { startServer } from "../backend/dev-server/index.js"
 import { openBrowser } from "../backend/utils/platform.js"
