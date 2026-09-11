@@ -10,7 +10,7 @@
   "scripts": {
     "test": "node --test",
     "typecheck": "tsgo --noEmit",
-    "check-files-to-publish": "node ./scripts/check-before-publish.js --threshold=5 --throw --no-verbose",
+    "check-files-to-publish": "node ./scripts/check-before-publish.js --threshold=5 --throw --silent",
     "start": "node ./bin/index.js",
     "// dev:node-watch": "need reload page manually",
     "create:web-component": "node ./scripts/create-web-component.js",
@@ -33,7 +33,7 @@
   "dependencies": {
     "@hono/node-server": "^2.1.1",
     "hono": "^4.13.5",
-    "walking-log": "^0.2.0"
+    "walking-log": "^0.2.1"
   },
   "devDependencies": {
     "@tauri-apps/cli": "^2",

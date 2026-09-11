@@ -6,9 +6,8 @@ import assert from "node:assert"
 import { execSync } from "node:child_process"
 import readline from "node:readline"
 import { parseArgs } from "node:util"
-import { createLogger } from "walking-log"
+import { createLogger, LEVEL } from "walking-log"
 import { fetchJSON } from "../shared/utils/light-lodash.js"
-import { LEVEL } from "walking-log"
 
 /** @import { NpmPackDryRunJSONItem, NpmPackDryRunJSON } from './check.type.ts' */
 
@@ -55,9 +54,9 @@ const colors = {
   RESET: "\x1b[0m",
 }
 
-// @ts-expect-error
+const { verbose, silent } = values
 const logger = createLogger({
-  level: values.silent ? LEVEL.ERROR : values.verbose ? LEVEL.DEBUG : LEVEL.INFO,
+  level: silent ? LEVEL.ERROR : verbose ? LEVEL.DEBUG : LEVEL.INFO,
 })
 
 async function main() {
@@ -118,14 +117,16 @@ async function check() {
 }
 async function fetchDiff() {
   const timeLabel = `[check-before-publish] ${pkgName}`
-  console.time(timeLabel)
+  verbose && console.time(timeLabel)
 
   try {
     return await fetchDiffCore()
   } finally {
-    console.log()
-    console.timeEnd(timeLabel)
-    console.log()
+    if (verbose) {
+      console.log()
+      console.timeEnd(timeLabel)
+      console.log()
+    }
   }
 }
 
@@ -137,19 +138,11 @@ async function fetchDiffCore() {
 
   logger.info(`Previous published v${prevVersion} file count:`, prevFileCount)
 
-  const tarballDetails = await fetchToPublishInfo()
-
-  const { name, entryCount: totalFiles, version, files } = tarballDetails
+  const { name, entryCount: totalFiles, version, files } = await fetchToPublishInfo()
 
   const msgWrongDir = `Check if \`${PACK_DRY_RUN_CMD}\` ran in the wrong directory.`
   if (name !== pkgName) {
     throw new Error(`Tarball name mismatch. Expected "${pkgName}", but got "${name}". ${msgWrongDir}`)
-  }
-
-  if (version === prevVersion) {
-    throw new Error(
-      `Version to publish v${version} should not the same with prev version v${prevVersion}. ${msgWrongDir}`,
-    )
   }
 
   const diff = totalFiles - prevFileCount

@@ -2,7 +2,7 @@
   "name": "walking-log",
   "description": "A light-weight consola: A simple console.log only for printing messages in Node.js with colors, time, time diff and emojis. I use it in CLI app usually",
   "private": false,
-  "version": "0.2.0",
+  "version": "0.2.1",
   "type": "module",
   "main": "index.js",
   "types": "dist/index.d.ts",
