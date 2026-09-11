@@ -1,4 +1,4 @@
-// If files count to publish is less or more than previous published files count by an threshold, exit with error
+// If file count to publish is less or more than previous published file count by an threshold, exit with error
 // because it usually shows sign of error which means there is many files missing or extra files added by mistake
 // use `npm pack --dry-run`
 
@@ -17,7 +17,9 @@ import { fetchJSON } from "../shared/utils/light-lodash.js"
 
 const DEFAULT_THRESHOLD = 6
 const pkgName = "npm-calf"
-const testing = false
+
+const testing = true
+const overlimit = false
 
 const PACK_DRY_RUN_CMD = `npm pack --dry-run`
 
@@ -36,7 +38,7 @@ const { values } = parseArgs({
       type: "boolean",
       default: true,
       description:
-        "Should exit with error when files count to publish is less or more than previous published files count by an threshold?",
+        "Should exit with error when file count to publish is less or more than previous published file count by an threshold?",
     },
   },
 })
@@ -67,9 +69,9 @@ async function check() {
     const msg1 =
       `To publish ` +
       red(`v${version}`) +
-      ` files count is ${red(totalFiles)}, but previous published ` +
+      ` file count is ${red(totalFiles)}, but previous published ` +
       green(`v${prevVersion}`) +
-      ` files count is ${green(prevFileCount)}.`
+      ` file count is ${green(prevFileCount)}.`
     logger.error(colors.RESET + msg1 + colors.RESET)
 
     const msg2 = `The diff (Math.abs(${totalFiles} - ${prevFileCount}) = ${diff}) ${red("❯")} threshold (${threshold}).`
@@ -82,7 +84,7 @@ async function check() {
 
     const isInteractive = process.stdin.isTTY
 
-    const fileCountOverThresholdError = `FileCountOverThresholdError: previous published files count (${prevFileCount}) is too different from to publish files count (${totalFiles}).`
+    const fileCountOverThresholdError = `FileCountOverThresholdError: previous published file count (${prevFileCount}) is too different from to publish file count (${totalFiles}).`
 
     if (!isInteractive) {
       logger.debug("Not interactive mode")
@@ -120,12 +122,12 @@ async function fetchDiff() {
 }
 
 async function fetchDiffCore() {
-  logger.info(`Start check files count for`, pkgName)
+  logger.info(`Start check file count for`, pkgName)
 
   const { latestVersionFileCount: prevFileCount, latestVersion: prevVersion } =
     await getPrevPublishedFilesCount(pkgName)
 
-  logger.info(`Previous published v${prevVersion} files count:`, prevFileCount)
+  logger.info(`Previous published v${prevVersion} file count:`, prevFileCount)
 
   const tarballDetails = await fetchToPublishInfo()
 
@@ -142,9 +144,15 @@ async function fetchDiffCore() {
     )
   }
 
-  logger.info(`To publish v${version} files count:`, totalFiles)
-
   const diff = totalFiles - prevFileCount
+
+  logger.info(
+    `To publish v${version} file count:`,
+    totalFiles,
+    "\b. File count diff:",
+    diff,
+    `(= ${totalFiles} - ${prevFileCount})`,
+  )
 
   return { diff, prevVersion, prevFileCount, totalFiles, version, files }
 }
@@ -207,11 +215,12 @@ async function getPrevPublishedFilesCount(pkgName) {
  */
 async function fetchToPublishInfo() {
   if (testing) {
+    const entryCount = overlimit ? 659 : 86
     return {
       name: pkgName,
       version: "1.3.0",
-      entryCount: 659,
-      files: new Array(659),
+      entryCount,
+      files: new Array(entryCount),
     }
   }
   const stdout = execSync(`${PACK_DRY_RUN_CMD} --json`).toString("utf-8")

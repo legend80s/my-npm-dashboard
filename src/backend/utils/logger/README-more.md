@@ -15,7 +15,6 @@ const logger = new Logger({
   },
 })
 
-
 logger.warn("A new version of walking-log is available: 0.0.5")
 logger.error(new Error("This is an example error. Everything is fine!"))
 ```
