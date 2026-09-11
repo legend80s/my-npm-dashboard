@@ -18,7 +18,7 @@ import { fetchJSON } from "../shared/utils/light-lodash.js"
 const DEFAULT_THRESHOLD = 6
 const pkgName = "npm-calf"
 
-const testing = true
+const testing = false
 const overlimit = false
 
 const PACK_DRY_RUN_CMD = `npm pack --dry-run`
@@ -61,8 +61,10 @@ async function check() {
   const { diff, version, totalFiles, prevFileCount, prevVersion, files } = await fetchDiff()
   const threshold = Number(values.threshold)
 
-  if (Math.abs(diff) > threshold) {
+  if (Math.abs(diff) >= threshold) {
     handleThresholdExceeded()
+  } else {
+    logger.success("✅ File count check success. Ready to publish!")
   }
 
   async function handleThresholdExceeded() {
