@@ -69,7 +69,9 @@ async function check() {
   if (Math.abs(diff) >= threshold) {
     handleThresholdExceeded()
   } else {
-    logger.success("✅ File count check success. Ready to publish!")
+    logger.success(
+      `✅ File count check success: diff (${Math.abs(diff)}) < threshold (${threshold}). Ready to publish!`,
+    )
   }
 
   async function handleThresholdExceeded() {
@@ -131,7 +133,7 @@ async function fetchDiff() {
 }
 
 async function fetchDiffCore() {
-  logger.info(`Start check file count for`, pkgName)
+  logger.info(`Start checking file count for`, pkgName)
 
   const { latestVersionFileCount: prevFileCount, latestVersion: prevVersion } =
     await getPrevPublishedFilesCount(pkgName)
@@ -148,7 +150,7 @@ async function fetchDiffCore() {
   const diff = totalFiles - prevFileCount
 
   logger.info(
-    `To publish v${version} file count:`,
+    `To publish file count:`,
     totalFiles,
     "\b. File count diff:",
     diff,
