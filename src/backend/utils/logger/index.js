@@ -195,7 +195,7 @@ export class Logger {
 
     const humanTime = this.#diffToHumanTime(diff)
 
-    return `${BASH_COLORS.yellow}+${humanTime}${BASH_COLORS.reset}`
+    return `${BASH_COLORS.yellow}${humanTime}${BASH_COLORS.reset}`
   }
 
   /**
@@ -208,7 +208,7 @@ export class Logger {
       return this.diffToHumanTime(diff)
     }
 
-    return `${diff.toLocaleString("en")}ms`
+    return `+${diff.toLocaleString("en")}ms`
   }
 }
 
@@ -223,10 +223,10 @@ export function createLogger({ verbose, ...rest }) {
     formatTime: (date) => date.toLocaleString(),
     diffToHumanTime: (diff) => {
       if (diff < 1000) {
-        return `${diff}ms`
+        return `+${diff}ms`
       }
 
-      return `${Math.floor(diff / 1000)}.${String(diff % 1000).padStart(3, "0")}s`
+      return `+${Math.floor(diff / 1000)}.${String(diff % 1000).padStart(3, "0")}s`
     },
     // formatLevel: (level) => `[${level.toUpperCase()}]`,
     color: true,
@@ -235,49 +235,4 @@ export function createLogger({ verbose, ...rest }) {
 
     ...rest,
   })
-}
-
-const isMain = () => {
-  try {
-    return import.meta.main
-  } catch {
-    return false
-  }
-}
-
-if (isMain()) {
-  const logger = createLogger({ verbose: true })
-
-  logger.info("Hello from the wasteland.")
-  logger.warn("Watch out for walkers.")
-  logger.error("We lost another one.")
-
-  const { setTimeout: sleep } = await import("node:timers/promises")
-
-  logger.debug("Using consola 3.0.0")
-
-  await sleep(100)
-  logger.debug("Using consola", "3.0.0")
-
-  await sleep(100)
-  logger.debug("Using consola", "v", 3)
-
-  await sleep(100)
-  logger.info("Using consola", {
-    string: "3.0.0",
-    boolean: true,
-    number: 123,
-    array: [1, 2, 3],
-    object: { a: 1, b: 2 },
-  })
-
-  await sleep(100)
-  logger.warn("A new version of consola is available: 3.0.1")
-
-  await sleep(1000)
-  logger.success("Project built!")
-
-  setTimeout(() => {
-    logger.error(new Error("This is an example error. Everything is fine!"))
-  }, 1000)
 }
