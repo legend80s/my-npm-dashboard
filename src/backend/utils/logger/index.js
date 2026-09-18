@@ -102,7 +102,7 @@ export class Logger {
     /** @type {import('node:util').InspectColor[] | null} */
     const color =
       level === "success"
-        ? ["white", "bgGreen"]
+        ? ["black", "bgGreenBright"]
         : level === "warn"
           ? ["black", "bgYellow"]
           : level === "error"
