@@ -738,7 +738,7 @@ function createCardElement(pkg) {
   if ("error" in pkg) {
     card.innerHTML = `
       <div class="card-header">
-          <span class="card-name">⚠️ ${pkg.name}</span>
+          <h3 class="card-name">⚠️ ${pkg.name}</h3>
           <span class="card-version">--</span>
       </div>
       <div class="card-metrics" style="color:var(--red);">
@@ -770,7 +770,7 @@ function createCardElement(pkg) {
 
   card.innerHTML = `
       <header class="card-header">
-          <a class="card-name" href="${NPMJS_DOMAIN}/package/${name}" target="_blank">${name}</a>
+          <h3 class="card-name" href="${NPMJS_DOMAIN}/package/${name}" target="_blank">${name}</h3>
 
           <div style="white-space: nowrap;">
             <img title="v${pkg.version}" src="https://img.shields.io/npm/v/${name}.svg?style=flat" alt="NPM Version" />

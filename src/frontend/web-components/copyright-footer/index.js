@@ -33,7 +33,7 @@ window.customElements.define(
         </style>
 
         <footer>
-        <p class="" style="font-family: Georgia, sans-serif;">
+        <p class="" style="xfont-family: Georgia, sans-serif;">
           ${t("slogan1")}
         </p>
         <p class="${mainSloganCls}">${t("slogan2")}</p>

@@ -75,6 +75,26 @@
   padding: 0;
   box-sizing: border-box;
 }
+/* https://www.gic.com.sg/content/themes/gic_2021/assets/fonts/CanelaDeck-Medium.woff2 */
+@font-face {
+  font-family: CanelaDeck;
+  src:
+    url(https://www.gic.com.sg/content/themes/gic_2021/assets/fonts/CanelaDeck-Regular.woff2) format("woff2"),
+    url(https://www.gic.com.sg/content/themes/gic_2021/assets/fonts/CanelaDeck-Regular.woff) format("woff");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: CanelaDeck;
+  src:
+    url(https://www.gic.com.sg/content/themes/gic_2021/assets/fonts/CanelaDeck-Medium.woff2) format("woff2"),
+    url(https://www.gic.com.sg/content/themes/gic_2021/assets/fonts/CanelaDeck-Medium.woff) format("woff");
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
 
 /* @font-face {
   font-family: "Plantin MT Pro";
@@ -103,9 +123,7 @@ h1,
 h2,
 h3,
 h4 {
-  /* font-family:
-    Arbutus Slab,
-    sans-serif; */
+  font-family: CanelaDeck, sans-serif;
   /* font-weight: 600; */
   letter-spacing: -0.02em;
   line-height: calc(4px + 2ex);
