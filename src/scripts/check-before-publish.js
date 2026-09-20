@@ -1,7 +1,8 @@
 // If file count to publish is less or more than previous published file count by an threshold, exit with error
-// because it usually shows sign of error which means there is many files missing or extra files added by mistake
-// use `npm pack --dry-run`
-
+// Because it usually shows sign of error which means there is many files missing or extra files added by mistake
+// Use `npm pack --dry-run` to get the file count before publish and `https://registry.npmjs.org/${pkgName}` to get the file count of previous published version.
+// **dont‑ship‑unexpected‑files** pack-lint  packwatchman pack-abacus pack-governor
+// packmeerkat packgoose pack-xray pack-hold-on shipwright
 import assert from "node:assert"
 import { execSync } from "node:child_process"
 import readline from "node:readline"
@@ -273,10 +274,11 @@ function printFilesStats(files) {
   const sorted = Object.entries(grouped).sort((a, b) => b[1].length - a[1].length)
 
   console.log()
-  logger.info("## Files stats (by parsing", green(`\`${PACK_DRY_RUN_CMD} --json\``), "and grouped):")
+  console.info("## Files stats (by parsing", green(`\`${PACK_DRY_RUN_CMD} --json\``), "and grouped):")
+  const len = String(sorted.length).length
   sorted.forEach(([key, files], index) => {
     // logger.info(index + 1, `\b.`, key, ":", files.length)
-    logger.info(`${cyan(index + 1)}.`, key, "\b:", files.length)
+    console.info(`${cyan((index + 1).toString().padStart(len, "0"))}.`, key, "\b:", files.length)
   })
   // console.log(Object.fromEntries(sorted.map(([key, files]) => [key, files.length])))
   console.log()

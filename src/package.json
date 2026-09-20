@@ -10,7 +10,7 @@
   "scripts": {
     "test": "node --test",
     "typecheck": "tsgo --noEmit",
-    "check-files-to-publish": "node ./scripts/check-before-publish.js --threshold=5 --throw --silent",
+    "check-files-to-publish": "shipwright --threshold-count=5 --throw --no-silent",
     "start": "node ./bin/index.js",
     "// dev:node-watch": "need reload page manually",
     "create:web-component": "node ./scripts/create-web-component.js",
@@ -36,11 +36,11 @@
     "walking-log": "^0.2.1"
   },
   "devDependencies": {
-    "@tauri-apps/cli": "^2",
     "@types/node": "^26.1.1",
     "chart.js": "^4.5.1",
     "concurrently": "^10.0.4",
     "live-server": "^1.2.2",
+    "npm-shipwright": "^0.2.0",
     "sourdough-toast": "^0.3.0"
   },
   "keywords": [
