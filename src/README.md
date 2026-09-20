@@ -1,4 +1,4 @@
-# NPM-Calf 🐘 - Your NPM Dashboard
+<h1 align="center">NPM-Calf 🐘 - Your NPM Dashboard</h1>
 
 <h2 align="center">
   <img src="https://raw.githubusercontent.com/legend80s/my-npm-dashboard/refs/heads/main/src/assets/calf-elephant.svg" width="300" />
