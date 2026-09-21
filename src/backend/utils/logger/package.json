@@ -2,7 +2,7 @@
   "name": "walking-log",
   "description": "A light-weight consola: A simple console.log only for printing messages in Node.js with colors, time, time diff and emojis. I use it in CLI app usually",
   "private": false,
-  "version": "1.0.0",
+  "version": "1.0.1",
   "type": "module",
   "main": "index.js",
   "types": "dist/index.d.ts",
@@ -15,11 +15,12 @@
     "test": "node --test",
     "typecheck": "tsc --noEmit",
     "generate:types": "tsc index.js --declaration --emitDeclarationOnly --outDir dist --ignoreConfig --allowJs",
+    "commit2": "git commit -m \"chore: bump to v%npm_package_version%\" package.json",
     "pub:patch": "npm version patch",
     "pub:minor": "npm version minor",
     "pub:major": "npm version major",
     "preversion": "npm test && npm run typecheck && npm run generate:types",
-    "postversion": "npm publish && git push && git push --tags"
+    "postversion": "npm publish && npm run commit && git push && git push --tags"
   },
   "repository": {
     "type": "git",
