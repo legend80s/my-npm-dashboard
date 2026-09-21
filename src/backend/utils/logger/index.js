@@ -1,7 +1,7 @@
 // import { consola } from "consola";
 /** @typedef {number} int */
 
-import { styleText } from "node:util"
+import { format, stripVTControlCharacters, styleText } from "node:util"
 
 export const BASH_COLORS = {
   reset: "\x1b[0m",
@@ -121,10 +121,11 @@ export class Logger {
 
   /**
    * @param  {unknown[]} args
+   * @returns {string | void}
    */
   debug(...args) {
     if (this.level <= LEVEL.DEBUG) {
-      this.#dispatch("debug", args)
+      return this.#dispatch("debug", args)
     }
   }
 
@@ -133,7 +134,7 @@ export class Logger {
    */
   info(...args) {
     if (this.level <= LEVEL.INFO) {
-      this.#dispatch("info", args)
+      return this.#dispatch("info", args)
     }
   }
 
@@ -142,7 +143,7 @@ export class Logger {
    */
   warn(...args) {
     if (this.level <= LEVEL.WARN) {
-      this.#dispatch("warn", args)
+      return this.#dispatch("warn", args)
     }
   }
 
@@ -151,7 +152,7 @@ export class Logger {
    */
   error(...args) {
     if (this.level <= LEVEL.ERROR) {
-      this.#dispatch("error", args)
+      return this.#dispatch("error", args)
     }
   }
 
@@ -160,7 +161,7 @@ export class Logger {
    */
   success(...args) {
     if (this.level <= LEVEL.INFO) {
-      this.#dispatch("success", args)
+      return this.#dispatch("success", args)
     }
   }
 
@@ -169,24 +170,37 @@ export class Logger {
    * @param {LevelKey} level
    * @param {unknown[]} args
    * @param {Pick<LoggerOptions, 'formatLevel'>} pickEmoji
+   * @returns {string}
    */
   #dispatch(level, args, { formatLevel = this.formatLevel } = {}) {
+    const fLevel = formatLevel(level)
+    // console.log("fLevel:", fLevel) // fLevel is [ WARN ] and with color code
     const leadings = [
       this.showTime && this.formatTimestamp(new Date()),
       // showDiff
       this.showDiff && this.#formatDiff(),
-      formatLevel(level),
+      fLevel,
     ]
       .filter(Boolean)
       .join(" ")
 
+    // trim space around level
+    const sfLevel = stripVTControlCharacters(fLevel)
+    const journal = stripVTControlCharacters(format(leadings, ...args)).replace(
+      sfLevel,
+      sfLevel.replace("[ ", "[").replace(" ]", "]"),
+    )
+
     if (!this.color) {
-      return console[level !== "success" ? level : "info"](leadings, ...args)
+      console[level !== "success" ? level : "info"](leadings, ...args)
+      return journal
     }
 
     const color = this.decorations[level].color
 
-    return console[level !== "success" ? level : "info"](leadings + color, ...args, BASH_COLORS.reset)
+    console[level !== "success" ? level : "info"](leadings + color, ...args, BASH_COLORS.reset)
+
+    return journal
   }
 
   #formatDiff() {
@@ -194,6 +208,10 @@ export class Logger {
     this.#now = Date.now()
 
     const humanTime = this.#diffToHumanTime(diff)
+
+    if (!this.color) {
+      return humanTime
+    }
 
     return `${BASH_COLORS.yellow}${humanTime}${BASH_COLORS.reset}`
   }
@@ -212,26 +230,49 @@ export class Logger {
   }
 }
 
+export const defaultCreateLoggerConfig = {
+  showTime: true,
+  /**
+   *
+   * @param {Date} date
+   * @returns
+   */
+  formatTime: (date) => date.toLocaleString(),
+  /**
+   *
+   * @param {number} diff
+   * @returns
+   */
+  diffToHumanTime: (diff) => {
+    if (diff < 1000) {
+      return `+${diff}ms`
+    }
+
+    return `+${Math.floor(diff / 1000)}.${String(diff % 1000).padStart(3, "0")}s`
+  },
+  // formatLevel: (level) => `[${level.toUpperCase()}]`,
+  color: true,
+  // emoji: true,
+  showDiff: true,
+}
+
 /**
  * @param {Omit<LoggerOptions, 'level'> & { level?: LevelNumber; verbose?: boolean }} config
  */
 export function createLogger({ verbose, ...rest } = {}) {
   return new Logger({
     level: verbose ? LEVEL.DEBUG : LEVEL.INFO,
-    showTime: true,
-    formatTime: (date) => date.toLocaleString(),
-    diffToHumanTime: (diff) => {
-      if (diff < 1000) {
-        return `+${diff}ms`
-      }
-
-      return `+${Math.floor(diff / 1000)}.${String(diff % 1000).padStart(3, "0")}s`
-    },
-    // formatLevel: (level) => `[${level.toUpperCase()}]`,
-    color: true,
-    // emoji: true,
-    showDiff: true,
-
+    ...defaultCreateLoggerConfig,
     ...rest,
   })
+}
+
+if (import.meta.main) {
+  const logger = createLogger({ verbose: false })
+  const warnMsg = logger.warn("A new version of consola is available: 3.0.1")
+  console.log(`warnMsg: |${warnMsg}}|`)
+
+  const logger2 = createLogger({ verbose: false, color: false })
+  const warnMsg2 = logger2.warn("A new version of consola is available: 3.0.1")
+  console.log(`warnMsg2: |${warnMsg2}}|`)
 }

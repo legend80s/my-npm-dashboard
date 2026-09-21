@@ -1,3 +1,4 @@
+import assert, { deepStrictEqual, match } from "node:assert"
 import { test } from "node:test"
 import { setTimeout as sleep } from "node:timers/promises"
 import { inspect } from "node:util"
@@ -8,23 +9,43 @@ test("new Logger - colorless", () => {
     level: LEVEL.DEBUG,
   })
 
-  logger.debug("Using consola 3.0.0")
-  logger.debug("Using consola", "3.0.0")
-  logger.debug("Using consola", "v", 3)
+  match(
+    // @ts-expect-error
+    logger.debug("Using consola 3.0.0"),
+    /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z \[DEBUG\] Using consola 3\.0\.0$/,
+  )
 
-  logger.info("Using consola", {
-    string: "3.0.0",
-    boolean: true,
-    number: 123,
-    array: [1, 2, 3],
-    object: { a: 1, b: 2 },
-  })
+  // @ts-expect-error
+  match(logger.debug("Using consola", "3.0.0"), /\[DEBUG\] Using consola 3.0.0$/)
+  // @ts-expect-error
+  match(logger.debug("Using consola", "v", 3), /\[DEBUG\] Using consola v 3$/)
 
-  logger.warn("A new version of consola is available: 3.0.1")
+  match(
+    // @ts-expect-error
+    logger.info("Using consola", {
+      string: "3.0.0",
+      boolean: true,
+      number: 123,
+      array: [1, 2, 3],
+      object: { a: 1, b: 2 },
+    }),
+    /\[INFO\] Using consola {\n  string: '3.0.0',\n  boolean: true,\n  number: 123,\n  array: \[ 1, 2, 3 \],\n  object: { a: 1, b: 2 }\n}/,
+  )
 
-  logger.success("Project built!")
+  match(
+    // @ts-expect-error
+    logger.warn("A new version of consola is available: 3.0.1"),
+    /\[WARN\] A new version of consola is available: 3.0.1$/,
+  )
 
-  logger.error(new Error("This is an example error. Everything is fine!"))
+  // @ts-expect-error
+  match(logger.success("Project built!"), /\[SUCCESS\] Project built!$/)
+
+  match(
+    // @ts-expect-error
+    logger.error(new Error("This is an example error. Everything is fine!")),
+    /\[ERROR\] Error: This is an example error\. Everything is fine!/,
+  )
 })
 
 // console.log("inspect.colors.red:", inspect.colors.red)
@@ -63,11 +84,13 @@ test("new Logger - with color and emoji", () => {
 test("createLogger", () => {
   const logger = createLogger({ verbose: false })
 
-  logger.debug("Using consola 3.0.0")
+  deepStrictEqual(logger.debug("Using consola 3.0.0"), undefined)
 
-  logger.debug("Using consola", "3.0.0")
+  deepStrictEqual(logger.debug("Using consola", "3.0.0"), undefined)
 
-  logger.debug("Using consola", "v", 3)
+  deepStrictEqual(logger.debug("Using consola", "v", 3), undefined)
+  // @ts-expect-error
+  match(logger.info("Using consola", "v", 3), /\[INFO\] Using consola v 3/)
 
   logger.info("Using consola", {
     string: "3.0.0",
@@ -77,11 +100,21 @@ test("createLogger", () => {
     object: { a: 1, b: 2 },
   })
 
-  logger.warn("A new version of consola is available: 3.0.1")
+  const warnMsg = logger.warn("A new version of consola is available: 3.0.1")
+  console.log("warnMsg:", warnMsg)
+  console.log(`warnMsg: |${warnMsg}}|`)
 
-  logger.success("Project built!")
+  // @ts-expect-error
+  match(warnMsg, /\[WARN\] A new version of consola is available: 3\.0\.1$/)
 
-  logger.error(new Error("This is an example error. Everything is fine!"))
+  // @ts-expect-error
+  match(logger.success("Project built!"), /\[SUCCESS\] Project built!/)
+
+  match(
+    // @ts-expect-error
+    logger.error(new Error("This is an example error. Everything is fine!")),
+    /\[ERROR\] Error: This is an example error\. Everything is fine!/,
+  )
 })
 
 test("createLogger print nothing", () => {
