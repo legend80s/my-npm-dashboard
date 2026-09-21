@@ -4,7 +4,7 @@
   <img src="https://raw.githubusercontent.com/legend80s/my-npm-dashboard/refs/heads/main/src/assets/calf-elephant.svg" width="300" />
 </h2>
 
-[中文](./README.zh.md) | English
+[中文](./https://github.com/legend80s/my-npm-dashboard/blob/main/src/README.zh.md) | English
 
 > **Calf** — because even the biggest elephants start small, but we track them all.
 
