@@ -13,8 +13,8 @@
   ],
   "scripts": {
     "test": "node --test",
-    "typecheck": "tsgo --noEmit",
-    "generate:types": "tsgo index.js --declaration --emitDeclarationOnly --outDir dist --ignoreConfig --allowJs",
+    "typecheck": "tsc --noEmit",
+    "generate:types": "tsc index.js --declaration --emitDeclarationOnly --outDir dist --ignoreConfig --allowJs",
     "pub:patch": "npm version patch",
     "pub:minor": "npm version minor",
     "pub:major": "npm version major",
@@ -26,8 +26,9 @@
     "url": "https://github.com/legend80s/my-npm-dashboard/blob/main/src/backend/utils/logger"
   },
   "homepage": "https://github.com/legend80s/my-npm-dashboard/blob/main/src/backend/utils/logger/README.md",
-  "devDependencies": {},
-  "dependencies": {},
+  "devDependencies": {
+    "typescript": "^7.0.2"
+  },
   "keywords": [
     "consola",
     "console",
