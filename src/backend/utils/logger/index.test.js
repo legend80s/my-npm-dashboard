@@ -163,3 +163,9 @@ test("createLogger verbose true", async () => {
   logger.warn("A new version of walking-log is available: 0.0.5")
   logger.error(new Error("This is an example error. Everything is fine!"))
 })
+
+test("createLogger without options", () => {
+  const logger = createLogger()
+
+  logger.warn("A new version of walking-log is available: 1.0.0")
+})
