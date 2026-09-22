@@ -56,8 +56,8 @@ const decorations = {
 export class Logger {
   /** @type {int | null} */
   #now = null
+
   /**
-   *
    * @param {LoggerOptions} opts
    */
   constructor(opts) {
@@ -89,7 +89,6 @@ export class Logger {
   }
 
   /**
-   *
    * @param {LevelKey} level
    * @returns {string}
    */
@@ -121,7 +120,7 @@ export class Logger {
 
   /**
    * @param  {unknown[]} args
-   * @returns {string | void}
+   * @returns {string | undefined}
    */
   debug(...args) {
     if (this.level <= LEVEL.DEBUG) {
@@ -131,6 +130,7 @@ export class Logger {
 
   /**
    * @param  {...unknown} args
+   * @returns {string | undefined}
    */
   info(...args) {
     if (this.level <= LEVEL.INFO) {
@@ -140,6 +140,7 @@ export class Logger {
 
   /**
    * @param  {...unknown} args
+   * @returns {string | undefined}
    */
   warn(...args) {
     if (this.level <= LEVEL.WARN) {
@@ -149,6 +150,7 @@ export class Logger {
 
   /**
    * @param  {...unknown} args
+   * @returns {string | undefined}
    */
   error(...args) {
     if (this.level <= LEVEL.ERROR) {
@@ -158,6 +160,7 @@ export class Logger {
 
   /**
    * @param  {unknown[]} args
+   * @returns {string | undefined}
    */
   success(...args) {
     if (this.level <= LEVEL.INFO) {
@@ -166,7 +169,6 @@ export class Logger {
   }
 
   /**
-   *
    * @param {LevelKey} level
    * @param {unknown[]} args
    * @param {Pick<LoggerOptions, 'formatLevel'>} pickEmoji
