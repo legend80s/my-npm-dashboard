@@ -188,10 +188,10 @@ export class Logger {
 
     // trim space around level
     const sfLevel = stripVTControlCharacters(fLevel)
-    const journal = stripVTControlCharacters(format(leadings, ...args)).replace(
+    const journal = `${stripVTControlCharacters(format(leadings, ...args)).replace(
       sfLevel,
       sfLevel.replace("[ ", "[").replace(" ]", "]"),
-    )
+    )}\n`
 
     if (!this.color) {
       console[level !== "success" ? level : "info"](leadings, ...args)
