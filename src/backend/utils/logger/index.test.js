@@ -12,13 +12,13 @@ test("new Logger - colorless", () => {
   match(
     // @ts-expect-error
     logger.debug("Using consola 3.0.0"),
-    /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z \[DEBUG\] Using consola 3\.0\.0$/,
+    /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z \[DEBUG\] Using consola 3\.0\.0\n$/,
   )
 
   // @ts-expect-error
-  match(logger.debug("Using consola", "3.0.0"), /\[DEBUG\] Using consola 3.0.0$/)
+  match(logger.debug("Using consola", "3.0.0"), /\[DEBUG\] Using consola 3.0.0\n$/)
   // @ts-expect-error
-  match(logger.debug("Using consola", "v", 3), /\[DEBUG\] Using consola v 3$/)
+  match(logger.debug("Using consola", "v", 3), /\[DEBUG\] Using consola v 3\n$/)
 
   match(
     // @ts-expect-error
@@ -35,11 +35,11 @@ test("new Logger - colorless", () => {
   match(
     // @ts-expect-error
     logger.warn("A new version of consola is available: 3.0.1"),
-    /\[WARN\] A new version of consola is available: 3.0.1$/,
+    /\[WARN\] A new version of consola is available: 3.0.1\n$/,
   )
 
   // @ts-expect-error
-  match(logger.success("Project built!"), /\[SUCCESS\] Project built!$/)
+  match(logger.success("Project built!"), /\[SUCCESS\] Project built!\n$/)
 
   match(
     // @ts-expect-error
@@ -105,7 +105,7 @@ test("createLogger", () => {
   console.log(`warnMsg: |${warnMsg}}|`)
 
   // @ts-expect-error
-  match(warnMsg, /\[WARN\] A new version of consola is available: 3\.0\.1$/)
+  match(warnMsg, /\[WARN\] A new version of consola is available: 3\.0\.1\n$/)
 
   // @ts-expect-error
   match(logger.success("Project built!"), /\[SUCCESS\] Project built!/)
