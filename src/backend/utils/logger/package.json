@@ -19,7 +19,7 @@
     "pub:patch": "npm version patch",
     "pub:minor": "npm version minor",
     "pub:major": "npm version major",
-    "preversion": "npm test && npm run typecheck && npm run generate:types",
+    "preversion": "npm test && npm run typecheck && shipwright && npm run generate:types",
     "postversion": "npm publish && npm run commit && git push && git push --tags"
   },
   "repository": {
@@ -28,6 +28,7 @@
   },
   "homepage": "https://github.com/legend80s/my-npm-dashboard/blob/main/src/backend/utils/logger/README.md",
   "devDependencies": {
+    "npm-shipwright": "^0.3.0",
     "typescript": "^7.0.2"
   },
   "keywords": [

@@ -8,6 +8,9 @@ importers:
 
   .:
     devDependencies:
+      npm-shipwright:
+        specifier: ^0.3.0
+        version: 0.3.0
       typescript:
         specifier: ^7.0.2
         version: 7.0.2
@@ -134,10 +137,17 @@ packages:
     cpu: [x64]
     os: [win32]
 
+  npm-shipwright@0.3.0:
+    resolution: {integrity: sha512-TytCki1vAYVTBkCtnBccZcXCeMKmYzat6MXoJNL/s9P/WTq/E0TcQKJD4GiFMfkyzM5LyXGXECmsnQQ4cfzyvw==}
+    hasBin: true
+
   typescript@7.0.2:
     resolution: {integrity: sha512-8FYau96o3NKOhbjKi/qNvG/W5jhzxkbdm5sj9AbZ/5T5sWqn3hJgLfGx27sRKZWTvyzCP8dLRBTf5tBTSRVUNA==}
     engines: {node: '>=16.20.0'}
     hasBin: true
+
+  walking-log@1.1.2:
+    resolution: {integrity: sha512-QTDelOQUWWRGSIrE+WKoOHrHZj7h/Jl58jntVdg1cRfa9ogT7iTNQCzEotPLVG70kami5L5xKXPtaoZJkrBzJQ==}
 
 snapshots:
 
@@ -201,6 +211,10 @@ snapshots:
   '@typescript/typescript-win32-x64@7.0.2':
     optional: true
 
+  npm-shipwright@0.3.0:
+    dependencies:
+      walking-log: 1.1.2
+
   typescript@7.0.2:
     optionalDependencies:
       '@typescript/typescript-aix-ppc64': 7.0.2
@@ -223,3 +237,5 @@ snapshots:
       '@typescript/typescript-sunos-x64': 7.0.2
       '@typescript/typescript-win32-arm64': 7.0.2
       '@typescript/typescript-win32-x64': 7.0.2
+
+  walking-log@1.1.2: {}
