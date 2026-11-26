@@ -43,6 +43,12 @@ const options = {
     // @ts-expect-error
     description: "Open the server in the browser. --no-open to disable",
   },
+  "dry-run": {
+    type: "boolean",
+    default: false,
+    // @ts-expect-error
+    description: "Run the server without starting the backend",
+  },
 }
 
 const { values } = parseArgs({
@@ -54,7 +60,7 @@ const { verbose } = values
 const logger = createLogger({ verbose })
 
 async function main() {
-  const { help, version, port, open } = values
+  const { help, version, port, open, "dry-run": dryRun } = values
   // console.log("values:", values)
 
   if (help) {
@@ -73,21 +79,24 @@ async function main() {
   const portNum = Number(port || process.env.PORT)
   // const rootDir = new URL("..", import.meta.url).pathname
 
-  const { info } = await startServer({
-    port: portNum || DEFAULT_PORT,
-    // root: join(import.meta.dirname, "../"),
-    // open, // 自动打开浏览器
-    debug: logger.debug,
-  })
+  let url = `http://localhost:${portNum}?dry-run`
+  if (!dryRun) {
+    const { info } = await startServer({
+      port: portNum || DEFAULT_PORT,
+      // root: join(import.meta.dirname, "../"),
+      // open, // 自动打开浏览器
+      debug: logger.debug.bind(logger),
+    })
 
-  const url = `http://localhost:${info.port}`
+    url = `http://localhost:${info.port}`
+  }
 
   console.log(`\nServer is running on ${url}\n`)
 
   if (open) {
     logger.debug("openBrowser url:", url)
     verbose && console.time("openBrowser")
-    openBrowser(url, { debug: logger.debug })
+    openBrowser(url, { debug: logger.debug.bind(logger) })
       .catch((error) => {
         logger.error("openBrowser", error)
       })
