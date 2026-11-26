@@ -76,6 +76,9 @@ async function main() {
     return
   }
 
+  console.log()
+  printVersion()
+
   const portNum = Number(port || process.env.PORT)
   // const rootDir = new URL("..", import.meta.url).pathname
 
