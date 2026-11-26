@@ -2,10 +2,10 @@
   "name": "npm-calf",
   "description": "🐘 An npm dashboard for your recently \"born\" packages.",
   "private": false,
-  "version": "1.5.1",
+  "version": "1.5.2",
   "type": "module",
   "bin": {
-    "calf": "./bin/index.js"
+    "calf": "bin/index.js"
   },
   "scripts": {
     "test": "node --test",
