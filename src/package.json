@@ -2,7 +2,7 @@
   "name": "npm-calf",
   "description": "🐘 An npm dashboard for your recently \"born\" packages.",
   "private": false,
-  "version": "1.5.3",
+  "version": "1.5.4",
   "type": "module",
   "bin": {
     "calf": "bin/index.js"
@@ -10,6 +10,7 @@
   "scripts": {
     "test": "node --test",
     "typecheck": "tsc --noEmit",
+    "commit": "bash ./scripts/git-commit.sh",
     "check-files-to-publish": "shipwright --threshold-count=5 --throw --no-silent",
     "start": "node ./bin/index.js",
     "// dev:node-watch": "need reload page manually",
@@ -23,7 +24,7 @@
     "pub:minor": "npm version minor",
     "pub:major": "npm version major",
     "preversion": "npm test && npm run typecheck && npm run check-files-to-publish",
-    "postversion": "npm publish && git push && git push --tags"
+    "postversion": "npm publish && npm run commit && git push && git push --tags"
   },
   "repository": {
     "type": "git",
